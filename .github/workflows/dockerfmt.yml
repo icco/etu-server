@@ -1,0 +1,24 @@
+name: Format Dockerfile
+
+on:
+  pull_request:
+
+jobs:
+  dockerfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Format Dockerfile
+        uses: reteps/dockerfmt@v4
+        with:
+          path: Dockerfile
+
+      - name: Commit changes
+        run: |
+          if ! git diff --quiet; then
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+            git commit -am "style: format Dockerfile"
+            git push
+          fi
