@@ -92,7 +92,7 @@ EXPOSE 80 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget -q --spider http://localhost/health || exit 1
+    CMD wget -q --spider http://localhost/health || exit 1
 
 # Start both services
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
