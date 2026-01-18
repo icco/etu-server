@@ -6,132 +6,139 @@ Read more about the concept at https://writing.natwelch.com/post/765
 
 ## Features
 
-### 🎨 Landing Page
-A modern marketing page that introduces Etu, explains interstitial journaling, and showcases features with honest pricing ($5/year).
-
-### 📝 Web Client
-A full-featured journaling application with:
-- **Quick Capture**: Write notes in Markdown with live preview
-- **Tag System**: Organize notes with custom tags
+- **Quick Capture**: Write notes in Markdown with live preview (Cmd+Enter to save)
+- **Tag System**: Organize notes with custom tags and autocomplete
 - **Search & Filter**: Find notes by content, tags, or date
 - **Timeline View**: Browse notes chronologically with date grouping
-- **Settings**: Manage account, subscription, and API keys
+- **Full Note View**: Click any note to see rendered markdown
+- **Settings**: Manage account, view stats, and manage API keys
+- **Keyboard Shortcuts**: `n` for new note, `/` to search
+- **Mobile Support**: Responsive design with bottom navigation
+- **API Keys**: Generate keys for CLI and mobile app access
+- **Stripe Subscriptions**: $5/year with Stripe integration
 
-### 🔌 API Server
-_(Coming in a separate PR)_
+## Tech Stack
 
-The backend API server will provide:
-- gRPC and HTTP/JSON APIs
-- Authentication with API keys
-- Persistent storage
-- Stripe payment integration
-- Multi-client support (web, CLI, mobile)
-
-## Technology Stack
-
-- **Frontend**: React 19 + TypeScript
-- **Build Tool**: Vite
-- **UI Framework**: Radix UI + Tailwind CSS 4
+- **Framework**: Next.js 16 (App Router)
+- **Database**: PostgreSQL with Prisma ORM
+- **Auth**: Auth.js v5 (NextAuth) with credentials
+- **Styling**: Tailwind CSS 4
 - **Icons**: Phosphor Icons
-- **Markdown**: marked library
-- **State Management**: GitHub Spark KV (browser storage)
+- **Markdown**: marked + DOMPurify
+- **Payments**: Stripe
 
-## Development
+## Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- npm
 
-### Setup
+- Node.js 25+ (see `.nvmrc`)
+- PostgreSQL database
+- Yarn
+
+### Development
 
 ```bash
 # Install dependencies
-npm install
+yarn install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your database URL and secrets
+
+# Push database schema
+yarn db:push
 
 # Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+yarn dev
 ```
 
-The development server will start at http://localhost:5000
+Open http://localhost:3000
+
+### Environment Variables
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/etu"
+
+# Auth.js
+AUTH_SECRET="your-secret-key"
+NEXTAUTH_URL="http://localhost:3000"
+
+# Stripe (optional)
+STRIPE_SECRET_KEY="sk_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+STRIPE_PRICE_ID="price_..."
+```
+
+## Docker
+
+```bash
+# Development with docker-compose
+docker-compose up -d
+
+# Production build
+docker build -t etu-server .
+docker run -p 3000:3000 \
+  -e DATABASE_URL="postgresql://..." \
+  -e AUTH_SECRET="..." \
+  etu-server
+```
 
 ## Project Structure
 
 ```
-src/
+├── app/
+│   ├── (auth)/           # Login/register pages
+│   │   ├── login/
+│   │   └── register/
+│   ├── (app)/            # Protected app pages
+│   │   ├── notes/        # Notes timeline
+│   │   └── settings/     # User settings
+│   ├── api/
+│   │   ├── auth/         # NextAuth handlers
+│   │   └── stripe/       # Stripe webhooks
+│   ├── layout.tsx
+│   ├── page.tsx          # Landing page
+│   └── globals.css
 ├── components/
-│   ├── LandingPage.tsx      # Marketing landing page
-│   ├── AppView.tsx           # Main application view
-│   ├── NoteCard.tsx          # Individual note display
-│   ├── NoteDialog.tsx        # Note creation/editing modal
-│   ├── SettingsDialog.tsx    # User settings
-│   └── ui/                   # Reusable UI components
+│   ├── note-card.tsx
+│   └── note-dialog.tsx
 ├── lib/
-│   ├── types.ts              # TypeScript type definitions
-│   ├── note-utils.ts         # Note manipulation utilities
-│   └── utils.ts              # General utilities
-├── App.tsx                   # Root application component
-└── main.tsx                  # Application entry point
+│   ├── actions/          # Server actions
+│   │   ├── auth.ts
+│   │   ├── notes.ts
+│   │   └── api-keys.ts
+│   ├── auth.ts           # Auth.js config
+│   ├── db.ts             # Prisma client
+│   └── stripe.ts
+├── prisma/
+│   └── schema.prisma
+├── middleware.ts         # Auth middleware
+└── next.config.ts
 ```
 
-## Current Limitations
+## API Keys
 
-This implementation currently uses browser-based local storage. For production use, it requires:
+Generate API keys in Settings to use with:
+- **CLI**: https://github.com/icco/etu
+- **Mobile**: https://github.com/icco/etu-mobile
 
-1. **Backend API Server** - RESTful/gRPC API for data persistence
-2. **Authentication** - Proper user authentication system
-3. **Payment Integration** - Stripe integration for subscriptions
-4. **Database** - Persistent storage (PostgreSQL recommended)
+```bash
+# Use API key with curl
+curl -H "Authorization: etu_your_key_here" \
+  https://your-domain.com/api/notes
+```
 
-See the [API Server Roadmap](#api-server-roadmap) section below.
+## Database
 
-## Related Projects
+Uses Prisma with PostgreSQL. Key models:
 
-- **CLI Client**: https://github.com/icco/etu
-- **Mobile App**: https://github.com/icco/etu-mobile
-
-## API Server Roadmap
-
-The API server will be implemented in a separate PR with:
-
-### Core Features
-- [ ] Protocol Buffer definitions based on icco/etu
-- [ ] gRPC server implementation
-- [ ] HTTP/JSON gateway
-- [ ] JWT + API key authentication
-- [ ] PostgreSQL database integration
-- [ ] Note CRUD operations
-- [ ] Full-text search
-- [ ] Tag management
-
-### Payment & Users
-- [ ] Stripe subscription integration
-- [ ] User registration and management
-- [ ] Subscription status tracking
-- [ ] Payment webhook handling
-
-### DevOps
-- [ ] Docker containerization
-- [ ] Database migrations
-- [ ] API documentation (OpenAPI/Swagger)
-- [ ] Integration tests
-- [ ] CI/CD pipeline
-
-## Design Philosophy
-
-Etu follows these experience qualities:
-
-1. **Effortless** - Capturing thoughts should be friction-free
-2. **Purposeful** - Every element serves quick capture and easy retrieval
-3. **Trustworthy** - Stable, secure, and respectful of user content
+- **User**: Account with subscription status
+- **Note**: Markdown content with timestamps
+- **Tag**: User-scoped tags
+- **NoteTag**: Many-to-many junction
+- **ApiKey**: Hashed API keys for external access
 
 ## License
 
 MIT License - Copyright (c) 2024 Etu
-
-GitHub Spark Template resources are licensed under the MIT license, Copyright GitHub, Inc.
