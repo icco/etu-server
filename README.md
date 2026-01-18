@@ -2,7 +2,10 @@
 
 Etu is an interstitial journaling platform that helps you capture life's moments through quick, tagged markdown notes called "blips."
 
-Read more about the concept at https://writing.natwelch.com/post/765
+This is the backend and webapp for Etu. For more reading on our ideas see:
+
+ - https://writing.natwelch.com/post/765
+ - [BLIPS.md](./BLIPS.md)
 
 ## Features
 
