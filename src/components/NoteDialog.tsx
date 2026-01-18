@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -85,7 +87,7 @@ export function NoteDialog({
           <TabsContent value="preview" className="flex-1 mt-0">
             <div className="border border-border rounded-md p-4 min-h-[300px] bg-card prose prose-sm max-w-none">
               {content ? (
-                <div dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked.parse(content) as string) }} />
               ) : (
                 <p className="text-muted-foreground italic">Nothing to preview yet...</p>
               )}
@@ -139,32 +141,4 @@ export function NoteDialog({
       </DialogContent>
     </Dialog>
   )
-}
-
-function renderMarkdown(text: string): string {
-  let html = text
-  
-  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-  
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>')
-  
-  html = html.replace(/`(.*?)`/g, '<code>$1</code>')
-  
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-  
-  html = html.replace(/^\- (.*$)/gim, '<li>$1</li>')
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-  
-  html = html.replace(/\n\n/g, '</p><p>')
-  html = '<p>' + html + '</p>'
-  
-  html = html.replace(/<p><h/g, '<h')
-  html = html.replace(/<\/h([1-6])><\/p>/g, '</h$1>')
-  html = html.replace(/<p><ul>/g, '<ul>')
-  html = html.replace(/<\/ul><\/p>/g, '</ul>')
-  
-  return html
 }
