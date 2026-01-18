@@ -1,9 +1,13 @@
 import type { NextAuthConfig } from "next-auth"
+import Credentials from "next-auth/providers/credentials"
 
+// Edge-compatible auth config (no Prisma imports)
+// Used by middleware for session validation
 export const authConfig = {
   pages: {
     signIn: "/login",
   },
+  session: { strategy: "jwt" },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
@@ -23,6 +27,27 @@ export const authConfig = {
 
       return true
     },
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
+    },
+    session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string
+      }
+      return session
+    },
   },
-  providers: [], // Configured in auth.ts
+  providers: [
+    // Credentials provider stub for Edge - actual validation happens in auth.ts
+    Credentials({
+      credentials: {
+        email: {},
+        password: {},
+      },
+      authorize: () => null, // Never authorizes - full auth.ts handles this
+    }),
+  ],
 } satisfies NextAuthConfig

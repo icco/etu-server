@@ -10,7 +10,6 @@ import {
   SignOut, 
   Gear, 
   X, 
-  CalendarBlank,
   House 
 } from "@phosphor-icons/react"
 import { signOut } from "next-auth/react"
@@ -55,8 +54,8 @@ function groupNotesByDate(notes: Note[]): Map<string, Note[]> {
 
 export function NotesView({ initialNotes, initialTags, searchParams }: NotesViewProps) {
   const router = useRouter()
-  const urlParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
+  const _urlParams = useSearchParams()
+  const [_isPending, startTransition] = useTransition()
   
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
@@ -137,7 +136,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
       setDialogOpen(false)
       setEditingNote(null)
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("Failed to save blip")
     }
   }
@@ -152,7 +151,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
       await deleteNote(id)
       toast.success("Blip deleted")
       router.refresh()
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete blip")
     }
   }

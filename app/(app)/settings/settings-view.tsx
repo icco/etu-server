@@ -66,7 +66,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
       setNewKeyName("")
       router.refresh()
       toast.success("API key created")
-    } catch (error) {
+    } catch {
       toast.error("Failed to create API key")
     } finally {
       setIsCreating(false)
@@ -78,7 +78,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
       await deleteApiKey(id)
       setApiKeys((keys) => keys.filter((k) => k.id !== id))
       toast.success("API key revoked")
-    } catch (error) {
+    } catch {
       toast.error("Failed to revoke API key")
     }
   }

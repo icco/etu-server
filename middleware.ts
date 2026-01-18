@@ -1,27 +1,10 @@
-import { auth } from "@/lib/auth"
+import NextAuth from "next-auth"
+import { authConfig } from "@/lib/auth.config"
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth?.user
-  const { pathname } = req.nextUrl
+// Use Edge-compatible auth config (no Prisma)
+export const { auth: middleware } = NextAuth(authConfig)
 
-  // Protected routes
-  const protectedPaths = ["/notes", "/settings"]
-  const isProtected = protectedPaths.some((p) => pathname.startsWith(p))
-
-  if (isProtected && !isLoggedIn) {
-    const loginUrl = new URL("/login", req.nextUrl.origin)
-    loginUrl.searchParams.set("callbackUrl", pathname)
-    return Response.redirect(loginUrl)
-  }
-
-  // Redirect logged-in users away from auth pages
-  const authPaths = ["/login", "/register"]
-  const isAuthPage = authPaths.includes(pathname)
-
-  if (isAuthPage && isLoggedIn) {
-    return Response.redirect(new URL("/notes", req.nextUrl.origin))
-  }
-})
+export default middleware
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
