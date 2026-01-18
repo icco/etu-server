@@ -1,5 +1,5 @@
 {
-  "name": "etu-server",
+  "name": "@icco/etu-server",
   "version": "1.0.0",
   "private": true,
   "scripts": {
