@@ -6,10 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Format Dockerfile
-        uses: reteps/dockerfmt@v0.3.9
+      - uses: actions/setup-go@v5
         with:
-          path: Dockerfile
+          go-version: '1.25'
+      - name: Format Dockerfile
+        run: go run github.com/reteps/dockerfmt@latest -w Dockerfile
       - name: Commit changes
         run: |
           if ! git diff --quiet; then
