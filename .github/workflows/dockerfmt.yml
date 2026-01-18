@@ -4,18 +4,18 @@ on:
 jobs:
   dockerfmt:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-go@v5
         with:
           go-version: '1.25'
       - name: Format Dockerfile
         run: go run github.com/reteps/dockerfmt@latest -w Dockerfile
-      - name: Commit changes
-        run: |
-          if ! git diff --quiet; then
-            git config --global user.name 'github-actions[bot]'
-            git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-            git commit -am "style: format Dockerfile"
-            git push
-          fi
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "style: format Dockerfile"
+          file_pattern: Dockerfile
