@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useFormStatus } from "react-dom"
-import { NotePencil } from "@phosphor-icons/react"
+import { PencilSquareIcon } from "@heroicons/react/24/solid"
 import { register } from "@/lib/actions/auth"
 import { toast } from "sonner"
 
@@ -47,7 +47,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="bg-card border border-border rounded-lg p-8">
           <div className="flex items-center gap-2 mb-6 justify-center">
-            <NotePencil size={32} weight="duotone" className="text-primary" />
+            <PencilSquareIcon className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-primary">Etu</h1>
           </div>
 

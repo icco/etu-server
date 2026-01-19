@@ -5,18 +5,18 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import {
-  ArrowLeft,
-  Key,
-  ChartBar,
-  User,
-  CreditCard,
-  Copy,
-  Check,
-  Trash,
-  Download,
-  NotePencil,
-  Tag,
-} from "@phosphor-icons/react"
+  ArrowLeftIcon,
+  KeyIcon,
+  ChartBarIcon,
+  UserIcon,
+  CreditCardIcon,
+  DocumentDuplicateIcon,
+  CheckIcon,
+  TrashIcon,
+  ArrowDownTrayIcon,
+  PencilSquareIcon,
+  TagIcon,
+} from "@heroicons/react/24/outline"
 import { toast } from "sonner"
 import { createApiKey, deleteApiKey } from "@/lib/actions/api-keys"
 
@@ -104,7 +104,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center gap-4">
           <Link href="/notes" className="p-2 hover:bg-muted rounded-md transition-colors">
-            <ArrowLeft size={24} />
+            <ArrowLeftIcon className="h-6 w-6" />
           </Link>
           <h1 className="text-xl font-bold">Settings</h1>
         </div>
@@ -114,10 +114,10 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
         {/* Tabs */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
           {[
-            { id: "account", label: "Account", icon: User },
-            { id: "stats", label: "Stats", icon: ChartBar },
-            { id: "subscription", label: "Subscription", icon: CreditCard },
-            { id: "api", label: "API Keys", icon: Key },
+            { id: "account", label: "Account", icon: UserIcon },
+            { id: "stats", label: "Stats", icon: ChartBarIcon },
+            { id: "subscription", label: "Subscription", icon: CreditCardIcon },
+            { id: "api", label: "API Keys", icon: KeyIcon },
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -128,7 +128,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                   : "bg-muted hover:bg-muted/80"
               }`}
             >
-              <Icon size={18} />
+              <Icon className="h-4.5 w-4.5" />
               {label}
             </button>
           ))}
@@ -156,18 +156,18 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
           <div className="space-y-6">
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-lg font-semibold mb-6 flex items-center gap-2">
-                <ChartBar size={20} />
+                <ChartBarIcon className="h-5 w-5" />
                 Usage Statistics
               </h2>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <NotePencil size={24} className="text-accent mx-auto mb-2" />
+                  <PencilSquareIcon className="h-6 w-6 text-accent mx-auto mb-2" />
                   <div className="text-2xl font-bold">{stats.totalNotes}</div>
                   <div className="text-sm text-muted-foreground">Total Blips</div>
                 </div>
                 <div className="bg-muted/50 rounded-lg p-4 text-center">
-                  <Tag size={24} className="text-accent mx-auto mb-2" />
+                  <TagIcon className="h-6 w-6 text-accent mx-auto mb-2" />
                   <div className="text-2xl font-bold">{stats.totalTags}</div>
                   <div className="text-sm text-muted-foreground">Unique Tags</div>
                 </div>
@@ -192,7 +192,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                     onClick={handleExportJSON}
                     className="flex items-center gap-2 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
                   >
-                    <Download size={16} />
+                    <ArrowDownTrayIcon className="h-4 w-4" />
                     Export as JSON
                   </button>
                 </div>
@@ -234,7 +234,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                 <span className="text-muted-foreground">/ year</span>
               </div>
               <button className="flex items-center gap-2 w-full justify-center px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors">
-                <CreditCard size={20} />
+                <CreditCardIcon className="h-5 w-5" />
                 Manage Subscription
               </button>
               <p className="text-xs text-muted-foreground text-center mt-2">
@@ -270,7 +270,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                   disabled={isCreating}
                   className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md transition-colors disabled:opacity-50"
                 >
-                  <Key size={18} />
+                  <KeyIcon className="h-4.5 w-4.5" />
                   Generate
                 </button>
               </div>
@@ -288,9 +288,9 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                     className="p-1 hover:bg-muted rounded"
                   >
                     {copiedKey === newlyCreatedKey ? (
-                      <Check size={16} className="text-secondary" />
+                      <CheckIcon className="h-4 w-4 text-secondary" />
                     ) : (
-                      <Copy size={16} />
+                      <DocumentDuplicateIcon className="h-4 w-4" />
                     )}
                   </button>
                 </div>
@@ -323,7 +323,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                         onClick={() => handleDeleteKey(key.id)}
                         className="p-2 text-destructive hover:bg-muted rounded transition-colors"
                       >
-                        <Trash size={16} />
+                        <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
                   ))}

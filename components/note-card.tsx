@@ -4,7 +4,7 @@ import { useState } from "react"
 import { format } from "date-fns"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
-import { DotsThree, Pencil, Trash } from "@phosphor-icons/react"
+import { EllipsisHorizontalIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
 
 interface Note {
   id: string
@@ -103,7 +103,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
               }}
               className="p-1 opacity-0 group-hover:opacity-100 hover:bg-muted rounded transition-all"
             >
-              <DotsThree size={20} weight="bold" />
+              <EllipsisHorizontalIcon className="h-5 w-5" />
             </button>
             {menuOpen && (
               <>
@@ -123,7 +123,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                     }}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
                   >
-                    <Pencil size={16} />
+                    <PencilIcon className="h-4 w-4" />
                     Edit
                   </button>
                   <button
@@ -134,7 +134,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                     disabled={isDeleting}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-muted transition-colors disabled:opacity-50"
                   >
-                    <Trash size={16} />
+                    <TrashIcon className="h-4 w-4" />
                     {isDeleting ? "Deleting..." : "Delete"}
                   </button>
                 </div>
@@ -191,7 +191,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                 }}
                 className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md transition-colors"
               >
-                <Pencil size={16} />
+                <PencilIcon className="h-4 w-4" />
                 Edit
               </button>
             </div>

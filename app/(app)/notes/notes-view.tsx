@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { 
-  NotePencil, 
-  MagnifyingGlass, 
-  SignOut, 
-  Gear, 
-  X, 
-  House 
-} from "@phosphor-icons/react"
+import {
+  PencilSquareIcon,
+  MagnifyingGlassIcon,
+  ArrowRightStartOnRectangleIcon,
+  Cog6ToothIcon,
+  XMarkIcon,
+  HomeIcon
+} from "@heroicons/react/24/outline"
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
 import { createNote, updateNote, deleteNote } from "@/lib/actions/notes"
@@ -165,15 +165,14 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
           <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <NotePencil size={28} weight="duotone" className="text-primary" />
+              <PencilSquareIcon className="h-7 w-7 text-primary" />
               <h1 className="text-xl font-bold text-primary hidden sm:block">Etu</h1>
             </div>
 
             <div className="flex-1 max-w-md">
               <div className="relative">
-                <MagnifyingGlass
-                  size={20}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                <MagnifyingGlassIcon
+                  className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                 />
                 <input
                   id="search-notes"
@@ -194,20 +193,20 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                 }}
                 className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors"
               >
-                <NotePencil size={20} weight="bold" />
+                <PencilSquareIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">New Blip</span>
               </button>
               <Link
                 href="/settings"
                 className="p-2 hover:bg-muted rounded-md transition-colors"
               >
-                <Gear size={24} />
+                <Cog6ToothIcon className="h-6 w-6" />
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
                 className="p-2 hover:bg-muted rounded-md transition-colors"
               >
-                <SignOut size={24} />
+                <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
               </button>
             </div>
           </div>
@@ -236,7 +235,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                       onClick={clearFilters}
                       className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground ml-2"
                     >
-                      <X size={14} />
+                      <XMarkIcon className="h-3.5 w-3.5" />
                       Clear
                     </button>
                   )}
@@ -250,7 +249,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
           {notes.length === 0 && !hasFilters ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <NotePencil size={64} weight="duotone" className="text-muted-foreground mb-4" />
+              <PencilSquareIcon className="h-16 w-16 text-muted-foreground mb-4" />
               <h2 className="text-2xl font-semibold text-foreground mb-2">No blips yet</h2>
               <p className="text-muted-foreground mb-6 max-w-md">
                 Start your interstitial journaling journey by capturing your first thought.
@@ -259,13 +258,13 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                 onClick={() => setDialogOpen(true)}
                 className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 rounded-md font-medium transition-colors"
               >
-                <NotePencil size={20} weight="bold" />
+                <PencilSquareIcon className="h-5 w-5" />
                 Create Your First Blip
               </button>
             </div>
           ) : notes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <MagnifyingGlass size={64} weight="duotone" className="text-muted-foreground mb-4" />
+              <MagnifyingGlassIcon className="h-16 w-16 text-muted-foreground mb-4" />
               <h2 className="text-2xl font-semibold text-foreground mb-2">No matching blips</h2>
               <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
               <button
@@ -307,31 +306,31 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="flex flex-col items-center gap-1 p-2"
             >
-              <House size={24} />
+              <HomeIcon className="h-6 w-6" />
               <span className="text-xs">Home</span>
             </button>
             <button
               onClick={() => document.getElementById("search-notes")?.focus()}
               className="flex flex-col items-center gap-1 p-2"
             >
-              <MagnifyingGlass size={24} />
+              <MagnifyingGlassIcon className="h-6 w-6" />
               <span className="text-xs">Search</span>
             </button>
             <button
               onClick={() => setDialogOpen(true)}
               className="bg-accent text-accent-foreground rounded-full w-14 h-14 flex items-center justify-center shadow-lg -mt-6"
             >
-              <NotePencil size={28} weight="bold" />
+              <PencilSquareIcon className="h-7 w-7" />
             </button>
             <Link href="/settings" className="flex flex-col items-center gap-1 p-2">
-              <Gear size={24} />
+              <Cog6ToothIcon className="h-6 w-6" />
               <span className="text-xs">Settings</span>
             </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               className="flex flex-col items-center gap-1 p-2"
             >
-              <SignOut size={24} />
+              <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
               <span className="text-xs">Logout</span>
             </button>
           </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
-import { X } from "@phosphor-icons/react"
+import { XMarkIcon } from "@heroicons/react/24/outline"
 
 interface NoteDialogProps {
   open: boolean
@@ -92,7 +92,7 @@ export function NoteDialog({
             onClick={() => onOpenChange(false)}
             className="p-1 hover:bg-muted rounded transition-colors"
           >
-            <X size={20} />
+            <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
@@ -202,7 +202,7 @@ export function NoteDialog({
                     onClick={() => removeTag(tag)}
                     className="p-0.5 hover:bg-background/50 rounded-full"
                   >
-                    <X size={12} />
+                    <XMarkIcon className="h-3 w-3" />
                   </button>
                 </span>
               ))}

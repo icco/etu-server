@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { NotePencil, MagnifyingGlass, DeviceMobile, Code } from "@phosphor-icons/react/dist/ssr"
+import { PencilSquareIcon, MagnifyingGlassIcon, DevicePhoneMobileIcon, CodeBracketIcon } from "@heroicons/react/24/solid"
 import { auth } from "@/lib/auth"
 
 export default async function LandingPage() {
@@ -10,7 +10,7 @@ export default async function LandingPage() {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <NotePencil size={32} weight="duotone" className="text-primary" />
+            <PencilSquareIcon className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-primary">Etu</h1>
           </div>
           <Link
@@ -73,7 +73,7 @@ export default async function LandingPage() {
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-              <NotePencil size={40} weight="duotone" className="text-accent mb-4" />
+              <PencilSquareIcon className="h-10 w-10 text-accent mb-4" />
               <h4 className="text-xl font-semibold mb-2 text-foreground">Quick Capture</h4>
               <p className="text-muted-foreground">
                 Write in Markdown. Add tags. Save instantly. No friction between thought and capture.
@@ -81,7 +81,7 @@ export default async function LandingPage() {
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-              <MagnifyingGlass size={40} weight="duotone" className="text-accent mb-4" />
+              <MagnifyingGlassIcon className="h-10 w-10 text-accent mb-4" />
               <h4 className="text-xl font-semibold mb-2 text-foreground">Powerful Search</h4>
               <p className="text-muted-foreground">
                 Find anything instantly. Search by content, tags, or date. Your thoughts, rediscovered.
@@ -89,7 +89,7 @@ export default async function LandingPage() {
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-              <DeviceMobile size={40} weight="duotone" className="text-accent mb-4" />
+              <DevicePhoneMobileIcon className="h-10 w-10 text-accent mb-4" />
               <h4 className="text-xl font-semibold mb-2 text-foreground">Everywhere</h4>
               <p className="text-muted-foreground">
                 Web, CLI, and mobile apps. Capture from wherever you are, sync automatically.
@@ -97,7 +97,7 @@ export default async function LandingPage() {
             </div>
 
             <div className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
-              <Code size={40} weight="duotone" className="text-accent mb-4" />
+              <CodeBracketIcon className="h-10 w-10 text-accent mb-4" />
               <h4 className="text-xl font-semibold mb-2 text-foreground">Open Source</h4>
               <p className="text-muted-foreground">
                 Built in the open. Contribute on GitHub. Self-host if you want full control.
@@ -151,7 +151,7 @@ export default async function LandingPage() {
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <NotePencil size={24} weight="duotone" className="text-primary" />
+              <PencilSquareIcon className="h-6 w-6 text-primary" />
               <span className="text-sm text-muted-foreground">&copy; 2026 Nat Welch.</span>
             </div>
             <div className="flex gap-6 text-sm">
