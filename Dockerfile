@@ -25,6 +25,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Generate Prisma client again (needed for build)
+RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" yarn db:generate
+
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN yarn build
