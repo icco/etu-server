@@ -65,7 +65,7 @@ DATABASE_URL="postgresql://user:password@localhost:5432/etu"
 
 # Auth.js
 AUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
+AUTH_URL="http://localhost:3000"
 
 # Stripe (optional)
 STRIPE_SECRET_KEY="sk_..."
@@ -141,7 +141,3 @@ Uses Prisma with PostgreSQL. Key models:
 - **Tag**: User-scoped tags
 - **NoteTag**: Many-to-many junction
 - **ApiKey**: Hashed API keys for external access
-
-## License
-
-MIT License - Copyright (c) 2024 Etu

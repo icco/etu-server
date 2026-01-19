@@ -152,7 +152,7 @@ export default async function LandingPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <NotePencil size={24} weight="duotone" className="text-primary" />
-              <span className="text-sm text-muted-foreground">© 2024 Etu. Open source journaling.</span>
+              <span className="text-sm text-muted-foreground">&copy; 2026 Nat Welch.</span>
             </div>
             <div className="flex gap-6 text-sm">
               <a
