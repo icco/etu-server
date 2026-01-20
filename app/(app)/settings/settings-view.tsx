@@ -125,7 +125,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
               onClick={() => setActiveTab(id as typeof activeTab)}
               className={`tab gap-2 ${activeTab === id ? "tab-active" : ""}`}
             >
-              <Icon className="h-4.5 w-4.5" />
+              <Icon className="h-5 w-5" />
               {label}
             </button>
           ))}
