@@ -122,7 +122,18 @@ docker run -p 3000:3000 \
 
 ## API Documentation
 
-Etu Server provides a REST API for programmatic access to notes and tags. See **[API.md](./API.md)** for complete documentation.
+Etu Server provides both REST and gRPC APIs for programmatic access to notes and tags.
+
+### API Formats
+
+1. **REST API (JSON+HTTP)** - Standard HTTP REST API at `/api/v1/*`
+2. **gRPC API** - High-performance RPC using Protocol Buffers on port 50051
+
+### Documentation
+
+- **Web Documentation**: Visit `/docs` for interactive API documentation
+- **API.md**: Complete reference with examples in bash, Python, and JavaScript
+- **Protocol Buffers**: See `proto/etu.proto` for gRPC type definitions
 
 ### Quick Start
 
@@ -130,6 +141,7 @@ Generate API keys in Settings to use with:
 - **CLI**: https://github.com/icco/etu
 - **Mobile**: https://github.com/icco/etu-mobile
 
+**REST API Example:**
 ```bash
 # List all notes
 curl -H "Authorization: etu_your_key_here" \
@@ -143,8 +155,15 @@ curl -X POST \
   https://your-domain.com/api/v1/notes
 ```
 
+**gRPC Server:**
+```bash
+# Start gRPC server (separate from web server)
+yarn grpc
+```
+
 ### Available Endpoints
 
+**REST API:**
 - `GET /api/v1/notes` - List notes with filtering
 - `POST /api/v1/notes` - Create a note
 - `GET /api/v1/notes/{id}` - Get a specific note
@@ -152,7 +171,11 @@ curl -X POST \
 - `DELETE /api/v1/notes/{id}` - Delete a note
 - `GET /api/v1/tags` - List all tags
 
-See **[API.md](./API.md)** for detailed documentation with examples in bash, Python, and JavaScript.
+**gRPC Services:**
+- `NotesService` - Full CRUD operations for notes
+- `TagsService` - Tag listing and management
+
+See **[API.md](./API.md)** or visit `/docs` for complete documentation.
 
 ## Database
 
