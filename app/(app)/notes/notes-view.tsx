@@ -59,6 +59,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
   
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState(searchParams.search || "")
   const [selectedTags, setSelectedTags] = useState<string[]>(
     searchParams.tags?.split(",").filter(Boolean) || []
@@ -166,13 +167,9 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         {/* Header */}
         <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
           <div className="navbar-start">
-            <div className="flex items-center gap-2">
-              <PencilSquareIcon className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold text-primary hidden sm:block">Etu</span>
-            </div>
           </div>
 
-          <div className="navbar-center flex-1 max-w-2xl px-4">
+          <div className="navbar-center flex-1 max-w-2xl px-4 hidden md:block">
             <div className="relative w-full">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/60 pointer-events-none z-10" />
               <input
@@ -208,6 +205,25 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             </button>
           </div>
         </header>
+
+        {/* Mobile search section */}
+        {mobileSearchOpen && (
+          <div className="bg-base-100 border-b border-base-300 md:hidden">
+            <div className="container mx-auto px-4 py-3">
+              <div className="relative w-full">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/60 pointer-events-none z-10" />
+                <input
+                  id="search-notes-mobile"
+                  type="search"
+                  placeholder="Search blips..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="input input-bordered w-full pl-10 bg-base-100 text-base-content placeholder:text-base-content/50"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tags filter */}
         {allTags.length > 0 && (
@@ -294,7 +310,15 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             <HomeIcon className="h-5 w-5" />
             <span className="btm-nav-label">Home</span>
           </button>
-          <button onClick={() => document.getElementById("search-notes")?.focus()}>
+          <button 
+            onClick={() => {
+              setMobileSearchOpen(!mobileSearchOpen)
+              if (!mobileSearchOpen) {
+                setTimeout(() => document.getElementById("search-notes-mobile")?.focus(), 100)
+              }
+            }}
+            className={mobileSearchOpen ? "active" : ""}
+          >
             <MagnifyingGlassIcon className="h-5 w-5" />
             <span className="btm-nav-label">Search</span>
           </button>
