@@ -120,17 +120,39 @@ docker run -p 3000:3000 \
 └── next.config.ts
 ```
 
-## API Keys
+## API Documentation
+
+Etu Server provides a REST API for programmatic access to notes and tags. See **[API.md](./API.md)** for complete documentation.
+
+### Quick Start
 
 Generate API keys in Settings to use with:
 - **CLI**: https://github.com/icco/etu
 - **Mobile**: https://github.com/icco/etu-mobile
 
 ```bash
-# Use API key with curl
+# List all notes
 curl -H "Authorization: etu_your_key_here" \
-  https://your-domain.com/api/notes
+  https://your-domain.com/api/v1/notes
+
+# Create a new note
+curl -X POST \
+  -H "Authorization: etu_your_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{"content":"My note","tags":["journal"]}' \
+  https://your-domain.com/api/v1/notes
 ```
+
+### Available Endpoints
+
+- `GET /api/v1/notes` - List notes with filtering
+- `POST /api/v1/notes` - Create a note
+- `GET /api/v1/notes/{id}` - Get a specific note
+- `PUT /api/v1/notes/{id}` - Update a note
+- `DELETE /api/v1/notes/{id}` - Delete a note
+- `GET /api/v1/tags` - List all tags
+
+See **[API.md](./API.md)** for detailed documentation with examples in bash, Python, and JavaScript.
 
 ## Database
 
