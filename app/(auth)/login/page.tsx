@@ -30,7 +30,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body">
@@ -87,8 +87,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          <Link href="/" className="hover:text-accent transition-colors">
+        <p className="text-center text-sm text-base-content/60 mt-4">
+          <Link href="/" className="link link-hover">
             ← Back to home
           </Link>
         </p>

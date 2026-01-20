@@ -242,9 +242,9 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
           {notes.length === 0 && !hasFilters ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <PencilSquareIcon className="h-16 w-16 text-muted-foreground mb-4" />
-              <h2 className="text-2xl font-semibold text-foreground mb-2">No blips yet</h2>
-              <p className="text-muted-foreground mb-6 max-w-md">
+              <PencilSquareIcon className="h-16 w-16 text-base-content/40 mb-4" />
+              <h2 className="text-2xl font-semibold mb-2">No blips yet</h2>
+              <p className="text-base-content/60 mb-6 max-w-md">
                 Start your interstitial journaling journey by capturing your first thought.
               </p>
               <button onClick={() => setDialogOpen(true)} className="btn btn-primary gap-2">
@@ -254,9 +254,9 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             </div>
           ) : notes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <MagnifyingGlassIcon className="h-16 w-16 text-muted-foreground mb-4" />
-              <h2 className="text-2xl font-semibold text-foreground mb-2">No matching blips</h2>
-              <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
+              <MagnifyingGlassIcon className="h-16 w-16 text-base-content/40 mb-4" />
+              <h2 className="text-2xl font-semibold mb-2">No matching blips</h2>
+              <p className="text-base-content/60 mb-6">Try adjusting your search or filters.</p>
               <button onClick={clearFilters} className="btn btn-ghost">
                 Clear Filters
               </button>
@@ -265,9 +265,9 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             <div className="max-w-3xl mx-auto space-y-8">
               {Array.from(groupedNotes.entries()).map(([date, dateNotes]) => (
                 <div key={date}>
-                  <div className="sticky top-[73px] bg-background/95 backdrop-blur-sm py-2 mb-4 z-10">
-                    <h3 className="text-lg font-semibold text-foreground">{date}</h3>
-                    <div className="h-px bg-border mt-2" />
+                  <div className="sticky top-[73px] bg-base-200/95 backdrop-blur-sm py-2 mb-4 z-10">
+                    <h3 className="text-lg font-semibold">{date}</h3>
+                    <div className="divider my-0" />
                   </div>
                   <div className="space-y-4">
                     {dateNotes.map((note) => (

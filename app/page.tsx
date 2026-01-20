@@ -23,27 +23,27 @@ export default async function LandingPage() {
 
       <section className="container mx-auto px-6 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
             Capture Life&apos;s Moments,
             <br />
             One Blip at a Time
           </h2>
-          <p className="text-xl text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xl text-base-content/60 mb-8 leading-relaxed max-w-2xl mx-auto">
             Etu is your interstitial journaling companion. Quick notes, powerful search, and seamless
             access across all your devices.
           </p>
           <Link href={session ? "/notes" : "/register"} className="btn btn-primary btn-lg">
             Start Journaling Today
           </Link>
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-sm text-base-content/60 mt-4">
             $5/year • Open source • Self-hostable
           </p>
         </div>
       </section>
 
-      <section className="container mx-auto px-6 py-20 border-t border-border">
+      <section className="container mx-auto px-6 py-20 border-t border-base-300">
         <div className="max-w-5xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-12 text-foreground">
+          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-12">
             What is Interstitial Journaling?
           </h3>
           <div className="card bg-base-100 shadow-xl mb-12">
@@ -64,9 +64,9 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="container mx-auto px-6 py-20 bg-muted/30">
+      <section className="container mx-auto px-6 py-20 bg-base-300/30">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-16 text-foreground">
+          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-16">
             Powerful Features
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -115,7 +115,7 @@ export default async function LandingPage() {
 
       <section className="container mx-auto px-6 py-20">
         <div className="max-w-3xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-12 text-foreground">
+          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-12">
             Simple, Honest Pricing
           </h3>
           <div className="card bg-base-100 shadow-xl border-2 border-primary">
