@@ -88,10 +88,7 @@ export function NoteDialog({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-xl font-semibold">{title}</h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-1 hover:bg-muted rounded transition-colors"
-          >
+          <button onClick={() => onOpenChange(false)} className="btn btn-ghost btn-sm btn-square">
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
@@ -183,10 +180,7 @@ export function NoteDialog({
                 </div>
               )}
             </div>
-            <button
-              onClick={() => addTag()}
-              className="px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
-            >
+            <button onClick={() => addTag()} className="btn btn-ghost">
               Add
             </button>
           </div>
@@ -212,17 +206,15 @@ export function NoteDialog({
 
         {/* Footer */}
         <div className="flex justify-end gap-2 p-4 border-t border-border">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-          >
+          <button onClick={() => onOpenChange(false)} className="btn btn-ghost">
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={!content.trim() || isSaving}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50"
+            className="btn btn-primary"
           >
+            {isSaving && <span className="loading loading-spinner loading-sm"></span>}
             {isSaving ? "Saving..." : "Save Blip"}
           </button>
         </div>

@@ -13,10 +13,7 @@ export default async function LandingPage() {
             <PencilSquareIcon className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-primary">Etu</h1>
           </div>
-          <Link
-            href={session ? "/notes" : "/login"}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors"
-          >
+          <Link href={session ? "/notes" : "/login"} className="btn btn-primary">
             {session ? "Open App" : "Get Started"}
           </Link>
         </div>
@@ -33,10 +30,7 @@ export default async function LandingPage() {
             Etu is your interstitial journaling companion. Quick notes, powerful search, and seamless
             access across all your devices.
           </p>
-          <Link
-            href={session ? "/notes" : "/register"}
-            className="inline-flex bg-accent text-accent-foreground hover:bg-accent/90 text-lg px-8 py-4 rounded-md font-medium transition-colors"
-          >
+          <Link href={session ? "/notes" : "/register"} className="btn btn-primary btn-lg">
             Start Journaling Today
           </Link>
           <p className="text-sm text-muted-foreground mt-4">
@@ -137,10 +131,7 @@ export default async function LandingPage() {
                 <span className="text-foreground">Data export anytime</span>
               </li>
             </ul>
-            <Link
-              href="/register"
-              className="inline-flex bg-accent text-accent-foreground hover:bg-accent/90 w-full justify-center py-3 rounded-md font-medium transition-colors"
-            >
+            <Link href="/register" className="btn btn-primary w-full">
               Subscribe Now
             </Link>
           </div>

@@ -103,7 +103,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6 py-4 flex items-center gap-4">
-          <Link href="/notes" className="p-2 hover:bg-muted rounded-md transition-colors">
+          <Link href="/notes" className="btn btn-ghost btn-square">
             <ArrowLeftIcon className="h-6 w-6" />
           </Link>
           <h1 className="text-xl font-bold">Settings</h1>
@@ -188,10 +188,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
               <div className="border-t border-border pt-6">
                 <h3 className="text-sm font-medium mb-3">Export Your Data</h3>
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={handleExportJSON}
-                    className="flex items-center gap-2 px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-                  >
+                  <button onClick={handleExportJSON} className="btn btn-ghost gap-2">
                     <ArrowDownTrayIcon className="h-4 w-4" />
                     Export as JSON
                   </button>
@@ -233,7 +230,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                 <span className="text-3xl font-bold">$5</span>
                 <span className="text-muted-foreground">/ year</span>
               </div>
-              <button className="flex items-center gap-2 w-full justify-center px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors">
+              <button className="btn btn-ghost w-full gap-2">
                 <CreditCardIcon className="h-5 w-5" />
                 Manage Subscription
               </button>
@@ -268,9 +265,13 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                 <button
                   onClick={handleCreateKey}
                   disabled={isCreating}
-                  className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md transition-colors disabled:opacity-50"
+                  className="btn btn-primary gap-2"
                 >
-                  <KeyIcon className="h-4.5 w-4.5" />
+                  {isCreating ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <KeyIcon className="h-4.5 w-4.5" />
+                  )}
                   Generate
                 </button>
               </div>
@@ -285,10 +286,10 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                   <code className="flex-1">{newlyCreatedKey}</code>
                   <button
                     onClick={() => handleCopyKey(newlyCreatedKey)}
-                    className="p-1 hover:bg-muted rounded"
+                    className="btn btn-ghost btn-sm btn-square"
                   >
                     {copiedKey === newlyCreatedKey ? (
-                      <CheckIcon className="h-4 w-4 text-secondary" />
+                      <CheckIcon className="h-4 w-4 text-success" />
                     ) : (
                       <DocumentDuplicateIcon className="h-4 w-4" />
                     )}
@@ -321,7 +322,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                       </div>
                       <button
                         onClick={() => handleDeleteKey(key.id)}
-                        className="p-2 text-destructive hover:bg-muted rounded transition-colors"
+                        className="btn btn-ghost btn-sm btn-square text-error"
                       >
                         <TrashIcon className="h-4 w-4" />
                       </button>

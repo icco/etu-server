@@ -101,7 +101,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                 e.stopPropagation()
                 setMenuOpen(!menuOpen)
               }}
-              className="p-1 opacity-0 group-hover:opacity-100 hover:bg-muted rounded transition-all"
+              className="btn btn-ghost btn-sm btn-square opacity-0 group-hover:opacity-100"
             >
               <EllipsisHorizontalIcon className="h-5 w-5" />
             </button>
@@ -121,7 +121,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                       setMenuOpen(false)
                       onEdit(note)
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors"
+                    className="btn btn-ghost btn-sm justify-start gap-2 w-full"
                   >
                     <PencilIcon className="h-4 w-4" />
                     Edit
@@ -132,9 +132,13 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                       handleDelete()
                     }}
                     disabled={isDeleting}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-muted transition-colors disabled:opacity-50"
+                    className="btn btn-ghost btn-sm justify-start gap-2 w-full text-error"
                   >
-                    <TrashIcon className="h-4 w-4" />
+                    {isDeleting ? (
+                      <span className="loading loading-spinner loading-xs"></span>
+                    ) : (
+                      <TrashIcon className="h-4 w-4" />
+                    )}
                     {isDeleting ? "Deleting..." : "Delete"}
                   </button>
                 </div>
@@ -178,10 +182,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
             </div>
 
             <div className="p-4 border-t border-border flex justify-end gap-2">
-              <button
-                onClick={() => setViewOpen(false)}
-                className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
+              <button onClick={() => setViewOpen(false)} className="btn btn-ghost">
                 Close
               </button>
               <button
@@ -189,7 +190,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                   setViewOpen(false)
                   onEdit(note)
                 }}
-                className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md transition-colors"
+                className="btn btn-primary gap-2"
               >
                 <PencilIcon className="h-4 w-4" />
                 Edit

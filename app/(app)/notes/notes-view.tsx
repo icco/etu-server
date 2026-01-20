@@ -191,20 +191,17 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                   setEditingNote(null)
                   setDialogOpen(true)
                 }}
-                className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors"
+                className="btn btn-primary gap-2"
               >
                 <PencilSquareIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">New Blip</span>
               </button>
-              <Link
-                href="/settings"
-                className="p-2 hover:bg-muted rounded-md transition-colors"
-              >
+              <Link href="/settings" className="btn btn-ghost btn-square">
                 <Cog6ToothIcon className="h-6 w-6" />
               </Link>
               <button
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="p-2 hover:bg-muted rounded-md transition-colors"
+                className="btn btn-ghost btn-square"
               >
                 <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
               </button>
@@ -254,10 +251,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
               <p className="text-muted-foreground mb-6 max-w-md">
                 Start your interstitial journaling journey by capturing your first thought.
               </p>
-              <button
-                onClick={() => setDialogOpen(true)}
-                className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 rounded-md font-medium transition-colors"
-              >
+              <button onClick={() => setDialogOpen(true)} className="btn btn-primary gap-2">
                 <PencilSquareIcon className="h-5 w-5" />
                 Create Your First Blip
               </button>
@@ -267,10 +261,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
               <MagnifyingGlassIcon className="h-16 w-16 text-muted-foreground mb-4" />
               <h2 className="text-2xl font-semibold text-foreground mb-2">No matching blips</h2>
               <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
-              <button
-                onClick={clearFilters}
-                className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
+              <button onClick={clearFilters} className="btn btn-ghost">
                 Clear Filters
               </button>
             </div>

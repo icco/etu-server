@@ -10,11 +10,8 @@ import { toast } from "sonner"
 function SubmitButton() {
   const { pending } = useFormStatus()
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="w-full bg-accent text-accent-foreground hover:bg-accent/90 py-3 rounded-md font-medium transition-colors disabled:opacity-50"
-    >
+    <button type="submit" disabled={pending} className="btn btn-primary w-full">
+      {pending && <span className="loading loading-spinner loading-sm"></span>}
       {pending ? "Signing in..." : "Sign In"}
     </button>
   )
