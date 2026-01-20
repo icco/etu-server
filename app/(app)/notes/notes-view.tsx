@@ -7,7 +7,7 @@ import { format } from "date-fns"
 import {
   PencilSquareIcon,
   MagnifyingGlassIcon,
-  ArrowRightStartOnRectangleIcon,
+  ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
   XMarkIcon,
   HomeIcon
@@ -202,7 +202,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
               onClick={() => signOut({ callbackUrl: "/" })}
               className="btn btn-ghost btn-square"
             >
-              <ArrowRightStartOnRectangleIcon className="h-6 w-6" />
+              <ArrowRightOnRectangleIcon className="h-6 w-6" />
             </button>
           </div>
         </header>
@@ -303,12 +303,12 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             <PencilSquareIcon className="h-6 w-6" />
             <span className="btm-nav-label">New</span>
           </button>
-          <Link href="/settings">
+          <button onClick={() => (window.location.href = "/settings")}>
             <Cog6ToothIcon className="h-5 w-5" />
             <span className="btm-nav-label">Settings</span>
-          </Link>
+          </button>
           <button onClick={() => signOut({ callbackUrl: "/" })}>
-            <ArrowRightStartOnRectangleIcon className="h-5 w-5" />
+            <ArrowRightOnRectangleIcon className="h-5 w-5" />
             <span className="btm-nav-label">Logout</span>
           </button>
         </div>

@@ -102,7 +102,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
   return (
     <div className="min-h-screen bg-base-200">
       <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
-        <div className="navbar-start">
+        <div className="flex-1">
           <Link href="/notes" className="btn btn-ghost btn-square">
             <ArrowLeftIcon className="h-6 w-6" />
           </Link>
@@ -280,7 +280,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                     {isCreating ? (
                       <span className="loading loading-spinner loading-sm"></span>
                     ) : (
-                      <KeyIcon className="h-4.5 w-4.5" />
+                      <KeyIcon className="h-5 w-5" />
                     )}
                     Generate
                   </button>
