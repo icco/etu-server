@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { verifyApiKey } from "@/lib/actions/api-keys"
+import type { Prisma } from "@prisma/client"
 
 async function authenticateRequest(req: NextRequest): Promise<string | null> {
   const authHeader = req.headers.get("Authorization")
@@ -50,7 +51,7 @@ export async function GET(
       content: note.content,
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
-      tags: note.tags.map((t) => t.tag.name),
+      tags: note.tags.map((t: { tag: { name: string } }) => t.tag.name),
     })
   } catch (error) {
     console.error("GET /api/v1/notes/[id] error:", error)
@@ -91,7 +92,7 @@ export async function PUT(
       )
     }
 
-    await db.$transaction(async (tx) => {
+    await db.$transaction(async (tx: Prisma.TransactionClient) => {
       // Update content if provided
       if (content !== undefined) {
         if (typeof content !== "string") {
@@ -144,7 +145,7 @@ export async function PUT(
       content: note!.content,
       createdAt: note!.createdAt,
       updatedAt: note!.updatedAt,
-      tags: note!.tags.map((t) => t.tag.name),
+      tags: note!.tags.map((t: { tag: { name: string } }) => t.tag.name),
     })
   } catch (error) {
     console.error("PUT /api/v1/notes/[id] error:", error)

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { verifyApiKey } from "@/lib/actions/api-keys"
-import { Prisma } from "@/src/generated/prisma/client"
+import type { Prisma } from "@prisma/client"
 
 async function authenticateRequest(req: NextRequest): Promise<string | null> {
   const authHeader = req.headers.get("Authorization")
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
         content: note.content,
         createdAt: note.createdAt,
         updatedAt: note.updatedAt,
-        tags: note.tags.map((t) => t.tag.name),
+        tags: note.tags.map((t: { tag: { name: string } }) => t.tag.name),
       })),
       total,
       limit,
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const note = await db.$transaction(async (tx) => {
+    const note = await db.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create note
       const note = await tx.note.create({
         data: {
@@ -170,7 +170,7 @@ export async function POST(req: NextRequest) {
         content: note!.content,
         createdAt: note!.createdAt,
         updatedAt: note!.updatedAt,
-        tags: note!.tags.map((t) => t.tag.name),
+        tags: note!.tags.map((t: { tag: { name: string } }) => t.tag.name),
       },
       { status: 201 }
     )
