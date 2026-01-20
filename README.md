@@ -25,8 +25,8 @@ This is the backend and webapp for Etu. For more reading on our ideas see:
 - **Framework**: Next.js 16 (App Router)
 - **Database**: PostgreSQL with Prisma ORM
 - **Auth**: Auth.js v5 (NextAuth) with credentials
-- **Styling**: Tailwind CSS 4
-- **Icons**: Phosphor Icons
+- **Styling**: Tailwind CSS 4 + daisyUI 5
+- **Icons**: Heroicons
 - **Markdown**: marked + DOMPurify
 - **Payments**: Stripe
 

@@ -4,14 +4,14 @@ import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { format } from "date-fns"
-import { 
-  NotePencil, 
-  MagnifyingGlass, 
-  SignOut, 
-  Gear, 
-  X, 
-  House 
-} from "@phosphor-icons/react"
+import {
+  PencilSquareIcon,
+  MagnifyingGlassIcon,
+  ArrowRightOnRectangleIcon,
+  Cog6ToothIcon,
+  XMarkIcon,
+  HomeIcon
+} from "@heroicons/react/24/outline"
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
 import { createNote, updateNote, deleteNote } from "@/lib/actions/notes"
@@ -160,118 +160,104 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
 
   return (
     <>
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-base-200 flex flex-col">
         {/* Header */}
-        <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-          <div className="container mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+        <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+          <div className="navbar-start">
             <div className="flex items-center gap-2">
-              <NotePencil size={28} weight="duotone" className="text-primary" />
-              <h1 className="text-xl font-bold text-primary hidden sm:block">Etu</h1>
-            </div>
-
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <MagnifyingGlass
-                  size={20}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                />
-                <input
-                  id="search-notes"
-                  type="search"
-                  placeholder="Search blips... (press /)"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  setEditingNote(null)
-                  setDialogOpen(true)
-                }}
-                className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors"
-              >
-                <NotePencil size={20} weight="bold" />
-                <span className="hidden sm:inline">New Blip</span>
-              </button>
-              <Link
-                href="/settings"
-                className="p-2 hover:bg-muted rounded-md transition-colors"
-              >
-                <Gear size={24} />
-              </Link>
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="p-2 hover:bg-muted rounded-md transition-colors"
-              >
-                <SignOut size={24} />
-              </button>
+              <PencilSquareIcon className="h-7 w-7 text-primary" />
+              <span className="text-xl font-bold text-primary hidden sm:block">Etu</span>
             </div>
           </div>
 
-          {/* Tags filter */}
-          {allTags.length > 0 && (
-            <div className="border-t border-border">
-              <div className="container mx-auto px-4 md:px-6 py-3">
-                <div className="flex gap-2 items-center overflow-x-auto">
-                  <span className="text-sm text-muted-foreground shrink-0">Tags:</span>
-                  {allTags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => toggleTag(tag)}
-                      className={`px-3 py-1 rounded-full text-sm transition-colors shrink-0 ${
-                        selectedTags.includes(tag)
-                          ? "bg-accent text-accent-foreground"
-                          : "bg-muted hover:bg-muted/80 text-foreground"
-                      }`}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                  {hasFilters && (
-                    <button
-                      onClick={clearFilters}
-                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground ml-2"
-                    >
-                      <X size={14} />
-                      Clear
-                    </button>
-                  )}
-                </div>
+          <div className="navbar-center flex-1 max-w-md px-4">
+            <label className="input input-bordered flex items-center gap-2 w-full">
+              <MagnifyingGlassIcon className="h-5 w-5 opacity-50" />
+              <input
+                id="search-notes"
+                type="search"
+                placeholder="Search blips... (press /)"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="grow"
+              />
+            </label>
+          </div>
+
+          <div className="navbar-end gap-1">
+            <button
+              onClick={() => {
+                setEditingNote(null)
+                setDialogOpen(true)
+              }}
+              className="btn btn-primary gap-2"
+            >
+              <PencilSquareIcon className="h-5 w-5" />
+              <span className="hidden sm:inline">New Blip</span>
+            </button>
+            <Link href="/settings" className="btn btn-ghost btn-square">
+              <Cog6ToothIcon className="h-6 w-6" />
+            </Link>
+            <button
+              onClick={() => signOut({ callbackUrl: "/" })}
+              className="btn btn-ghost btn-square"
+            >
+              <ArrowRightOnRectangleIcon className="h-6 w-6" />
+            </button>
+          </div>
+        </header>
+
+        {/* Tags filter */}
+        {allTags.length > 0 && (
+          <div className="bg-base-100 border-b border-base-300">
+            <div className="container mx-auto px-4 md:px-6 py-3">
+              <div className="flex gap-2 items-center overflow-x-auto">
+                <span className="text-sm text-base-content/60 shrink-0">Tags:</span>
+                {allTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`badge badge-lg cursor-pointer transition-colors shrink-0 ${
+                      selectedTags.includes(tag) ? "badge-primary" : "badge-ghost hover:badge-neutral"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {hasFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="btn btn-ghost btn-xs gap-1 ml-2"
+                  >
+                    <XMarkIcon className="h-3.5 w-3.5" />
+                    Clear
+                  </button>
+                )}
               </div>
             </div>
-          )}
-        </header>
+          </div>
+        )}
 
         {/* Main content */}
         <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
           {notes.length === 0 && !hasFilters ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <NotePencil size={64} weight="duotone" className="text-muted-foreground mb-4" />
-              <h2 className="text-2xl font-semibold text-foreground mb-2">No blips yet</h2>
-              <p className="text-muted-foreground mb-6 max-w-md">
+              <PencilSquareIcon className="h-16 w-16 text-base-content/40 mb-4" />
+              <h2 className="text-2xl font-semibold mb-2">No blips yet</h2>
+              <p className="text-base-content/60 mb-6 max-w-md">
                 Start your interstitial journaling journey by capturing your first thought.
               </p>
-              <button
-                onClick={() => setDialogOpen(true)}
-                className="flex items-center gap-2 bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 rounded-md font-medium transition-colors"
-              >
-                <NotePencil size={20} weight="bold" />
+              <button onClick={() => setDialogOpen(true)} className="btn btn-primary gap-2">
+                <PencilSquareIcon className="h-5 w-5" />
                 Create Your First Blip
               </button>
             </div>
           ) : notes.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <MagnifyingGlass size={64} weight="duotone" className="text-muted-foreground mb-4" />
-              <h2 className="text-2xl font-semibold text-foreground mb-2">No matching blips</h2>
-              <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
-              <button
-                onClick={clearFilters}
-                className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-              >
+              <MagnifyingGlassIcon className="h-16 w-16 text-base-content/40 mb-4" />
+              <h2 className="text-2xl font-semibold mb-2">No matching blips</h2>
+              <p className="text-base-content/60 mb-6">Try adjusting your search or filters.</p>
+              <button onClick={clearFilters} className="btn btn-ghost">
                 Clear Filters
               </button>
             </div>
@@ -279,9 +265,9 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             <div className="max-w-3xl mx-auto space-y-8">
               {Array.from(groupedNotes.entries()).map(([date, dateNotes]) => (
                 <div key={date}>
-                  <div className="sticky top-[73px] bg-background/95 backdrop-blur-sm py-2 mb-4 z-10">
-                    <h3 className="text-lg font-semibold text-foreground">{date}</h3>
-                    <div className="h-px bg-border mt-2" />
+                  <div className="sticky top-[73px] bg-base-200/95 backdrop-blur-sm py-2 mb-4 z-10">
+                    <h3 className="text-lg font-semibold">{date}</h3>
+                    <div className="divider my-0" />
                   </div>
                   <div className="space-y-4">
                     {dateNotes.map((note) => (
@@ -301,42 +287,32 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border md:hidden z-50 pb-safe">
-          <div className="flex items-center justify-around py-2">
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="flex flex-col items-center gap-1 p-2"
-            >
-              <House size={24} />
-              <span className="text-xs">Home</span>
-            </button>
-            <button
-              onClick={() => document.getElementById("search-notes")?.focus()}
-              className="flex flex-col items-center gap-1 p-2"
-            >
-              <MagnifyingGlass size={24} />
-              <span className="text-xs">Search</span>
-            </button>
-            <button
-              onClick={() => setDialogOpen(true)}
-              className="bg-accent text-accent-foreground rounded-full w-14 h-14 flex items-center justify-center shadow-lg -mt-6"
-            >
-              <NotePencil size={28} weight="bold" />
-            </button>
-            <Link href="/settings" className="flex flex-col items-center gap-1 p-2">
-              <Gear size={24} />
-              <span className="text-xs">Settings</span>
-            </Link>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="flex flex-col items-center gap-1 p-2"
-            >
-              <SignOut size={24} />
-              <span className="text-xs">Logout</span>
-            </button>
-          </div>
-        </nav>
-        <div className="h-20 md:hidden" />
+        <div className="btm-nav btm-nav-sm md:hidden z-50">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            <HomeIcon className="h-5 w-5" />
+            <span className="btm-nav-label">Home</span>
+          </button>
+          <button onClick={() => document.getElementById("search-notes")?.focus()}>
+            <MagnifyingGlassIcon className="h-5 w-5" />
+            <span className="btm-nav-label">Search</span>
+          </button>
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="active bg-primary text-primary-content"
+          >
+            <PencilSquareIcon className="h-6 w-6" />
+            <span className="btm-nav-label">New</span>
+          </button>
+          <button onClick={() => (window.location.href = "/settings")}>
+            <Cog6ToothIcon className="h-5 w-5" />
+            <span className="btm-nav-label">Settings</span>
+          </button>
+          <button onClick={() => signOut({ callbackUrl: "/" })}>
+            <ArrowRightOnRectangleIcon className="h-5 w-5" />
+            <span className="btm-nav-label">Logout</span>
+          </button>
+        </div>
+        <div className="h-16 md:hidden" />
       </div>
 
       <NoteDialog

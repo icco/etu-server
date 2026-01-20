@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
-import { X } from "@phosphor-icons/react"
+import { XMarkIcon } from "@heroicons/react/24/outline"
 
 interface NoteDialogProps {
   open: boolean
@@ -79,42 +79,30 @@ export function NoteDialog({
     setTags(tags.filter((t) => t !== tagToRemove))
   }
 
-  if (!open) return null
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/50" onClick={() => onOpenChange(false)} />
-      <div className="relative bg-card border border-border rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
+    <dialog className={`modal ${open ? "modal-open" : ""}`}>
+      <div className="modal-box w-11/12 max-w-3xl max-h-[90vh] flex flex-col p-0">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-1 hover:bg-muted rounded transition-colors"
-          >
-            <X size={20} />
+        <div className="flex items-center justify-between p-4 border-b border-base-300">
+          <h3 className="font-bold text-lg">{title}</h3>
+          <button onClick={() => onOpenChange(false)} className="btn btn-ghost btn-sm btn-circle">
+            <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-border">
+        <div role="tablist" className="tabs tabs-bordered">
           <button
+            role="tab"
             onClick={() => setActiveTab("write")}
-            className={`px-4 py-2 font-medium transition-colors ${
-              activeTab === "write"
-                ? "text-foreground border-b-2 border-accent"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`tab ${activeTab === "write" ? "tab-active" : ""}`}
           >
             Write
           </button>
           <button
+            role="tab"
             onClick={() => setActiveTab("preview")}
-            className={`px-4 py-2 font-medium transition-colors ${
-              activeTab === "preview"
-                ? "text-foreground border-b-2 border-accent"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`tab ${activeTab === "preview" ? "tab-active" : ""}`}
           >
             Preview
           </button>
@@ -129,10 +117,10 @@ export function NoteDialog({
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Write your thoughts in Markdown... (Cmd+Enter to save)"
-              className="w-full h-[300px] p-3 border border-input rounded-md bg-background font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+              className="textarea textarea-bordered w-full h-[300px] font-mono text-sm resize-none"
             />
           ) : (
-            <div className="min-h-[300px] p-4 border border-border rounded-md bg-muted/30">
+            <div className="min-h-[300px] p-4 bg-base-200 rounded-lg">
               {content ? (
                 <div
                   className="prose prose-sm max-w-none"
@@ -141,17 +129,17 @@ export function NoteDialog({
                   }}
                 />
               ) : (
-                <p className="text-muted-foreground italic">Nothing to preview yet...</p>
+                <p className="text-base-content/60 italic">Nothing to preview yet...</p>
               )}
             </div>
           )}
         </div>
 
         {/* Tags */}
-        <div className="p-4 border-t border-border space-y-3">
+        <div className="p-4 border-t border-base-300 space-y-3">
           <label className="block text-sm font-medium">Tags</label>
           <div className="flex gap-2">
-            <div className="relative flex-1">
+            <div className="dropdown dropdown-top flex-1">
               <input
                 type="text"
                 value={tagInput}
@@ -167,66 +155,54 @@ export function NoteDialog({
                 }}
                 onFocus={() => tagInput && setShowSuggestions(true)}
                 placeholder="Add a tag..."
-                className="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                className="input input-bordered w-full"
               />
               {showSuggestions && filteredSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg z-10 max-h-40 overflow-auto">
+                <ul className="dropdown-content menu bg-base-100 rounded-box z-10 w-full p-2 shadow-lg max-h-40 overflow-auto">
                   {filteredSuggestions.slice(0, 5).map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => addTag(tag)}
-                      className="w-full px-3 py-2 text-left text-sm hover:bg-muted transition-colors"
-                    >
-                      {tag}
-                    </button>
+                    <li key={tag}>
+                      <button onClick={() => addTag(tag)}>{tag}</button>
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </div>
-            <button
-              onClick={() => addTag()}
-              className="px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
-            >
+            <button onClick={() => addTag()} className="btn btn-ghost">
               Add
             </button>
           </div>
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="flex items-center gap-1 px-3 py-1 bg-muted rounded-full text-sm"
-                >
+                <div key={tag} className="badge badge-lg gap-1">
                   {tag}
-                  <button
-                    onClick={() => removeTag(tag)}
-                    className="p-0.5 hover:bg-background/50 rounded-full"
-                  >
-                    <X size={12} />
+                  <button onClick={() => removeTag(tag)} className="btn btn-ghost btn-xs btn-circle">
+                    <XMarkIcon className="h-3 w-3" />
                   </button>
-                </span>
+                </div>
               ))}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 p-4 border-t border-border">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="px-4 py-2 border border-border rounded-md hover:bg-muted transition-colors"
-          >
+        <div className="modal-action px-4 pb-4">
+          <button onClick={() => onOpenChange(false)} className="btn btn-ghost">
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={!content.trim() || isSaving}
-            className="bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2 rounded-md font-medium transition-colors disabled:opacity-50"
+            className="btn btn-primary"
           >
+            {isSaving && <span className="loading loading-spinner loading-sm"></span>}
             {isSaving ? "Saving..." : "Save Blip"}
           </button>
         </div>
       </div>
-    </div>
+      <form method="dialog" className="modal-backdrop">
+        <button onClick={() => onOpenChange(false)}>close</button>
+      </form>
+    </dialog>
   )
 }
