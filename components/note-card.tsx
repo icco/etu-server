@@ -154,54 +154,51 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
       </div>
 
       {/* Full view dialog */}
-      {viewOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setViewOpen(false)} />
-          <div className="relative bg-card border border-border rounded-lg w-full max-w-2xl max-h-[85vh] flex flex-col">
-            <div className="p-6 border-b border-border">
-              <h2 className="text-lg font-medium text-muted-foreground">
-                {formatFullDate(note.createdAt)}
-              </h2>
-            </div>
+      <dialog className={`modal ${viewOpen ? "modal-open" : ""}`}>
+        <div className="modal-box w-11/12 max-w-2xl max-h-[85vh] flex flex-col p-0">
+          <div className="p-6 border-b border-base-300">
+            <h3 className="font-medium text-base-content/60">
+              {formatFullDate(note.createdAt)}
+            </h3>
+          </div>
 
-            {note.tags.length > 0 && (
-              <div className="px-6 py-3 flex flex-wrap gap-2">
-                {note.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-muted rounded-full text-sm text-foreground"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="flex-1 overflow-auto px-6 py-4">
-              <div
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(note.content) }}
-              />
+          {note.tags.length > 0 && (
+            <div className="px-6 py-3 flex flex-wrap gap-2">
+              {note.tags.map((tag) => (
+                <span key={tag} className="badge badge-ghost">
+                  {tag}
+                </span>
+              ))}
             </div>
+          )}
 
-            <div className="p-4 border-t border-border flex justify-end gap-2">
-              <button onClick={() => setViewOpen(false)} className="btn btn-ghost">
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setViewOpen(false)
-                  onEdit(note)
-                }}
-                className="btn btn-primary gap-2"
-              >
-                <PencilIcon className="h-4 w-4" />
-                Edit
-              </button>
-            </div>
+          <div className="flex-1 overflow-auto px-6 py-4">
+            <div
+              className="prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(note.content) }}
+            />
+          </div>
+
+          <div className="modal-action px-4 pb-4">
+            <button onClick={() => setViewOpen(false)} className="btn btn-ghost">
+              Close
+            </button>
+            <button
+              onClick={() => {
+                setViewOpen(false)
+                onEdit(note)
+              }}
+              className="btn btn-primary gap-2"
+            >
+              <PencilIcon className="h-4 w-4" />
+              Edit
+            </button>
           </div>
         </div>
-      )}
+        <form method="dialog" className="modal-backdrop">
+          <button onClick={() => setViewOpen(false)}>close</button>
+        </form>
+      </dialog>
     </>
   )
 }
