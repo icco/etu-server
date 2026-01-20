@@ -224,7 +224,6 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="input input-bordered w-full pl-10 bg-base-100 text-base-content placeholder:text-base-content/50"
-                  autoFocus
                 />
               </div>
             </div>
@@ -320,6 +319,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             onClick={() => {
               setMobileSearchOpen(!mobileSearchOpen)
               if (!mobileSearchOpen) {
+                // Small delay to ensure the input is rendered before focusing
                 setTimeout(() => document.getElementById("search-notes-mobile")?.focus(), 100)
               }
             }}
