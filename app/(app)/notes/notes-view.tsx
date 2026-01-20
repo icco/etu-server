@@ -10,8 +10,7 @@ import {
   ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  HomeIcon,
-  BookOpenIcon
+  HomeIcon
 } from "@heroicons/react/24/outline"
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
@@ -168,10 +167,6 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         {/* Header */}
         <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
           <div className="navbar-start">
-            <div className="flex items-center gap-2">
-              <BookOpenIcon className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold text-primary hidden sm:block">Etu</span>
-            </div>
           </div>
 
           <div className="navbar-center flex-1 max-w-2xl px-4 hidden md:block">
@@ -319,7 +314,6 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             onClick={() => {
               setMobileSearchOpen(!mobileSearchOpen)
               if (!mobileSearchOpen) {
-                // Small delay to ensure the input is rendered before focusing
                 setTimeout(() => document.getElementById("search-notes-mobile")?.focus(), 100)
               }
             }}
