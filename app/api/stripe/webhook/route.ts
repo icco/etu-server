@@ -69,12 +69,15 @@ export async function POST(req: NextRequest) {
               ? "trial"
               : "inactive"
 
+          // In Stripe SDK v20+, current_period_end is on subscription items
+          const periodEnd = subscription.items.data[0]?.current_period_end
+
           await authService.updateUserSubscription(
             {
               userId: userResponse.user.id,
               subscriptionStatus: status,
-              subscriptionEnd: subscription.current_period_end
-                ? dateToTimestamp(new Date(subscription.current_period_end * 1000))
+              subscriptionEnd: periodEnd
+                ? dateToTimestamp(new Date(periodEnd * 1000))
                 : undefined,
             },
             GRPC_API_KEY
