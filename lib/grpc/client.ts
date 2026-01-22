@@ -17,6 +17,8 @@ const protoDescriptor = grpc.loadPackageDefinition(packageDefinition) as unknown
   etu: {
     NotesService: typeof grpc.Client
     TagsService: typeof grpc.Client
+    AuthService: typeof grpc.Client
+    ApiKeysService: typeof grpc.Client
   }
 }
 
@@ -38,9 +40,25 @@ function createTagsClient() {
   )
 }
 
+function createAuthClient() {
+  return new protoDescriptor.etu.AuthService(
+    GRPC_URL,
+    grpc.credentials.createInsecure()
+  )
+}
+
+function createApiKeysClient() {
+  return new protoDescriptor.etu.ApiKeysService(
+    GRPC_URL,
+    grpc.credentials.createInsecure()
+  )
+}
+
 // Singleton clients
 let notesClient: InstanceType<typeof protoDescriptor.etu.NotesService> | null = null
 let tagsClient: InstanceType<typeof protoDescriptor.etu.TagsService> | null = null
+let authClient: InstanceType<typeof protoDescriptor.etu.AuthService> | null = null
+let apiKeysClient: InstanceType<typeof protoDescriptor.etu.ApiKeysService> | null = null
 
 function getNotesClient() {
   if (!notesClient) {
@@ -54,6 +72,20 @@ function getTagsClient() {
     tagsClient = createTagsClient()
   }
   return tagsClient
+}
+
+function getAuthClient() {
+  if (!authClient) {
+    authClient = createAuthClient()
+  }
+  return authClient
+}
+
+function getApiKeysClient() {
+  if (!apiKeysClient) {
+    apiKeysClient = createApiKeysClient()
+  }
+  return apiKeysClient
 }
 
 // Types
@@ -75,6 +107,25 @@ export interface Tag {
   name: string
   count: number
   createdAt: Timestamp
+}
+
+export interface User {
+  id: string
+  email: string
+  name?: string
+  image?: string
+  subscriptionStatus: string
+  subscriptionEnd?: Timestamp
+  createdAt: Timestamp
+  stripeCustomerId?: string
+}
+
+export interface ApiKey {
+  id: string
+  name: string
+  keyPrefix: string
+  createdAt: Timestamp
+  lastUsed?: Timestamp
 }
 
 export interface ListNotesRequest {
@@ -140,6 +191,90 @@ export interface ListTagsRequest {
 
 export interface ListTagsResponse {
   tags: Tag[]
+}
+
+// Auth types
+export interface RegisterRequest {
+  email: string
+  password: string
+}
+
+export interface RegisterResponse {
+  user: User
+}
+
+export interface AuthenticateRequest {
+  email: string
+  password: string
+}
+
+export interface AuthenticateResponse {
+  success: boolean
+  user?: User
+}
+
+export interface GetUserRequest {
+  userId: string
+}
+
+export interface GetUserResponse {
+  user: User
+}
+
+export interface GetUserByStripeCustomerIdRequest {
+  stripeCustomerId: string
+}
+
+export interface GetUserByStripeCustomerIdResponse {
+  user?: User
+}
+
+export interface UpdateUserSubscriptionRequest {
+  userId: string
+  subscriptionStatus: string
+  stripeCustomerId?: string
+  subscriptionEnd?: Timestamp
+}
+
+export interface UpdateUserSubscriptionResponse {
+  user: User
+}
+
+// API Keys types
+export interface CreateApiKeyRequest {
+  userId: string
+  name: string
+}
+
+export interface CreateApiKeyResponse {
+  apiKey: ApiKey
+  rawKey: string
+}
+
+export interface ListApiKeysRequest {
+  userId: string
+}
+
+export interface ListApiKeysResponse {
+  apiKeys: ApiKey[]
+}
+
+export interface DeleteApiKeyRequest {
+  userId: string
+  keyId: string
+}
+
+export interface DeleteApiKeyResponse {
+  success: boolean
+}
+
+export interface VerifyApiKeyRequest {
+  rawKey: string
+}
+
+export interface VerifyApiKeyResponse {
+  valid: boolean
+  userId?: string
 }
 
 // Helper to create metadata with API key
@@ -211,6 +346,72 @@ export const tagsService = {
     const client = getTagsClient()
     const metadata = createMetadata(apiKey)
     return promisify(client, "listTags", request, metadata)
+  },
+}
+
+// Auth Service
+export const authService = {
+  async register(request: RegisterRequest, apiKey: string): Promise<RegisterResponse> {
+    const client = getAuthClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "register", request, metadata)
+  },
+
+  async authenticate(request: AuthenticateRequest, apiKey: string): Promise<AuthenticateResponse> {
+    const client = getAuthClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "authenticate", request, metadata)
+  },
+
+  async getUser(request: GetUserRequest, apiKey: string): Promise<GetUserResponse> {
+    const client = getAuthClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "getUser", request, metadata)
+  },
+
+  async getUserByStripeCustomerId(
+    request: GetUserByStripeCustomerIdRequest,
+    apiKey: string
+  ): Promise<GetUserByStripeCustomerIdResponse> {
+    const client = getAuthClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "getUserByStripeCustomerId", request, metadata)
+  },
+
+  async updateUserSubscription(
+    request: UpdateUserSubscriptionRequest,
+    apiKey: string
+  ): Promise<UpdateUserSubscriptionResponse> {
+    const client = getAuthClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "updateUserSubscription", request, metadata)
+  },
+}
+
+// API Keys Service
+export const apiKeysService = {
+  async createApiKey(request: CreateApiKeyRequest, apiKey: string): Promise<CreateApiKeyResponse> {
+    const client = getApiKeysClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "createApiKey", request, metadata)
+  },
+
+  async listApiKeys(request: ListApiKeysRequest, apiKey: string): Promise<ListApiKeysResponse> {
+    const client = getApiKeysClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "listApiKeys", request, metadata)
+  },
+
+  async deleteApiKey(request: DeleteApiKeyRequest, apiKey: string): Promise<DeleteApiKeyResponse> {
+    const client = getApiKeysClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "deleteApiKey", request, metadata)
+  },
+
+  async verifyApiKey(request: VerifyApiKeyRequest, apiKey: string): Promise<VerifyApiKeyResponse> {
+    const client = getApiKeysClient()
+    const metadata = createMetadata(apiKey)
+    return promisify(client, "verifyApiKey", request, metadata)
   },
 }
 

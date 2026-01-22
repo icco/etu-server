@@ -1,10 +1,10 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import bcrypt from "bcryptjs"
 import { z } from "zod"
-import { db } from "./db"
 import { authConfig } from "./auth.config"
+import { authService, timestampToDate } from "./grpc/client"
+
+const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -13,7 +13,6 @@ const loginSchema = z.object({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: PrismaAdapter(db),
   providers: [
     Credentials({
       name: "credentials",
@@ -27,20 +26,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const { email, password } = parsed.data
 
-        const user = await db.user.findUnique({
-          where: { email },
-        })
+        try {
+          const response = await authService.authenticate(
+            { email, password },
+            GRPC_API_KEY
+          )
 
-        if (!user || !user.passwordHash) return null
+          if (!response.success || !response.user) return null
 
-        const valid = await bcrypt.compare(password, user.passwordHash)
-        if (!valid) return null
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
+          return {
+            id: response.user.id,
+            email: response.user.email,
+            name: response.user.name,
+            image: response.user.image,
+          }
+        } catch {
+          return null
         }
       },
     }),
@@ -52,18 +53,24 @@ export async function getCurrentUser() {
   const session = await auth()
   if (!session?.user?.id) return null
 
-  const user = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      image: true,
-      subscriptionStatus: true,
-      subscriptionEnd: true,
-      createdAt: true,
-    },
-  })
+  try {
+    const response = await authService.getUser(
+      { userId: session.user.id },
+      GRPC_API_KEY
+    )
 
-  return user
+    return {
+      id: response.user.id,
+      email: response.user.email,
+      name: response.user.name,
+      image: response.user.image,
+      subscriptionStatus: response.user.subscriptionStatus,
+      subscriptionEnd: response.user.subscriptionEnd
+        ? timestampToDate(response.user.subscriptionEnd)
+        : null,
+      createdAt: timestampToDate(response.user.createdAt),
+    }
+  } catch {
+    return null
+  }
 }

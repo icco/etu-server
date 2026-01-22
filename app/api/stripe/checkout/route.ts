@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { db } from "@/lib/db"
+import { authService } from "@/lib/grpc/client"
 import { stripe, STRIPE_PRICE_ID } from "@/lib/stripe"
+
+const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
 
 export async function POST() {
   if (!stripe || !STRIPE_PRICE_ID) {
@@ -13,16 +15,13 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const user = await db.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, email: true, stripeCustomerId: true },
-  })
-
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 })
-  }
-
   try {
+    const userResponse = await authService.getUser(
+      { userId: session.user.id },
+      GRPC_API_KEY
+    )
+    const user = userResponse.user
+
     let customerId = user.stripeCustomerId
 
     if (!customerId) {
@@ -32,10 +31,14 @@ export async function POST() {
       })
       customerId = customer.id
 
-      await db.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId: customerId },
-      })
+      await authService.updateUserSubscription(
+        {
+          userId: user.id,
+          subscriptionStatus: user.subscriptionStatus,
+          stripeCustomerId: customerId,
+        },
+        GRPC_API_KEY
+      )
     }
 
     const checkoutSession = await stripe.checkout.sessions.create({

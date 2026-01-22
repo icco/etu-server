@@ -1,10 +1,11 @@
 "use server"
 
 import { z } from "zod"
-import bcrypt from "bcryptjs"
-import { db } from "@/lib/db"
 import { signIn } from "@/lib/auth"
 import { AuthError } from "next-auth"
+import { authService } from "@/lib/grpc/client"
+
+const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -28,20 +29,15 @@ export async function register(formData: FormData) {
 
   const { email, password } = parsed.data
 
-  // Check if user exists
-  const existing = await db.user.findUnique({ where: { email } })
-  if (existing) {
-    return { error: "An account with this email already exists" }
+  try {
+    await authService.register({ email, password }, GRPC_API_KEY)
+  } catch (error) {
+    // Check if it's a "user already exists" error
+    if (error instanceof Error && error.message.includes("exists")) {
+      return { error: "An account with this email already exists" }
+    }
+    return { error: "Failed to create account" }
   }
-
-  // Create user
-  const passwordHash = await bcrypt.hash(password, 12)
-  await db.user.create({
-    data: {
-      email,
-      passwordHash,
-    },
-  })
 
   // Sign in the new user
   try {
