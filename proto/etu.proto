@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package etu;
 
+option go_package = "github.com/icco/etu-backend/proto";
+
 // Timestamp message
 message Timestamp {
   int64 seconds = 1;
@@ -28,12 +30,13 @@ message Tag {
 // Request/Response messages for Notes
 
 message ListNotesRequest {
-  string search = 1;
-  repeated string tags = 2;
-  string start_date = 3;  // ISO 8601 format
-  string end_date = 4;    // ISO 8601 format
-  int32 limit = 5;
-  int32 offset = 6;
+  string user_id = 1;      // Required for auth context
+  string search = 2;
+  repeated string tags = 3;
+  string start_date = 4;   // ISO 8601 format
+  string end_date = 5;     // ISO 8601 format
+  int32 limit = 6;
+  int32 offset = 7;
 }
 
 message ListNotesResponse {
@@ -44,8 +47,9 @@ message ListNotesResponse {
 }
 
 message CreateNoteRequest {
-  string content = 1;
-  repeated string tags = 2;
+  string user_id = 1;      // Required for auth context
+  string content = 2;
+  repeated string tags = 3;
 }
 
 message CreateNoteResponse {
@@ -53,7 +57,8 @@ message CreateNoteResponse {
 }
 
 message GetNoteRequest {
-  string id = 1;
+  string user_id = 1;      // Required for auth context
+  string id = 2;
 }
 
 message GetNoteResponse {
@@ -61,9 +66,11 @@ message GetNoteResponse {
 }
 
 message UpdateNoteRequest {
-  string id = 1;
-  optional string content = 2;
-  repeated string tags = 3;
+  string user_id = 1;      // Required for auth context
+  string id = 2;
+  optional string content = 3;
+  repeated string tags = 4;
+  bool update_tags = 5;    // Flag to indicate if tags should be updated
 }
 
 message UpdateNoteResponse {
@@ -71,7 +78,8 @@ message UpdateNoteResponse {
 }
 
 message DeleteNoteRequest {
-  string id = 1;
+  string user_id = 1;      // Required for auth context
+  string id = 2;
 }
 
 message DeleteNoteResponse {
@@ -81,7 +89,7 @@ message DeleteNoteResponse {
 // Request/Response messages for Tags
 
 message ListTagsRequest {
-  // No parameters needed
+  string user_id = 1;      // Required for auth context
 }
 
 message ListTagsResponse {

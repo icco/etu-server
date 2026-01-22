@@ -2455,11 +2455,6 @@ globalthis@^1.0.4:
     define-properties "^1.2.1"
     gopd "^1.0.1"
 
-google-protobuf@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-4.0.1.tgz#9e5935307ead0e32714e33f33a3caac9bd9b49b4"
-  integrity sha512-0I4mx3UtAwpcc8l9Ds5gHcwV2FyPdwvxxBcor8LusE4b6PjoFxEngZRBepjvuQ4B0eZ2iu/Vezh8oRsnpJ9UGA==
-
 gopd@^1.0.1, gopd@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/gopd/-/gopd-1.2.0.tgz#89f56b8217bdbc8802bd299df6d7f1081d7e51a1"
