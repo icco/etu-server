@@ -2,7 +2,7 @@
 
 Etu is an interstitial journaling platform that helps you capture life's moments through quick, tagged markdown notes called "blips."
 
-This is the backend and webapp for Etu. For more reading on our ideas see:
+This is the webapp for Etu. For more reading on our ideas see:
 
  - https://writing.natwelch.com/post/765
  - [BLIPS.md](./BLIPS.md)
@@ -23,8 +23,8 @@ This is the backend and webapp for Etu. For more reading on our ideas see:
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
-- **Database**: PostgreSQL with Prisma ORM
-- **Auth**: Auth.js v5 (NextAuth) with credentials
+- **Backend**: gRPC client for etu-backend service
+- **Auth**: Auth.js v5 (NextAuth) with credentials via gRPC backend
 - **Styling**: Tailwind CSS 4 + daisyUI 5
 - **Icons**: Heroicons
 - **Markdown**: marked + DOMPurify
@@ -35,8 +35,8 @@ This is the backend and webapp for Etu. For more reading on our ideas see:
 ### Prerequisites
 
 - Node.js 25+ (see `.nvmrc`)
-- PostgreSQL database
 - Yarn
+- Running [etu-backend](https://github.com/icco/etu-backend) gRPC service
 
 ### Development
 
@@ -46,10 +46,7 @@ yarn install
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your database URL and secrets
-
-# Push database schema
-yarn db:push
+# Edit .env.local with your gRPC backend URL and secrets
 
 # Start development server
 yarn dev
@@ -60,12 +57,13 @@ Open http://localhost:3000
 ### Environment Variables
 
 ```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/etu"
-
 # Auth.js
 AUTH_SECRET="your-secret-key"
 AUTH_URL="http://localhost:3000"
+
+# gRPC Backend
+GRPC_BACKEND_URL="localhost:50051"
+GRPC_API_KEY="your-service-api-key"
 
 # Stripe (optional)
 STRIPE_SECRET_KEY="sk_..."
@@ -82,8 +80,9 @@ docker-compose up -d
 # Production build
 docker build -t etu-server .
 docker run -p 3000:3000 \
-  -e DATABASE_URL="postgresql://..." \
   -e AUTH_SECRET="..." \
+  -e GRPC_BACKEND_URL="..." \
+  -e GRPC_API_KEY="..." \
   etu-server
 ```
 
@@ -107,66 +106,33 @@ docker run -p 3000:3000 \
 │   ├── note-card.tsx
 │   └── note-dialog.tsx
 ├── lib/
-│   ├── actions/          # Server actions
+│   ├── actions/          # Server actions (use gRPC backend)
 │   │   ├── auth.ts
 │   │   ├── notes.ts
 │   │   └── api-keys.ts
+│   ├── grpc/
+│   │   └── client.ts     # gRPC client for etu-backend
 │   ├── auth.ts           # Auth.js config
-│   ├── db.ts             # Prisma client
 │   └── stripe.ts
-├── prisma/
-│   └── schema.prisma
+├── proto/
+│   └── etu.proto         # Protocol buffer definitions
 ├── middleware.ts         # Auth middleware
 └── next.config.ts
 ```
 
-## API Documentation
+## Architecture
 
-Etu Server provides a REST API for programmatic access to notes and tags.
+This webapp follows a microservice architecture:
 
-### Documentation
+- **etu-web** (this repo): Frontend webapp (no direct database access)
+- **[etu-backend](https://github.com/icco/etu-backend)**: gRPC service for all data storage (users, notes, tags, API keys)
 
-- **Web Documentation**: Visit `/docs` for interactive API documentation
-- **API.md**: Complete reference with examples in bash, Python, and JavaScript
-- **Type Definitions**: See `proto/etu.proto` for Protocol Buffer type definitions
+The webapp communicates with the backend via gRPC. Protocol buffer definitions are in `proto/etu.proto`.
 
-### Quick Start
+### API Access
 
-Generate API keys in Settings to use with:
+For programmatic access to notes and tags, use:
 - **CLI**: https://github.com/icco/etu
 - **Mobile**: https://github.com/icco/etu-mobile
 
-**REST API Example:**
-```bash
-# List all notes
-curl -H "Authorization: etu_your_key_here" \
-  https://your-domain.com/api/v1/notes
-
-# Create a new note
-curl -X POST \
-  -H "Authorization: etu_your_key_here" \
-  -H "Content-Type: application/json" \
-  -d '{"content":"My note","tags":["journal"]}' \
-  https://your-domain.com/api/v1/notes
-```
-
-### Available Endpoints
-
-- `GET /api/v1/notes` - List notes with filtering
-- `POST /api/v1/notes` - Create a note
-- `GET /api/v1/notes/{id}` - Get a specific note
-- `PUT /api/v1/notes/{id}` - Update a note
-- `DELETE /api/v1/notes/{id}` - Delete a note
-- `GET /api/v1/tags` - List all tags
-
-See **[API.md](./API.md)** or visit `/docs` for complete documentation.
-
-## Database
-
-Uses Prisma with PostgreSQL. Key models:
-
-- **User**: Account with subscription status
-- **Note**: Markdown content with timestamps
-- **Tag**: User-scoped tags
-- **NoteTag**: Many-to-many junction
-- **ApiKey**: Hashed API keys for external access
+Generate API keys in Settings to use with these clients.
