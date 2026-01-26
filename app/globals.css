@@ -4,7 +4,7 @@
 @theme {
   --font-heading: 'Roboto', sans-serif;
   --font-body: 'Roboto', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Roboto Mono', monospace;
 }
 
 @layer base {
