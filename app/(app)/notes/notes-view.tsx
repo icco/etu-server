@@ -284,7 +284,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         </main>
 
         {/* FAB - New note button */}
-        <div className="fab">
+        <div className="fixed bottom-6 right-6 z-40">
           <button
             onClick={() => {
               setEditingNote(null)
