@@ -46,7 +46,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: response.user.name,
             image: response.user.image,
           }
-        } catch {
+        } catch (error) {
+          if (process.env.NODE_ENV !== "production") {
+            console.error("Authentication error:", error)
+          }
           return null
         }
       },
@@ -76,7 +79,10 @@ export async function getCurrentUser() {
         : null,
       createdAt: timestampToDate(response.user.createdAt),
     }
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Get current user error:", error)
+    }
     return null
   }
 }

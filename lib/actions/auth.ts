@@ -3,7 +3,8 @@
 import { z } from "zod"
 import { signIn } from "@/lib/auth"
 import { AuthError } from "next-auth"
-import { authService } from "@/lib/grpc/client"
+import { authService, GrpcError } from "@/lib/grpc/client"
+import { Code } from "@connectrpc/connect"
 
 function getGrpcApiKey(): string {
   const key = process.env.GRPC_API_KEY
@@ -38,10 +39,11 @@ export async function register(formData: FormData) {
   try {
     await authService.register({ email, password }, getGrpcApiKey())
   } catch (error) {
-    // Check if it's a "user already exists" error
-    if (error instanceof Error && error.message.includes("exists")) {
+    // Check if it's a "user already exists" error using gRPC status code
+    if (error instanceof GrpcError && error.code === Code.AlreadyExists) {
       return { error: "An account with this email already exists" }
     }
+    console.error("Registration error:", error)
     return { error: "Failed to create account" }
   }
 

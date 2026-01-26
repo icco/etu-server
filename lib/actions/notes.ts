@@ -159,11 +159,14 @@ export async function getTags() {
 export async function getStats() {
   const userId = await requireUser()
 
-  // Get all notes to calculate stats
+  // Get notes to calculate stats
+  // NOTE: This fetches up to 10,000 notes client-side. For users with more notes,
+  // stats will be incomplete. Consider implementing a backend stats endpoint
+  // if this becomes a problem.
   const response = await notesService.listNotes(
     {
       userId,
-      limit: 10000, // Get all notes for stats
+      limit: 10000,
       offset: 0,
     },
     getGrpcApiKey()
