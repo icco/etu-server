@@ -2,8 +2,8 @@
 @plugin "daisyui";
 
 @theme {
-  --font-heading: 'Newsreader', serif;
-  --font-body: 'Space Grotesk', sans-serif;
+  --font-heading: 'Roboto', sans-serif;
+  --font-body: 'Roboto', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
