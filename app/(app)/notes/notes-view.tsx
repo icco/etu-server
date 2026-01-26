@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useTransition, useRef } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import { format } from "date-fns"
 import {
   PencilSquareIcon,
@@ -10,7 +9,7 @@ import {
   ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  HomeIcon
+  UserCircleIcon
 } from "@heroicons/react/24/outline"
 import { signOut } from "next-auth/react"
 import { toast } from "sonner"
@@ -59,7 +58,6 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
   
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState(searchParams.search || "")
   const [selectedTags, setSelectedTags] = useState<string[]>(
     searchParams.tags?.split(",").filter(Boolean) || []
@@ -166,64 +164,57 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
       <div className="min-h-screen bg-base-200 flex flex-col">
         {/* Header */}
         <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
-          <div className="navbar-start">
+          <div className="flex-1">
+            <span className="text-xl font-bold px-2">Blips</span>
           </div>
-
-          <div className="navbar-center flex-1 max-w-2xl px-4 hidden md:block">
-            <div className="relative w-full">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/60 pointer-events-none z-10" />
+          <div className="flex gap-2">
+            <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/60 pointer-events-none" />
               <input
                 id="search-notes"
-                type="search"
-                placeholder="Search blips... (press /)"
+                type="text"
+                placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="input input-bordered w-full pl-10 bg-base-100 text-base-content placeholder:text-base-content/50"
+                className="input input-bordered input-sm w-28 md:w-64 pl-9"
               />
             </div>
-          </div>
-
-          <div className="navbar-end gap-1">
             <button
               onClick={() => {
                 setEditingNote(null)
                 setDialogOpen(true)
               }}
-              className="btn btn-primary gap-2"
+              className="btn btn-primary btn-sm gap-1"
             >
-              <PencilSquareIcon className="h-5 w-5" />
-              <span className="hidden sm:inline">New Blip</span>
+              <PencilSquareIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">New</span>
             </button>
-            <Link href="/settings" className="btn btn-ghost btn-square">
-              <Cog6ToothIcon className="h-6 w-6" />
-            </Link>
-            <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="btn btn-ghost btn-square"
-            >
-              <ArrowRightOnRectangleIcon className="h-6 w-6" />
-            </button>
-          </div>
-        </header>
-
-        {/* Mobile search section */}
-        {mobileSearchOpen && (
-          <div className="bg-base-100 border-b border-base-300 md:hidden">
-            <div className="container mx-auto px-4 py-3">
-              <div className="relative w-full">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-base-content/60 pointer-events-none z-10" />
-                <input
-                  id="search-notes-mobile"
-                  type="search"
-                  placeholder="Search blips..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="input input-bordered w-full pl-10 bg-base-100 text-base-content placeholder:text-base-content/50"
-                />
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                <UserCircleIcon className="h-8 w-8" />
               </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+              >
+                <li>
+                  <a href="/settings" className="justify-between">
+                    <span className="flex items-center gap-2">
+                      <Cog6ToothIcon className="h-4 w-4" />
+                      Settings
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <button onClick={() => signOut({ callbackUrl: "/" })}>
+                    <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                    Logout
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
-        )}
+        </header>
 
         {/* Tags filter */}
         {allTags.length > 0 && (
@@ -283,7 +274,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             <div className="max-w-3xl mx-auto space-y-8">
               {Array.from(groupedNotes.entries()).map(([date, dateNotes]) => (
                 <div key={date}>
-                  <div className="sticky top-[73px] bg-base-200/95 backdrop-blur-sm py-2 mb-4 z-10">
+                  <div className="sticky top-16 bg-base-200/95 backdrop-blur-sm py-2 mb-4 z-10">
                     <h3 className="text-lg font-semibold">{date}</h3>
                     <div className="divider my-0" />
                   </div>
@@ -304,41 +295,6 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
           )}
         </main>
 
-        {/* Mobile bottom nav */}
-        <div className="btm-nav btm-nav-sm md:hidden z-50">
-          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <HomeIcon className="h-5 w-5" />
-            <span className="btm-nav-label">Home</span>
-          </button>
-          <button 
-            onClick={() => {
-              setMobileSearchOpen(!mobileSearchOpen)
-              if (!mobileSearchOpen) {
-                setTimeout(() => document.getElementById("search-notes-mobile")?.focus(), 100)
-              }
-            }}
-            className={mobileSearchOpen ? "active" : ""}
-          >
-            <MagnifyingGlassIcon className="h-5 w-5" />
-            <span className="btm-nav-label">Search</span>
-          </button>
-          <button
-            onClick={() => setDialogOpen(true)}
-            className="active bg-primary text-primary-content"
-          >
-            <PencilSquareIcon className="h-6 w-6" />
-            <span className="btm-nav-label">New</span>
-          </button>
-          <button onClick={() => (window.location.href = "/settings")}>
-            <Cog6ToothIcon className="h-5 w-5" />
-            <span className="btm-nav-label">Settings</span>
-          </button>
-          <button onClick={() => signOut({ callbackUrl: "/" })}>
-            <ArrowRightOnRectangleIcon className="h-5 w-5" />
-            <span className="btm-nav-label">Logout</span>
-          </button>
-        </div>
-        <div className="h-16 md:hidden" />
       </div>
 
       <NoteDialog
