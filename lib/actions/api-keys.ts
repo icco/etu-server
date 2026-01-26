@@ -5,7 +5,13 @@ import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
 import { apiKeysService, timestampToDate } from "@/lib/grpc/client"
 
-const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 const createKeySchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -25,7 +31,7 @@ export async function createApiKey(name: string) {
 
   const response = await apiKeysService.createApiKey(
     { userId, name },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   revalidatePath("/settings")
@@ -43,7 +49,7 @@ export async function createApiKey(name: string) {
 export async function getApiKeys() {
   const userId = await requireUser()
 
-  const response = await apiKeysService.listApiKeys({ userId }, GRPC_API_KEY)
+  const response = await apiKeysService.listApiKeys({ userId }, getGrpcApiKey())
 
   return response.apiKeys.map((key) => ({
     id: key.id,
@@ -57,7 +63,7 @@ export async function getApiKeys() {
 export async function deleteApiKey(id: string) {
   const userId = await requireUser()
 
-  await apiKeysService.deleteApiKey({ userId, keyId: id }, GRPC_API_KEY)
+  await apiKeysService.deleteApiKey({ userId, keyId: id }, getGrpcApiKey())
 
   revalidatePath("/settings")
   return { success: true }
@@ -66,7 +72,7 @@ export async function deleteApiKey(id: string) {
 // Verify an API key and return the user ID
 export async function verifyApiKey(rawKey: string): Promise<string | null> {
   try {
-    const response = await apiKeysService.verifyApiKey({ rawKey }, GRPC_API_KEY)
+    const response = await apiKeysService.verifyApiKey({ rawKey }, getGrpcApiKey())
     return response.valid ? (response.userId ?? null) : null
   } catch {
     return null

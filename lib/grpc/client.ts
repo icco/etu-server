@@ -25,33 +25,38 @@ const protoDescriptor = grpc.loadPackageDefinition(packageDefinition) as unknown
 // Get backend URL from environment
 const GRPC_URL = process.env.GRPC_BACKEND_URL || "localhost:50051"
 
+// Use TLS in production, insecure credentials for local development
+function getGrpcCredentials(): grpc.ChannelCredentials {
+  if (process.env.NODE_ENV === "production") {
+    return grpc.credentials.createSsl()
+  }
+  return grpc.credentials.createInsecure()
+}
+
+// Check if a client connection is still usable
+function isClientUsable(client: grpc.Client | null): boolean {
+  if (!client) {
+    return false
+  }
+  const state = client.getChannel().getConnectivityState(false)
+  return state !== grpc.connectivityState.SHUTDOWN
+}
+
 // Create clients
 function createNotesClient() {
-  return new protoDescriptor.etu.NotesService(
-    GRPC_URL,
-    grpc.credentials.createInsecure()
-  )
+  return new protoDescriptor.etu.NotesService(GRPC_URL, getGrpcCredentials())
 }
 
 function createTagsClient() {
-  return new protoDescriptor.etu.TagsService(
-    GRPC_URL,
-    grpc.credentials.createInsecure()
-  )
+  return new protoDescriptor.etu.TagsService(GRPC_URL, getGrpcCredentials())
 }
 
 function createAuthClient() {
-  return new protoDescriptor.etu.AuthService(
-    GRPC_URL,
-    grpc.credentials.createInsecure()
-  )
+  return new protoDescriptor.etu.AuthService(GRPC_URL, getGrpcCredentials())
 }
 
 function createApiKeysClient() {
-  return new protoDescriptor.etu.ApiKeysService(
-    GRPC_URL,
-    grpc.credentials.createInsecure()
-  )
+  return new protoDescriptor.etu.ApiKeysService(GRPC_URL, getGrpcCredentials())
 }
 
 // Singleton clients
@@ -60,32 +65,32 @@ let tagsClient: InstanceType<typeof protoDescriptor.etu.TagsService> | null = nu
 let authClient: InstanceType<typeof protoDescriptor.etu.AuthService> | null = null
 let apiKeysClient: InstanceType<typeof protoDescriptor.etu.ApiKeysService> | null = null
 
-function getNotesClient() {
-  if (!notesClient) {
+function getNotesClient(): InstanceType<typeof protoDescriptor.etu.NotesService> {
+  if (!isClientUsable(notesClient)) {
     notesClient = createNotesClient()
   }
-  return notesClient
+  return notesClient!
 }
 
-function getTagsClient() {
-  if (!tagsClient) {
+function getTagsClient(): InstanceType<typeof protoDescriptor.etu.TagsService> {
+  if (!isClientUsable(tagsClient)) {
     tagsClient = createTagsClient()
   }
-  return tagsClient
+  return tagsClient!
 }
 
-function getAuthClient() {
-  if (!authClient) {
+function getAuthClient(): InstanceType<typeof protoDescriptor.etu.AuthService> {
+  if (!isClientUsable(authClient)) {
     authClient = createAuthClient()
   }
-  return authClient
+  return authClient!
 }
 
-function getApiKeysClient() {
-  if (!apiKeysClient) {
+function getApiKeysClient(): InstanceType<typeof protoDescriptor.etu.ApiKeysService> {
+  if (!isClientUsable(apiKeysClient)) {
     apiKeysClient = createApiKeysClient()
   }
-  return apiKeysClient
+  return apiKeysClient!
 }
 
 // Types
@@ -284,7 +289,7 @@ function createMetadata(apiKey: string): grpc.Metadata {
   return metadata
 }
 
-// Promisified gRPC calls
+// Promisified gRPC calls with user-friendly error handling
 function promisify<TRequest, TResponse>(
   client: grpc.Client,
   method: string,
@@ -299,7 +304,7 @@ function promisify<TRequest, TResponse>(
     }
     fn.call(client, request, metadata, (error: grpc.ServiceError | null, response: TResponse) => {
       if (error) {
-        reject(error)
+        reject(new GrpcError(error))
       } else {
         resolve(response)
       }
@@ -418,5 +423,50 @@ export const apiKeysService = {
 // Convert gRPC timestamp to Date
 export function timestampToDate(ts: Timestamp | undefined): Date {
   if (!ts) return new Date()
-  return new Date(parseInt(ts.seconds) * 1000 + ts.nanos / 1000000)
+
+  // Handle both string and number types for seconds/nanos
+  const seconds =
+    typeof ts.seconds === "string" ? parseInt(ts.seconds, 10) : Number(ts.seconds)
+  const nanos = typeof ts.nanos === "string" ? parseInt(ts.nanos, 10) : Number(ts.nanos ?? 0)
+
+  if (!Number.isFinite(seconds) || !Number.isFinite(nanos)) {
+    return new Date()
+  }
+
+  return new Date(seconds * 1000 + nanos / 1000000)
+}
+
+// Custom error class for gRPC errors with user-friendly messages
+export class GrpcError extends Error {
+  public readonly code: grpc.status
+  public readonly details: string
+
+  constructor(error: grpc.ServiceError) {
+    const message = grpcStatusToMessage(error.code, error.details)
+    super(message)
+    this.name = "GrpcError"
+    this.code = error.code
+    this.details = error.details
+  }
+}
+
+function grpcStatusToMessage(code: grpc.status, details: string): string {
+  switch (code) {
+    case grpc.status.UNAUTHENTICATED:
+      return "Authentication required"
+    case grpc.status.PERMISSION_DENIED:
+      return "Permission denied"
+    case grpc.status.NOT_FOUND:
+      return "Resource not found"
+    case grpc.status.ALREADY_EXISTS:
+      return "Resource already exists"
+    case grpc.status.INVALID_ARGUMENT:
+      return details || "Invalid request"
+    case grpc.status.UNAVAILABLE:
+      return "Service temporarily unavailable"
+    case grpc.status.DEADLINE_EXCEEDED:
+      return "Request timed out"
+    default:
+      return details || "An unexpected error occurred"
+  }
 }

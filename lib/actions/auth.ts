@@ -5,7 +5,13 @@ import { signIn } from "@/lib/auth"
 import { AuthError } from "next-auth"
 import { authService } from "@/lib/grpc/client"
 
-const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -30,7 +36,7 @@ export async function register(formData: FormData) {
   const { email, password } = parsed.data
 
   try {
-    await authService.register({ email, password }, GRPC_API_KEY)
+    await authService.register({ email, password }, getGrpcApiKey())
   } catch (error) {
     // Check if it's a "user already exists" error
     if (error instanceof Error && error.message.includes("exists")) {

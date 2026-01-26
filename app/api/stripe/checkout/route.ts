@@ -3,7 +3,13 @@ import { auth } from "@/lib/auth"
 import { authService } from "@/lib/grpc/client"
 import { stripe, STRIPE_PRICE_ID } from "@/lib/stripe"
 
-const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 export async function POST() {
   if (!stripe || !STRIPE_PRICE_ID) {
@@ -18,7 +24,7 @@ export async function POST() {
   try {
     const userResponse = await authService.getUser(
       { userId: session.user.id },
-      GRPC_API_KEY
+      getGrpcApiKey()
     )
     const user = userResponse.user
 
@@ -37,7 +43,7 @@ export async function POST() {
           subscriptionStatus: user.subscriptionStatus,
           stripeCustomerId: customerId,
         },
-        GRPC_API_KEY
+        getGrpcApiKey()
       )
     }
 

@@ -9,6 +9,7 @@ import {
   createNote as createNoteAction,
   updateNote as updateNoteAction,
   deleteNote as deleteNoteAction,
+  getNote as getNoteAction,
   getNotes as getNotesAction,
   getTags as getTagsAction,
 } from "@/lib/actions/notes"
@@ -61,12 +62,7 @@ class ApiClient {
   }
 
   async getNote(id: string): Promise<Note> {
-    const result = await getNotesAction({ limit: 1 })
-    const note = result.notes.find((n) => n.id === id)
-    if (!note) {
-      throw new Error("Note not found")
-    }
-    return note
+    return getNoteAction(id)
   }
 
   async updateNote(

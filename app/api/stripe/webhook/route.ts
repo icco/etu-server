@@ -3,7 +3,13 @@ import Stripe from "stripe"
 import { authService, Timestamp } from "@/lib/grpc/client"
 import { stripe } from "@/lib/stripe"
 
-const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 function dateToTimestamp(date: Date): Timestamp {
   const seconds = Math.floor(date.getTime() / 1000)
@@ -45,7 +51,7 @@ export async function POST(req: NextRequest) {
               subscriptionStatus: "active",
               stripeCustomerId: session.customer as string,
             },
-            GRPC_API_KEY
+            getGrpcApiKey()
           )
         }
         break
@@ -58,7 +64,7 @@ export async function POST(req: NextRequest) {
 
         const userResponse = await authService.getUserByStripeCustomerId(
           { stripeCustomerId: customerId },
-          GRPC_API_KEY
+          getGrpcApiKey()
         )
 
         if (userResponse.user) {
@@ -80,7 +86,7 @@ export async function POST(req: NextRequest) {
                 ? dateToTimestamp(new Date(periodEnd * 1000))
                 : undefined,
             },
-            GRPC_API_KEY
+            getGrpcApiKey()
           )
         }
         break
@@ -92,7 +98,7 @@ export async function POST(req: NextRequest) {
 
         const userResponse = await authService.getUserByStripeCustomerId(
           { stripeCustomerId: customerId },
-          GRPC_API_KEY
+          getGrpcApiKey()
         )
 
         if (userResponse.user) {
@@ -101,7 +107,7 @@ export async function POST(req: NextRequest) {
               userId: userResponse.user.id,
               subscriptionStatus: "cancelled",
             },
-            GRPC_API_KEY
+            getGrpcApiKey()
           )
         }
         break

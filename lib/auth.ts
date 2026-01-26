@@ -4,7 +4,13 @@ import { z } from "zod"
 import { authConfig } from "./auth.config"
 import { authService, timestampToDate } from "./grpc/client"
 
-const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -29,7 +35,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           const response = await authService.authenticate(
             { email, password },
-            GRPC_API_KEY
+            getGrpcApiKey()
           )
 
           if (!response.success || !response.user) return null
@@ -56,7 +62,7 @@ export async function getCurrentUser() {
   try {
     const response = await authService.getUser(
       { userId: session.user.id },
-      GRPC_API_KEY
+      getGrpcApiKey()
     )
 
     return {

@@ -17,7 +17,13 @@ const updateNoteSchema = z.object({
 })
 
 // Service API key for internal gRPC calls
-const GRPC_API_KEY = process.env.GRPC_API_KEY || ""
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 async function requireUser() {
   const session = await auth()
@@ -37,7 +43,7 @@ export async function createNote(data: { content: string; tags: string[] }) {
       content: parsed.content,
       tags: parsed.tags,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   revalidatePath("/notes")
@@ -56,7 +62,7 @@ export async function updateNote(data: { id: string; content?: string; tags?: st
       tags: parsed.tags,
       updateTags: parsed.tags !== undefined,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   revalidatePath("/notes")
@@ -71,11 +77,31 @@ export async function deleteNote(id: string) {
       userId,
       id,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   revalidatePath("/notes")
   return { success: true }
+}
+
+export async function getNote(id: string) {
+  const userId = await requireUser()
+
+  const response = await notesService.getNote(
+    {
+      userId,
+      id,
+    },
+    getGrpcApiKey()
+  )
+
+  return {
+    id: response.note.id,
+    content: response.note.content,
+    createdAt: timestampToDate(response.note.createdAt),
+    updatedAt: timestampToDate(response.note.updatedAt),
+    tags: response.note.tags,
+  }
 }
 
 export async function getNotes(options?: {
@@ -98,7 +124,7 @@ export async function getNotes(options?: {
       limit: options?.limit || 50,
       offset: options?.offset || 0,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   return {
@@ -120,7 +146,7 @@ export async function getTags() {
     {
       userId,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   return response.tags.map((tag) => ({
@@ -140,14 +166,14 @@ export async function getStats() {
       limit: 10000, // Get all notes for stats
       offset: 0,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   const tagsResponse = await tagsService.listTags(
     {
       userId,
     },
-    GRPC_API_KEY
+    getGrpcApiKey()
   )
 
   // Count words
