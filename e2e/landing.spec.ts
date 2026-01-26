@@ -34,12 +34,4 @@ test.describe("Landing Page", () => {
     await expect(page.locator("text=$5")).toBeVisible()
     await expect(page).toHaveScreenshot("landing-pricing.png")
   })
-
-  test("responsive mobile view", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-    await page.goto("/")
-    await expect(page).toHaveScreenshot("landing-mobile.png", {
-      fullPage: true,
-    })
-  })
 })

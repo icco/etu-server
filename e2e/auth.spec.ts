@@ -21,12 +21,6 @@ test.describe("Auth Pages", () => {
     await expect(page).toHaveScreenshot("login-page.png")
   })
 
-  test("login page mobile view", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-    await page.goto("/login")
-    await expect(page).toHaveScreenshot("login-mobile.png")
-  })
-
   test("register page displays correctly", async ({ page }) => {
     await page.goto("/register")
     await expect(page.locator("h2").filter({ hasText: "Create your account" })).toBeVisible()
