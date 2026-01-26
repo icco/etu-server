@@ -1,10 +1,18 @@
 "use server"
 
 import { z } from "zod"
-import bcrypt from "bcryptjs"
-import { db } from "@/lib/db"
 import { signIn } from "@/lib/auth"
 import { AuthError } from "next-auth"
+import { authService, GrpcError } from "@/lib/grpc/client"
+import { Code } from "@connectrpc/connect"
+
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -28,20 +36,16 @@ export async function register(formData: FormData) {
 
   const { email, password } = parsed.data
 
-  // Check if user exists
-  const existing = await db.user.findUnique({ where: { email } })
-  if (existing) {
-    return { error: "An account with this email already exists" }
+  try {
+    await authService.register({ email, password }, getGrpcApiKey())
+  } catch (error) {
+    // Check if it's a "user already exists" error using gRPC status code
+    if (error instanceof GrpcError && error.code === Code.AlreadyExists) {
+      return { error: "An account with this email already exists" }
+    }
+    console.error("Registration error:", error)
+    return { error: "Failed to create account" }
   }
-
-  // Create user
-  const passwordHash = await bcrypt.hash(password, 12)
-  await db.user.create({
-    data: {
-      email,
-      passwordHash,
-    },
-  })
 
   // Sign in the new user
   try {

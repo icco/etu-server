@@ -4,31 +4,11 @@ services:
     ports:
       - 8080:8080
     environment:
-      - DATABASE_URL=postgresql://etu:etu@db:5432/etu
       - AUTH_SECRET=${AUTH_SECRET:-change-me-in-production}
       - AUTH_URL=${AUTH_URL:-http://localhost:3000}
+      - GRPC_BACKEND_URL=${GRPC_BACKEND_URL:-host.docker.internal:50051}
+      - GRPC_API_KEY=${GRPC_API_KEY:?GRPC_API_KEY is required}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
       - STRIPE_PRICE_ID=${STRIPE_PRICE_ID:-}
-    depends_on:
-      db:
-        condition: service_healthy
     restart: unless-stopped
-  db:
-    image: postgres:16-alpine
-    environment:
-      - POSTGRES_USER=etu
-      - POSTGRES_PASSWORD=etu
-      - POSTGRES_DB=etu
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -U etu
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-volumes:
-  postgres-data:

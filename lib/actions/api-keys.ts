@@ -1,11 +1,17 @@
 "use server"
 
 import { z } from "zod"
-import crypto from "crypto"
-import bcrypt from "bcryptjs"
 import { revalidatePath } from "next/cache"
-import { db } from "@/lib/db"
 import { auth } from "@/lib/auth"
+import { apiKeysService, timestampToDate } from "@/lib/grpc/client"
+
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
 
 const createKeySchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -19,69 +25,45 @@ async function requireUser() {
   return session.user.id
 }
 
-function generateApiKey(): string {
-  return "etu_" + crypto.randomBytes(32).toString("hex")
-}
-
 export async function createApiKey(name: string) {
   const userId = await requireUser()
   createKeySchema.parse({ name })
 
-  const rawKey = generateApiKey()
-  const keyHash = await bcrypt.hash(rawKey, 10)
-  const keyPrefix = rawKey.substring(0, 12)
-
-  const apiKey = await db.apiKey.create({
-    data: {
-      name,
-      keyHash,
-      keyPrefix,
-      userId,
-    },
-  })
+  const response = await apiKeysService.createApiKey(
+    { userId, name },
+    getGrpcApiKey()
+  )
 
   revalidatePath("/settings")
 
   // Return the raw key only on creation
   return {
-    id: apiKey.id,
-    name: apiKey.name,
-    key: rawKey,
-    keyPrefix,
-    createdAt: apiKey.createdAt,
+    id: response.apiKey.id,
+    name: response.apiKey.name,
+    key: response.rawKey,
+    keyPrefix: response.apiKey.keyPrefix,
+    createdAt: timestampToDate(response.apiKey.createdAt),
   }
 }
 
 export async function getApiKeys() {
   const userId = await requireUser()
 
-  const keys = await db.apiKey.findMany({
-    where: { userId },
-    select: {
-      id: true,
-      name: true,
-      keyPrefix: true,
-      createdAt: true,
-      lastUsed: true,
-    },
-    orderBy: { createdAt: "desc" },
-  })
+  const response = await apiKeysService.listApiKeys({ userId }, getGrpcApiKey())
 
-  return keys
+  return response.apiKeys.map((key) => ({
+    id: key.id,
+    name: key.name,
+    keyPrefix: key.keyPrefix,
+    createdAt: timestampToDate(key.createdAt),
+    lastUsed: key.lastUsed ? timestampToDate(key.lastUsed) : null,
+  }))
 }
 
 export async function deleteApiKey(id: string) {
   const userId = await requireUser()
 
-  const key = await db.apiKey.findFirst({
-    where: { id, userId },
-  })
-
-  if (!key) {
-    throw new Error("API key not found")
-  }
-
-  await db.apiKey.delete({ where: { id } })
+  await apiKeysService.deleteApiKey({ userId, keyId: id }, getGrpcApiKey())
 
   revalidatePath("/settings")
   return { success: true }
@@ -89,24 +71,10 @@ export async function deleteApiKey(id: string) {
 
 // Verify an API key and return the user ID
 export async function verifyApiKey(rawKey: string): Promise<string | null> {
-  const keyPrefix = rawKey.substring(0, 12)
-
-  const keys = await db.apiKey.findMany({
-    where: { keyPrefix },
-    select: { id: true, userId: true, keyHash: true },
-  })
-
-  for (const key of keys) {
-    const valid = await bcrypt.compare(rawKey, key.keyHash)
-    if (valid) {
-      // Update last used
-      await db.apiKey.update({
-        where: { id: key.id },
-        data: { lastUsed: new Date() },
-      })
-      return key.userId
-    }
+  try {
+    const response = await apiKeysService.verifyApiKey({ rawKey }, getGrpcApiKey())
+    return response.valid ? (response.userId ?? null) : null
+  } catch {
+    return null
   }
-
-  return null
 }

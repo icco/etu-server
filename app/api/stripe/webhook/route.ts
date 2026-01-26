@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 import Stripe from "stripe"
-import { db } from "@/lib/db"
+import { authService, Timestamp } from "@/lib/grpc/client"
 import { stripe } from "@/lib/stripe"
+
+function getGrpcApiKey(): string {
+  const key = process.env.GRPC_API_KEY
+  if (!key) {
+    throw new Error("GRPC_API_KEY environment variable is required")
+  }
+  return key
+}
+
+function dateToTimestamp(date: Date): Timestamp {
+  const seconds = Math.floor(date.getTime() / 1000)
+  const nanos = (date.getTime() % 1000) * 1000000
+  return { seconds: seconds.toString(), nanos }
+}
 
 export async function POST(req: NextRequest) {
   if (!stripe) {
@@ -31,13 +45,14 @@ export async function POST(req: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.userId
         if (userId) {
-          await db.user.update({
-            where: { id: userId },
-            data: {
+          await authService.updateUserSubscription(
+            {
+              userId,
               subscriptionStatus: "active",
               stripeCustomerId: session.customer as string,
             },
-          })
+            getGrpcApiKey()
+          )
         }
         break
       }
@@ -46,11 +61,13 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.created": {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
-        const user = await db.user.findUnique({
-          where: { stripeCustomerId: customerId },
-        })
 
-        if (user) {
+        const userResponse = await authService.getUserByStripeCustomerId(
+          { stripeCustomerId: customerId },
+          getGrpcApiKey()
+        )
+
+        if (userResponse.user) {
           const status =
             subscription.status === "active"
               ? "active"
@@ -58,15 +75,19 @@ export async function POST(req: NextRequest) {
               ? "trial"
               : "inactive"
 
-          await db.user.update({
-            where: { id: user.id },
-            data: {
+          // In Stripe SDK v20+, current_period_end is on subscription items
+          const periodEnd = subscription.items.data[0]?.current_period_end
+
+          await authService.updateUserSubscription(
+            {
+              userId: userResponse.user.id,
               subscriptionStatus: status,
-              subscriptionEnd: subscription.current_period_end
-                ? new Date(subscription.current_period_end * 1000)
-                : null,
+              subscriptionEnd: periodEnd
+                ? dateToTimestamp(new Date(periodEnd * 1000))
+                : undefined,
             },
-          })
+            getGrpcApiKey()
+          )
         }
         break
       }
@@ -74,15 +95,20 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
-        const user = await db.user.findUnique({
-          where: { stripeCustomerId: customerId },
-        })
 
-        if (user) {
-          await db.user.update({
-            where: { id: user.id },
-            data: { subscriptionStatus: "cancelled", subscriptionEnd: null },
-          })
+        const userResponse = await authService.getUserByStripeCustomerId(
+          { stripeCustomerId: customerId },
+          getGrpcApiKey()
+        )
+
+        if (userResponse.user) {
+          await authService.updateUserSubscription(
+            {
+              userId: userResponse.user.id,
+              subscriptionStatus: "cancelled",
+            },
+            getGrpcApiKey()
+          )
         }
         break
       }
