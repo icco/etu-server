@@ -284,17 +284,26 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         </main>
 
         {/* FAB - New note button */}
-        <div className="fixed bottom-6 right-6 z-40">
-          <button
+        <div className="fab">
+          <div
+            tabIndex={0}
+            role="button"
             onClick={() => {
               setEditingNote(null)
               setDialogOpen(true)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                setEditingNote(null)
+                setDialogOpen(true)
+              }
             }}
             className="btn btn-lg btn-circle btn-primary"
             aria-label="Create new note"
           >
             <PencilSquareIcon className="h-6 w-6" />
-          </button>
+          </div>
         </div>
       </div>
 

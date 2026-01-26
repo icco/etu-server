@@ -53,7 +53,7 @@ test.describe("Notes Page", () => {
     await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
 
     // Find the FAB button (floating action button in bottom corner)
-    const fabButton = page.locator("button[aria-label='Create new note']")
+    const fabButton = page.locator(".fab [role='button']")
     await expect(fabButton).toBeVisible()
     await fabButton.click()
 
