@@ -52,13 +52,13 @@ test.describe("Notes Page", () => {
   test("new note dialog opens", async ({ page }) => {
     await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
 
-    // Find and click the new note button
-    const newNoteButton = page.getByRole("button", { name: /new|add|create|\+/i }).first()
+    // Find the primary button (New note button) in the header
+    const newNoteButton = page.locator("button.btn-primary").first()
     await expect(newNoteButton).toBeVisible()
     await newNoteButton.click()
 
-    // Wait for dialog
-    await page.waitForSelector("[role=dialog]", { timeout: 5000 })
+    // Wait for the daisyUI modal to open (modal-open class is added)
+    await expect(page.locator("dialog.modal-open")).toBeVisible({ timeout: 5000 })
     await expect(page).toHaveScreenshot("notes-new-dialog.png")
   })
 })
