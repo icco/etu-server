@@ -13,9 +13,14 @@ WORKDIR /app
 # NPM_TOKEN is required for @icco/etu-proto from GitHub Packages
 ARG NPM_TOKEN
 COPY package.json yarn.lock* .npmrc ./
-RUN echo "//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" >>.npmrc \
-    && yarn install --frozen-lockfile \
-    && rm -f .npmrc
+RUN if [ -z "$NPM_TOKEN" ]; then \
+      echo "ERROR: NPM_TOKEN build arg is required for @icco/etu-proto"; \
+      echo "Usage: docker build --build-arg NPM_TOKEN=\$GITHUB_TOKEN ..."; \
+      exit 1; \
+    fi && \
+    echo "//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" >> .npmrc && \
+    yarn install --frozen-lockfile && \
+    rm -f .npmrc
 
 # Rebuild the source code only when needed
 FROM base AS builder
