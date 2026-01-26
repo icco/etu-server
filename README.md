@@ -23,7 +23,8 @@ This is the webapp for Etu. For more reading on our ideas see:
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
-- **Backend**: gRPC client for etu-backend service
+- **Backend**: Connect RPC client for etu-backend service
+- **Proto Types**: `@icco/etu-proto` package (shared TypeScript types)
 - **Auth**: Auth.js v5 (NextAuth) with credentials via gRPC backend
 - **Styling**: Tailwind CSS 4 + daisyUI 5
 - **Icons**: Heroicons
@@ -37,10 +38,14 @@ This is the webapp for Etu. For more reading on our ideas see:
 - Node.js 25+ (see `.nvmrc`)
 - Yarn
 - Running [etu-backend](https://github.com/icco/etu-backend) gRPC service
+- GitHub Packages authentication (for `@icco/etu-proto`)
 
 ### Development
 
 ```bash
+# Configure npm for @icco scope (if not already done)
+# Add to ~/.npmrc: //npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+
 # Install dependencies
 yarn install
 
@@ -61,9 +66,9 @@ Open http://localhost:3000
 AUTH_SECRET="your-secret-key"
 AUTH_URL="http://localhost:3000"
 
-# gRPC Backend
-GRPC_BACKEND_URL="localhost:50051"
-GRPC_API_KEY="your-service-api-key"
+# gRPC Backend (Connect RPC)
+GRPC_BACKEND_URL="http://localhost:50051"
+GRPC_API_KEY="your-service-api-key"  # Required
 
 # Stripe (optional)
 STRIPE_SECRET_KEY="sk_..."
@@ -81,7 +86,7 @@ docker-compose up -d
 docker build -t etu-server .
 docker run -p 3000:3000 \
   -e AUTH_SECRET="..." \
-  -e GRPC_BACKEND_URL="..." \
+  -e GRPC_BACKEND_URL="http://backend:50051" \
   -e GRPC_API_KEY="..." \
   etu-server
 ```
@@ -111,11 +116,9 @@ docker run -p 3000:3000 \
 │   │   ├── notes.ts
 │   │   └── api-keys.ts
 │   ├── grpc/
-│   │   └── client.ts     # gRPC client for etu-backend
+│   │   └── client.ts     # Connect RPC client for etu-backend
 │   ├── auth.ts           # Auth.js config
 │   └── stripe.ts
-├── proto/
-│   └── etu.proto         # Protocol buffer definitions
 ├── middleware.ts         # Auth middleware
 └── next.config.ts
 ```
@@ -127,7 +130,7 @@ This webapp follows a microservice architecture:
 - **etu-web** (this repo): Frontend webapp (no direct database access)
 - **[etu-backend](https://github.com/icco/etu-backend)**: gRPC service for all data storage (users, notes, tags, API keys)
 
-The webapp communicates with the backend via gRPC. Protocol buffer definitions are in `proto/etu.proto`.
+The webapp communicates with the backend via [Connect RPC](https://connectrpc.com/). TypeScript types are shared via the `@icco/etu-proto` package (published from etu-backend).
 
 ### API Access
 
