@@ -41,24 +41,6 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
     return stripped.length <= maxLength ? stripped : stripped.substring(0, maxLength) + "..."
   }
 
-  const highlightText = (text: string) => {
-    if (!searchQuery) return text
-
-    try {
-      const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-      const parts = text.split(new RegExp(`(${escaped})`, "gi"))
-      return parts.map((part, i) =>
-        part.toLowerCase() === searchQuery.toLowerCase() ? (
-          <mark key={i}>{part}</mark>
-        ) : (
-          part
-        )
-      )
-    } catch {
-      return text
-    }
-  }
-
   const renderMarkdown = (content: string) => {
     return DOMPurify.sanitize(marked.parse(content) as string)
   }
@@ -87,7 +69,7 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
                 <div className="flex flex-wrap gap-2 mb-3">
                   {note.tags.map((tag) => (
                     <span key={tag} className="badge badge-ghost badge-sm">
-                      {highlightText(tag)}
+                      {tag}
                     </span>
                   ))}
                 </div>
@@ -149,7 +131,10 @@ export function NoteCard({ note, onEdit, onDelete, searchQuery }: NoteCardProps)
             </div>
           </div>
 
-          <p className="leading-relaxed">{highlightText(getPreview(note.content))}</p>
+          <div
+            className="prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(note.content) }}
+          />
         </div>
       </div>
 
