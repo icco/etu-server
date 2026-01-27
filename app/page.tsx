@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { PencilSquareIcon, MagnifyingGlassIcon, DevicePhoneMobileIcon, CodeBracketIcon } from "@heroicons/react/24/solid"
 import { auth } from "@/lib/auth"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default async function LandingPage() {
   const session = await auth()
@@ -14,7 +15,8 @@ export default async function LandingPage() {
             <span className="text-2xl font-bold text-primary">Etu</span>
           </div>
         </div>
-        <div className="navbar-end">
+        <div className="navbar-end gap-4">
+          <ThemeToggle />
           <Link href={session ? "/notes" : "/login"} className="btn btn-primary">
             {session ? "Open App" : "Get Started"}
           </Link>

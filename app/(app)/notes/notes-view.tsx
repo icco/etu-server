@@ -9,9 +9,12 @@ import {
   ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
   XMarkIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  SunIcon,
+  MoonIcon,
 } from "@heroicons/react/24/outline"
 import { signOut } from "next-auth/react"
+import { useTheme } from "next-themes"
 import { toast } from "sonner"
 import { createNote, updateNote, deleteNote } from "@/lib/actions/notes"
 import { NoteCard } from "@/components/note-card"
@@ -55,6 +58,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
   const router = useRouter()
   const [_isPending, startTransition] = useTransition()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const { resolvedTheme, setTheme } = useTheme()
   
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
@@ -187,6 +191,16 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
               >
+                <li>
+                  <button onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}>
+                    {resolvedTheme === "dark" ? (
+                      <SunIcon className="h-4 w-4" />
+                    ) : (
+                      <MoonIcon className="h-4 w-4" />
+                    )}
+                    {resolvedTheme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </button>
+                </li>
                 <li>
                   <a href="/settings">
                     <Cog6ToothIcon className="h-4 w-4" />

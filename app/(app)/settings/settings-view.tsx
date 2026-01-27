@@ -17,6 +17,7 @@ import {
   PencilSquareIcon,
   TagIcon,
 } from "@heroicons/react/24/outline"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { toast } from "sonner"
 import { createApiKey, deleteApiKey } from "@/lib/actions/api-keys"
 
@@ -107,6 +108,9 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
             <ArrowLeftIcon className="h-6 w-6" />
           </Link>
           <span className="text-xl font-bold">Settings</span>
+        </div>
+        <div className="flex-none">
+          <ThemeToggle />
         </div>
       </header>
 
