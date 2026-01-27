@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { PencilSquareIcon, MagnifyingGlassIcon, DevicePhoneMobileIcon, CodeBracketIcon } from "@heroicons/react/24/solid"
+import { DocumentTextIcon, MagnifyingGlassIcon, DevicePhoneMobileIcon, CodeBracketIcon } from "@heroicons/react/24/outline"
 import { auth } from "@/lib/auth"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -10,10 +10,7 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-base-200">
       <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
         <div className="navbar-start">
-          <div className="flex items-center gap-2">
-            <PencilSquareIcon className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">Etu</span>
-          </div>
+          <span className="text-2xl font-bold text-base-content">Etu</span>
         </div>
         <div className="navbar-end gap-4">
           <ThemeToggle />
@@ -74,7 +71,7 @@ export default async function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
               <div className="card-body">
-                <PencilSquareIcon className="h-10 w-10 text-primary" />
+                <DocumentTextIcon className="h-10 w-10 text-primary" />
                 <h4 className="card-title">Capture Instantly</h4>
                 <p className="text-base-content/60">
                   Jot down fleeting thoughts as blips. Write in Markdown, add tags, no friction between idea and capture.
@@ -154,11 +151,8 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <footer className="footer footer-center bg-base-100 text-base-content p-6">
-        <div className="flex items-center gap-2">
-          <PencilSquareIcon className="h-6 w-6 text-primary" />
-          <span className="text-sm opacity-60">&copy; 2026 Nat Welch.</span>
-        </div>
+      <footer className="text-center text-sm opacity-60 py-4 bg-base-100">
+        &copy; 2026 <a href="https://natwelch.com" className="link link-hover">Nat Welch</a>.
       </footer>
     </div>
   )

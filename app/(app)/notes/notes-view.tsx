@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useTransition, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import {
-  PencilSquareIcon,
+  DocumentTextIcon,
+  PlusIcon,
   MagnifyingGlassIcon,
   ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
@@ -42,7 +43,7 @@ interface NotesViewProps {
 
 function groupNotesByDate(notes: Note[]): Map<string, Note[]> {
   const grouped = new Map<string, Note[]>()
-  
+
   notes.forEach((note) => {
     const dateKey = format(new Date(note.createdAt), "MMMM d, yyyy")
     if (!grouped.has(dateKey)) {
@@ -50,7 +51,7 @@ function groupNotesByDate(notes: Note[]): Map<string, Note[]> {
     }
     grouped.get(dateKey)!.push(note)
   })
-  
+
   return grouped
 }
 
@@ -59,7 +60,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
   const [_isPending, startTransition] = useTransition()
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const { resolvedTheme, setTheme } = useTheme()
-  
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
   const [searchQuery, setSearchQuery] = useState(searchParams.search || "")
@@ -98,7 +99,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
     const params = new URLSearchParams()
     if (newSearch) params.set("search", newSearch)
     if (newTags?.length) params.set("tags", newTags.join(","))
-    
+
     startTransition(() => {
       router.push(`/notes?${params.toString()}`)
     })
@@ -228,9 +229,8 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                   <button
                     key={tag}
                     onClick={() => toggleTag(tag)}
-                    className={`badge badge-lg cursor-pointer transition-colors shrink-0 ${
-                      selectedTags.includes(tag) ? "badge-primary" : "badge-ghost hover:badge-neutral"
-                    }`}
+                    className={`badge badge-lg cursor-pointer transition-colors shrink-0 ${selectedTags.includes(tag) ? "badge-primary" : "badge-ghost hover:badge-neutral"
+                      }`}
                   >
                     {tag}
                   </button>
@@ -253,13 +253,13 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
         <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
           {notes.length === 0 && !hasFilters ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <PencilSquareIcon className="h-16 w-16 text-base-content/40 mb-4" />
+              <DocumentTextIcon className="h-16 w-16 text-base-content/40 mb-4" />
               <h2 className="text-2xl font-semibold mb-2">No blips yet</h2>
               <p className="text-base-content/60 mb-6 max-w-md">
                 Start your interstitial journaling journey by capturing your first thought.
               </p>
               <button onClick={() => setDialogOpen(true)} className="btn btn-primary gap-2">
-                <PencilSquareIcon className="h-5 w-5" />
+                <PlusIcon className="h-5 w-5" />
                 Create Your First Blip
               </button>
             </div>
@@ -307,7 +307,7 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
             className="btn btn-lg btn-circle btn-primary"
             aria-label="Create new note"
           >
-            <PencilSquareIcon className="h-6 w-6" />
+            <PlusIcon className="h-6 w-6" />
           </button>
         </div>
       </div>

@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useFormStatus } from "react-dom"
-import { PencilSquareIcon } from "@heroicons/react/24/solid"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { register } from "@/lib/actions/auth"
 import { toast } from "sonner"
@@ -23,10 +22,10 @@ export default function RegisterPage() {
 
   async function handleSubmit(formData: FormData) {
     setError(null)
-    
+
     const password = formData.get("password") as string
     const confirmPassword = formData.get("confirmPassword") as string
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match")
       toast.error("Passwords do not match")
@@ -48,10 +47,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body p-8 sm:p-10">
-            <div className="flex items-center gap-2 mb-4 justify-center">
-              <PencilSquareIcon className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-primary">Etu</h1>
-            </div>
+            <h1 className="text-2xl font-bold text-primary text-center mb-4">Etu</h1>
 
             <h2 className="card-title justify-center">Create your account</h2>
             <p className="text-base-content/70 text-center mb-4">

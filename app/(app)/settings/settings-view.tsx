@@ -14,7 +14,7 @@ import {
   CheckIcon,
   TrashIcon,
   ArrowDownTrayIcon,
-  PencilSquareIcon,
+  DocumentTextIcon,
   TagIcon,
 } from "@heroicons/react/24/outline"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -166,7 +166,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
               <div className="stats stats-vertical lg:stats-horizontal shadow w-full">
                 <div className="stat">
                   <div className="stat-figure text-primary">
-                    <PencilSquareIcon className="h-6 w-6" />
+                    <DocumentTextIcon className="h-6 w-6" />
                   </div>
                   <div className="stat-title">Total Blips</div>
                   <div className="stat-value">{stats.totalNotes}</div>
@@ -217,13 +217,12 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
               <h2 className="card-title">Subscription</h2>
               <div className="flex items-center gap-4">
                 <span
-                  className={`badge ${
-                    user.subscriptionStatus === "active"
+                  className={`badge ${user.subscriptionStatus === "active"
                       ? "badge-success"
                       : user.subscriptionStatus === "trial"
-                      ? "badge-warning"
-                      : "badge-ghost"
-                  }`}
+                        ? "badge-warning"
+                        : "badge-ghost"
+                    }`}
                 >
                   {user.subscriptionStatus.charAt(0).toUpperCase() + user.subscriptionStatus.slice(1)}
                 </span>
