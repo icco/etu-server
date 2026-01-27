@@ -19,7 +19,7 @@ export function Header({ backHref, logoHref = "/", children }: HeaderProps) {
             <ArrowLeftIcon className="h-5 w-5" />
           </Link>
         )}
-        <Link href={logoHref} className="text-2xl font-bold text-base-content">
+        <Link href={logoHref} className="pl-4 text-2xl font-bold text-base-content">
           Etu
         </Link>
       </div>
