@@ -49,16 +49,36 @@ test.describe("Notes Page", () => {
     await expect(page).toHaveScreenshot("notes-search.png")
   })
 
-  test("new note dialog opens", async ({ page }) => {
+  test("new note dialog opens via FAB", async ({ page }) => {
     await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
 
-    // Find the primary button (New note button) in the header
-    const newNoteButton = page.locator("button.btn-primary").first()
-    await expect(newNoteButton).toBeVisible()
-    await newNoteButton.click()
+    // Find the FAB button (floating action button in bottom corner)
+    const fabButton = page.locator(".fab button")
+    await expect(fabButton).toBeVisible()
+    await fabButton.click()
 
     // Wait for the daisyUI modal to open (modal-open class is added)
     await expect(page.locator("dialog.modal-open")).toBeVisible({ timeout: 5000 })
     await expect(page).toHaveScreenshot("notes-new-dialog.png")
+  })
+
+  test("note modal renders markdown correctly", async ({ page }) => {
+    await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
+
+    // Click on the first note card to open the full view modal
+    const firstNoteCard = page.locator(".card").first()
+    await firstNoteCard.click()
+
+    // Wait for the modal to open
+    await expect(page.locator("dialog.modal-open")).toBeVisible({ timeout: 5000 })
+
+    // Verify markdown is rendered - the prose class contains the rendered content
+    const proseContent = page.locator("dialog.modal-open .prose")
+    await expect(proseContent).toBeVisible()
+
+    // The mock note has **building** which should render as <strong>
+    await expect(proseContent.locator("strong")).toContainText("building")
+
+    await expect(page).toHaveScreenshot("notes-modal-markdown.png")
   })
 })

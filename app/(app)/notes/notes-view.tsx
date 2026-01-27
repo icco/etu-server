@@ -179,16 +179,6 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
                 className="input input-bordered input-sm w-28 md:w-64 pl-9"
               />
             </div>
-            <button
-              onClick={() => {
-                setEditingNote(null)
-                setDialogOpen(true)
-              }}
-              className="btn btn-primary btn-sm gap-1"
-            >
-              <PencilSquareIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">New</span>
-            </button>
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-sm btn-square">
                 <UserCircleIcon className="h-6 w-6" />
@@ -293,6 +283,19 @@ export function NotesView({ initialNotes, initialTags, searchParams }: NotesView
           )}
         </main>
 
+        {/* FAB - New note button */}
+        <div className="fab">
+          <button
+            onClick={() => {
+              setEditingNote(null)
+              setDialogOpen(true)
+            }}
+            className="btn btn-lg btn-circle btn-primary"
+            aria-label="Create new note"
+          >
+            <PencilSquareIcon className="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
       <NoteDialog
