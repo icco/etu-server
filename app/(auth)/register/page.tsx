@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useFormStatus } from "react-dom"
 import { PencilSquareIcon } from "@heroicons/react/24/solid"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { register } from "@/lib/actions/auth"
 import { toast } from "sonner"
 
@@ -41,6 +42,9 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="fixed top-4 right-4">
+        <ThemeToggle />
+      </div>
       <div className="w-full max-w-md">
         <div className="card bg-base-100 shadow-xl">
           <div className="card-body p-8 sm:p-10">
