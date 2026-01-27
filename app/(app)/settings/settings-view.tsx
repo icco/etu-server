@@ -106,7 +106,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
         <UserMenu />
       </Header>
 
-      <main className="container mx-auto px-4 md:px-6 py-8 max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 md:px-6 py-8 max-w-4xl">
         {/* Tabs */}
         <div role="tablist" className="tabs tabs-boxed mb-8">
           {[
@@ -212,7 +212,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
                   className={`badge ${user.subscriptionStatus === "active"
                       ? "badge-success"
                       : user.subscriptionStatus === "trial"
-                        ? "badge-warning"
+                        ? "bg-warning text-black"
                         : "badge-ghost"
                     }`}
                 >

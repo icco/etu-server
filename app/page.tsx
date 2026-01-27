@@ -8,13 +8,14 @@ export default async function LandingPage() {
   const session = await auth()
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen bg-base-200 flex flex-col">
       <Header logoHref="/">
         <Link href={session ? "/notes" : "/login"} className="btn btn-primary">
           {session ? "Open App" : "Get Started"}
         </Link>
       </Header>
 
+      <main className="flex-1">
       <section className="container mx-auto px-6 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
@@ -145,6 +146,7 @@ export default async function LandingPage() {
           </div>
         </div>
       </section>
+      </main>
 
       <Footer />
     </div>
