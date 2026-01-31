@@ -71,7 +71,7 @@ export function SettingsView({ user, stats, initialApiKeys }: SettingsViewProps)
 
   // Notion key editing state
   const [isEditingNotionKey, setIsEditingNotionKey] = useState(false)
-  const [editNotionKey, setEditNotionKey] = useState(user.notionKey || "")
+  const [editNotionKey, setEditNotionKey] = useState("")
   const [isUpdatingNotionKey, setIsUpdatingNotionKey] = useState(false)
 
   // Password change state
