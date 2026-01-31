@@ -102,6 +102,8 @@ let mockUserSettings: UserSettings = {
   userId: "mock-user-1",
   username: "Test User",
   notionKey: undefined,
+  createdAt: new Date("2026-01-01T00:00:00Z"),
+  updatedAt: new Date("2026-01-15T00:00:00Z"),
 }
 
 // Mock Notes Service
@@ -252,6 +254,7 @@ export const mockUserSettingsService = {
       ...mockUserSettings,
       username: request.username ?? mockUserSettings.username,
       notionKey: request.notionKey ?? mockUserSettings.notionKey,
+      updatedAt: new Date(),
     }
     // Also update the mock user name for consistency
     if (request.username) {

@@ -197,6 +197,8 @@ export interface UserSettings {
   userId: string
   notionKey?: string
   username?: string
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export interface GetUserSettingsRequest {
@@ -344,6 +346,8 @@ function convertUserSettings(settings: ProtoUserSettings | undefined): UserSetti
     userId: settings.userId,
     notionKey: settings.notionKey,
     username: settings.username,
+    createdAt: settings.createdAt ? timestampToDate(convertTimestamp(settings.createdAt)) : undefined,
+    updatedAt: settings.updatedAt ? timestampToDate(convertTimestamp(settings.updatedAt)) : undefined,
   }
 }
 

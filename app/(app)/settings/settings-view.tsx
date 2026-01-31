@@ -48,6 +48,8 @@ interface SettingsViewProps {
     userId: string
     username?: string
     notionKey?: string
+    createdAt?: Date
+    updatedAt?: Date
   } | null
 }
 
@@ -277,6 +279,16 @@ export function SettingsView({ user, stats, initialApiKeys, userSettings }: Sett
                       {format(new Date(user.createdAt), "MMMM d, yyyy")}
                     </p>
                   </div>
+
+                  {/* Settings Updated Field (read-only) */}
+                  {userSettings?.updatedAt && (
+                    <div>
+                      <label className="text-sm text-base-content/60">Settings Updated</label>
+                      <p className="py-2" suppressHydrationWarning>
+                        {format(new Date(userSettings.updatedAt), "MMMM d, yyyy 'at' h:mm a")}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
