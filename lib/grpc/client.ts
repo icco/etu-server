@@ -311,11 +311,12 @@ function convertTimestamp(ts: ProtoTimestamp): Timestamp {
 }
 
 // Wrap calls with error handling
-async function withErrorHandling<T>(fn: () => Promise<T>): Promise<T> {
+async function withErrorHandling<T>(fn: () => Promise<T>, methodName?: string): Promise<T> {
   try {
     return await fn()
   } catch (error) {
     if (error instanceof ConnectError) {
+      console.error(`gRPC error in ${methodName || 'unknown'}:`, error.code, error.message)
       throw new GrpcError(error)
     }
     throw error
@@ -345,7 +346,7 @@ const realNotesService = {
         limit: response.limit,
         offset: response.offset,
       }
-    })
+    }, "NotesService.listNotes")
   },
 
   async createNote(request: CreateNoteRequest, apiKey: string): Promise<CreateNoteResponse> {
@@ -360,7 +361,7 @@ const realNotesService = {
         { headers: createHeaders(apiKey) }
       )
       return { note: convertNote(response.note) }
-    })
+    }, "NotesService.createNote")
   },
 
   async getNote(request: GetNoteRequest, apiKey: string): Promise<GetNoteResponse> {
@@ -374,7 +375,7 @@ const realNotesService = {
         { headers: createHeaders(apiKey) }
       )
       return { note: convertNote(response.note) }
-    })
+    }, "NotesService.getNote")
   },
 
   async updateNote(request: UpdateNoteRequest, apiKey: string): Promise<UpdateNoteResponse> {
@@ -391,7 +392,7 @@ const realNotesService = {
         { headers: createHeaders(apiKey) }
       )
       return { note: convertNote(response.note) }
-    })
+    }, "NotesService.updateNote")
   },
 
   async deleteNote(request: DeleteNoteRequest, apiKey: string): Promise<DeleteNoteResponse> {
@@ -405,7 +406,7 @@ const realNotesService = {
         { headers: createHeaders(apiKey) }
       )
       return { success: response.success }
-    })
+    }, "NotesService.deleteNote")
   },
 }
 
@@ -419,7 +420,7 @@ const realTagsService = {
         { headers: createHeaders(apiKey) }
       )
       return { tags: response.tags.map(convertTag) }
-    })
+    }, "TagsService.listTags")
   },
 }
 
@@ -436,7 +437,7 @@ const realAuthService = {
         { headers: createHeaders(apiKey) }
       )
       return { user: convertUser(response.user) }
-    })
+    }, "AuthService.register")
   },
 
   async authenticate(request: AuthenticateRequest, apiKey: string): Promise<AuthenticateResponse> {
@@ -453,7 +454,7 @@ const realAuthService = {
         success: response.success,
         user: response.user ? convertUser(response.user) : undefined,
       }
-    })
+    }, "AuthService.authenticate")
   },
 
   async getUser(request: GetUserRequest, apiKey: string): Promise<GetUserResponse> {
@@ -464,7 +465,7 @@ const realAuthService = {
         { headers: createHeaders(apiKey) }
       )
       return { user: convertUser(response.user) }
-    })
+    }, "AuthService.getUser")
   },
 
   async getUserByStripeCustomerId(
@@ -478,7 +479,7 @@ const realAuthService = {
         { headers: createHeaders(apiKey) }
       )
       return { user: response.user ? convertUser(response.user) : undefined }
-    })
+    }, "AuthService.getUserByStripeCustomerId")
   },
 
   async updateUserSubscription(
@@ -502,7 +503,7 @@ const realAuthService = {
         { headers: createHeaders(apiKey) }
       )
       return { user: convertUser(response.user) }
-    })
+    }, "AuthService.updateUserSubscription")
   },
 }
 
@@ -522,7 +523,7 @@ export const apiKeysService = {
         apiKey: convertApiKey(response.apiKey),
         rawKey: response.rawKey,
       }
-    })
+    }, "ApiKeysService.createApiKey")
   },
 
   async listApiKeys(request: ListApiKeysRequest, apiKey: string): Promise<ListApiKeysResponse> {
@@ -533,7 +534,7 @@ export const apiKeysService = {
         { headers: createHeaders(apiKey) }
       )
       return { apiKeys: response.apiKeys.map(convertApiKey) }
-    })
+    }, "ApiKeysService.listApiKeys")
   },
 
   async deleteApiKey(request: DeleteApiKeyRequest, apiKey: string): Promise<DeleteApiKeyResponse> {
@@ -547,7 +548,7 @@ export const apiKeysService = {
         { headers: createHeaders(apiKey) }
       )
       return { success: response.success }
-    })
+    }, "ApiKeysService.deleteApiKey")
   },
 
   async verifyApiKey(request: VerifyApiKeyRequest, apiKey: string): Promise<VerifyApiKeyResponse> {
@@ -561,7 +562,7 @@ export const apiKeysService = {
         valid: response.valid,
         userId: response.userId,
       }
-    })
+    }, "ApiKeysService.verifyApiKey")
   },
 }
 
