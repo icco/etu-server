@@ -338,7 +338,7 @@ export function SettingsView({ user, stats, initialApiKeys, userSettings }: Sett
                         className="btn btn-ghost btn-sm gap-2"
                       >
                         <PencilIcon className="h-4 w-4" />
-                        {userSettings?.notionKey ? "Update" : "Configure"}
+                        Edit
                       </button>
                     </div>
                   )}
