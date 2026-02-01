@@ -272,9 +272,9 @@ export interface VerifyApiKeyResponse {
 
 // Helper to create headers with API key
 function createHeaders(apiKey: string): HeadersInit {
-  // Debug: log API key prefix (first 10 chars) to verify it's being passed
+  // Debug: log presence of API key without exposing its value
   if (process.env.NODE_ENV !== "production") {
-    console.log(`gRPC auth header: ${apiKey ? apiKey.substring(0, 10) + "..." : "(empty)"}`)
+    console.log(`gRPC auth header configured: ${apiKey ? "present" : "absent"}`)
   }
   // Use Authorization header with the API key (backend expects raw key, not Bearer format)
   return {
