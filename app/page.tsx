@@ -3,7 +3,7 @@ import { DocumentTextIcon, MagnifyingGlassIcon, DevicePhoneMobileIcon, CodeBrack
 import { auth } from "@/lib/auth"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { getRandomNotes } from "@/lib/actions/notes"
+import { getRandomNotes, getTags } from "@/lib/actions/notes"
 import { RandomNotesView } from "./random-notes-view"
 
 export default async function LandingPage() {
@@ -11,9 +11,12 @@ export default async function LandingPage() {
 
   // If user is logged in, show random notes instead of landing page
   if (session?.user) {
-    const randomNotes = await getRandomNotes(5)
+    const [randomNotes, tags] = await Promise.all([
+      getRandomNotes(5),
+      getTags(),
+    ])
     
-    return <RandomNotesView notes={randomNotes} />
+    return <RandomNotesView notes={randomNotes} tags={tags} />
   }
 
   // Show landing page for unauthenticated users

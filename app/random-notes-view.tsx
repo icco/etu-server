@@ -11,7 +11,7 @@ import { NoteDialog } from "@/components/note-dialog"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { UserMenu } from "@/components/user-menu"
-import type { Note as GrpcNote, NoteImage as GrpcNoteImage } from "@/lib/grpc/client"
+import type { Note as GrpcNote, NoteImage as GrpcNoteImage, Tag } from "@/lib/grpc/client"
 
 // View layer types: with Timestamp fields converted to Date
 type NoteImage = Omit<GrpcNoteImage, "createdAt"> & {
@@ -26,12 +26,14 @@ type Note = Omit<GrpcNote, "createdAt" | "updatedAt" | "images"> & {
 
 interface RandomNotesViewProps {
   notes: Note[]
+  tags: Tag[]
 }
 
-export function RandomNotesView({ notes }: RandomNotesViewProps) {
+export function RandomNotesView({ notes, tags }: RandomNotesViewProps) {
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
+  const allTags = tags.map(t => t.name)
 
   const handleSaveNote = async (
     content: string,
@@ -150,7 +152,7 @@ export function RandomNotesView({ notes }: RandomNotesViewProps) {
         initialContent={editingNote?.content}
         initialTags={editingNote?.tags}
         initialImages={editingNote?.images}
-        existingTags={[]}
+        existingTags={allTags}
         title={editingNote ? "Edit Blip" : "New Blip"}
       />
     </>
