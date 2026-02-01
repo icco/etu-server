@@ -65,9 +65,10 @@ test.describe("Notes Page", () => {
   test("note modal renders markdown correctly", async ({ page }) => {
     await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
 
-    // Click on the first note card to open the full view modal
-    const firstNoteCard = page.locator(".card").first()
-    await firstNoteCard.click()
+    // Click on the note card that contains "building" to open the full view modal
+    const buildingNoteCard = page.locator(".card", { hasText: "building" }).first()
+    await expect(buildingNoteCard).toBeVisible()
+    await buildingNoteCard.click()
 
     // Wait for the modal to open
     await expect(page.locator("dialog.modal-open")).toBeVisible({ timeout: 5000 })
