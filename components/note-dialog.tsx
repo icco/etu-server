@@ -4,9 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
 import { XMarkIcon, PhotoIcon } from "@heroicons/react/24/outline"
-import type { NoteImage as GrpcNoteImage } from "@/lib/grpc/client"
-
-type NoteImage = Pick<GrpcNoteImage, "id" | "url" | "mimeType">
+import type { NoteImage } from "@/lib/grpc/client"
 
 interface PendingImage {
   id: string
