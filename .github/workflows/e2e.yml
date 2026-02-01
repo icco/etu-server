@@ -50,7 +50,7 @@ jobs:
         if: always()
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'chore: update e2e screenshots [skip ci]'
+          commit_message: 'chore: update e2e screenshots'
           file_pattern: e2e/**/*.png
       - name: Comment PR with screenshots
         if: github.event_name == 'pull_request' && always()
