@@ -1,22 +1,11 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { format } from "date-fns"
-import { marked } from "marked"
-import DOMPurify from "isomorphic-dompurify"
-import { EllipsisHorizontalIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
 import type { Note as GrpcNote, NoteImage as GrpcNoteImage } from "@/lib/grpc/client"
 
 type NoteImage = Pick<GrpcNoteImage, "id" | "url" | "extractedText" | "mimeType">
 
-interface Note {
-  id: GrpcNote["id"]
-  content: GrpcNote["content"]
-  createdAt: Date
-  updatedAt: Date
-  tags: GrpcNote["tags"]
-  images: NoteImage[]
-}
+type Note = Pick<GrpcNote, "id" | "content" | "createdAt" | "updatedAt" | "tags" | "images">
 
 interface NoteCardProps {
   note: Note

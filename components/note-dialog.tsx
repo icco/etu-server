@@ -66,6 +66,11 @@ export function NoteDialog({
         URL.revokeObjectURL(url)
       })
       previewUrlsRef.current.clear()
+      // Revoke any existing preview object URLs before clearing pending images
+      previewUrlsRef.current.forEach((url) => {
+        URL.revokeObjectURL(url)
+      })
+      previewUrlsRef.current.clear()
       setPendingImages([])
       setTimeout(() => textareaRef.current?.focus(), 100)
     }
