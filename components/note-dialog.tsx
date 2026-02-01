@@ -4,7 +4,12 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
 import { XMarkIcon, PhotoIcon } from "@heroicons/react/24/outline"
-import type { NoteImage } from "@/lib/grpc/client"
+// Minimal type for images passed to dialog (only fields we actually use)
+interface NoteImage {
+  id: string
+  url: string
+  mimeType: string
+}
 
 interface PendingImage {
   id: string
