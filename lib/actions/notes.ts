@@ -217,6 +217,46 @@ export async function getNotes(options?: {
   }
 }
 
+export async function getRandomNotes(count: number = 5) {
+  const userId = await requireUser()
+
+  // Fetch a larger set of notes to select from
+  // We fetch more than we need to ensure good randomness
+  const fetchLimit = Math.max(count * 10, 100)
+  
+  const response = await notesService.listNotes(
+    {
+      userId,
+      search: "",
+      tags: [],
+      startDate: "",
+      endDate: "",
+      limit: fetchLimit,
+      offset: 0,
+    },
+    getGrpcApiKey()
+  )
+
+  const allNotes = response.notes.map((note) => ({
+    id: note.id,
+    content: note.content,
+    createdAt: timestampToDate(note.createdAt),
+    updatedAt: timestampToDate(note.updatedAt),
+    tags: note.tags,
+    images: note.images.map((img) => ({
+      id: img.id,
+      url: img.url,
+      extractedText: img.extractedText,
+      mimeType: img.mimeType,
+      createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
+    })),
+  }))
+
+  // Shuffle and select random notes
+  const shuffled = [...allNotes].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, Math.min(count, shuffled.length))
+}
+
 export async function getTags() {
   const userId = await requireUser()
 
