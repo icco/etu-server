@@ -38,8 +38,9 @@ test.describe("Settings Page", () => {
 
   test("can edit name field", async ({ page }) => {
     // Find and click the Edit button for the Name field
-    const nameSection = page.locator("div").filter({ hasText: /^Name/ }).first()
-    await nameSection.getByRole("button", { name: "Edit" }).click()
+    // Use a more specific selector that targets the label and its sibling button
+    const nameRow = page.locator("label:has-text('Name')").locator("..").first()
+    await nameRow.getByRole("button", { name: "Edit" }).first().click()
 
     // Input should now be visible
     const nameInput = page.getByPlaceholder("Enter your name")
@@ -50,7 +51,7 @@ test.describe("Settings Page", () => {
     await nameInput.fill("Updated Test User")
 
     // Click the save button (checkmark)
-    await nameSection.locator("button.btn-primary").click()
+    await nameRow.locator("button.btn-primary").click()
 
     // Wait for the update to complete and page to refresh
     await expect(page.locator("text=Name updated")).toBeVisible({ timeout: 5000 })

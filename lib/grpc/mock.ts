@@ -38,6 +38,7 @@ import type {
   VerifyApiKeyResponse,
   ApiKey,
   Note,
+  NoteImage,
   Tag,
   User,
   Timestamp,
@@ -55,6 +56,7 @@ const mockNotes: Note[] = [
     content:
       "This is my first thought about **building** something great.\n\nIt has multiple paragraphs and supports markdown.",
     tags: ["ideas", "projects"],
+    images: [],
     createdAt: mockTimestamp(new Date("2026-01-25T10:00:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-25T10:00:00Z")),
   },
@@ -62,6 +64,7 @@ const mockNotes: Note[] = [
     id: "mock-note-2",
     content: "Meeting notes from today:\n- Discussed roadmap\n- Aligned on priorities\n- Next steps identified",
     tags: ["work", "meetings"],
+    images: [],
     createdAt: mockTimestamp(new Date("2026-01-24T14:30:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-24T14:30:00Z")),
   },
@@ -69,6 +72,7 @@ const mockNotes: Note[] = [
     id: "mock-note-3",
     content: "Remember to call mom on Sunday",
     tags: ["personal", "reminders"],
+    images: [],
     createdAt: mockTimestamp(new Date("2026-01-23T09:15:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-23T09:15:00Z")),
   },
@@ -76,6 +80,7 @@ const mockNotes: Note[] = [
     id: "mock-note-4",
     content: "Book recommendations:\n- The Pragmatic Programmer\n- Clean Code\n- Design Patterns",
     tags: ["reading", "personal"],
+    images: [],
     createdAt: mockTimestamp(new Date("2026-01-22T16:45:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-22T16:45:00Z")),
   },
@@ -83,6 +88,7 @@ const mockNotes: Note[] = [
     id: "mock-note-5",
     content: "Quick idea: what if we added dark mode to the app?",
     tags: ["ideas"],
+    images: [],
     createdAt: mockTimestamp(new Date("2026-01-21T11:20:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-21T11:20:00Z")),
   },
@@ -148,10 +154,19 @@ export const mockNotesService = {
 
   async createNote(request: CreateNoteRequest, _apiKey: string): Promise<CreateNoteResponse> {
     const now = new Date()
+    // Convert uploaded images to NoteImage objects (mock URLs)
+    const images: NoteImage[] = (request.images || []).map((img, idx) => ({
+      id: `mock-image-${Date.now()}-${idx}`,
+      url: `data:${img.mimeType};base64,${Buffer.from(img.data).toString("base64")}`,
+      extractedText: "",
+      mimeType: img.mimeType,
+      createdAt: mockTimestamp(now),
+    }))
     const note: Note = {
       id: `mock-note-${Date.now()}`,
       content: request.content,
       tags: request.tags || [],
+      images,
       createdAt: mockTimestamp(now),
       updatedAt: mockTimestamp(now),
     }
@@ -173,13 +188,25 @@ export const mockNotesService = {
       throw new Error("Note not found")
     }
     const note = mockNotes[index]
+    const now = new Date()
     if (request.content !== undefined) {
       note.content = request.content
     }
     if (request.updateTags && request.tags !== undefined) {
       note.tags = request.tags
     }
-    note.updatedAt = mockTimestamp(new Date())
+    // Add new images if provided
+    if (request.addImages && request.addImages.length > 0) {
+      const newImages: NoteImage[] = request.addImages.map((img, idx) => ({
+        id: `mock-image-${Date.now()}-${idx}`,
+        url: `data:${img.mimeType};base64,${Buffer.from(img.data).toString("base64")}`,
+        extractedText: "",
+        mimeType: img.mimeType,
+        createdAt: mockTimestamp(now),
+      }))
+      note.images = [...note.images, ...newImages]
+    }
+    note.updatedAt = mockTimestamp(now)
     return { note }
   },
 

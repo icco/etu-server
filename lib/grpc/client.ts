@@ -7,12 +7,13 @@ import {
   AuthService,
   ApiKeysService,
   UserSettingsService,
-  type Timestamp as ProtoTimestamp,
   type Note as ProtoNote,
+  type NoteImage as ProtoNoteImage,
   type Tag as ProtoTag,
   type User as ProtoUser,
   type ApiKey as ProtoApiKey,
 } from "@icco/etu-proto"
+import type { Timestamp as ProtoTimestamp } from "@bufbuild/protobuf/wkt"
 import {
   mockNotesService,
   mockTagsService,
@@ -66,10 +67,24 @@ export interface Timestamp {
   nanos: number
 }
 
+export interface NoteImage {
+  id: string
+  url: string
+  extractedText: string
+  mimeType: string
+  createdAt?: Timestamp
+}
+
+export interface ImageUpload {
+  data: Uint8Array
+  mimeType: string
+}
+
 export interface Note {
   id: string
   content: string
   tags: string[]
+  images: NoteImage[]
   createdAt?: Timestamp
   updatedAt?: Timestamp
 }
@@ -124,6 +139,7 @@ export interface CreateNoteRequest {
   userId: string
   content: string
   tags?: string[]
+  images?: ImageUpload[]
 }
 
 export interface CreateNoteResponse {
@@ -145,6 +161,7 @@ export interface UpdateNoteRequest {
   content?: string
   tags?: string[]
   updateTags?: boolean
+  addImages?: ImageUpload[]
 }
 
 export interface UpdateNoteResponse {
@@ -283,14 +300,25 @@ function createHeaders(apiKey: string): HeadersInit {
 }
 
 // Convert proto types to our interface types
+function convertNoteImage(image: ProtoNoteImage): NoteImage {
+  return {
+    id: image.id,
+    url: image.url,
+    extractedText: image.extractedText,
+    mimeType: image.mimeType,
+    createdAt: image.createdAt ? convertTimestamp(image.createdAt) : undefined,
+  }
+}
+
 function convertNote(note: ProtoNote | undefined): Note {
   if (!note) {
-    return { id: "", content: "", tags: [] }
+    return { id: "", content: "", tags: [], images: [] }
   }
   return {
     id: note.id,
     content: note.content,
     tags: [...note.tags],
+    images: note.images.map(convertNoteImage),
     createdAt: note.createdAt ? convertTimestamp(note.createdAt) : undefined,
     updatedAt: note.updatedAt ? convertTimestamp(note.updatedAt) : undefined,
   }
@@ -390,6 +418,7 @@ const realNotesService = {
           userId: request.userId,
           content: request.content,
           tags: request.tags ?? [],
+          images: request.images ?? [],
         },
         { headers: createHeaders(apiKey) }
       )
@@ -421,6 +450,7 @@ const realNotesService = {
           content: request.content,
           tags: request.tags ?? [],
           updateTags: request.updateTags ?? false,
+          addImages: request.addImages ?? [],
         },
         { headers: createHeaders(apiKey) }
       )

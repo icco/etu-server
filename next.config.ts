@@ -7,7 +7,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
     serverActions: {
-      bodySizeLimit: '2mb',
+      // Increased to support image uploads (base64 adds ~33% overhead)
+      // 10MB body allows ~7MB images after encoding
+      bodySizeLimit: '10mb',
     },
   },
 }
