@@ -3395,17 +3395,17 @@ tinyglobby@^0.2.13, tinyglobby@^0.2.15:
     fdir "^6.5.0"
     picomatch "^4.0.3"
 
-tldts-core@^7.0.19:
-  version "7.0.19"
-  resolved "https://registry.yarnpkg.com/tldts-core/-/tldts-core-7.0.19.tgz#9dd8a457a09b4e65c8266c029f1847fa78dead20"
-  integrity sha512-lJX2dEWx0SGH4O6p+7FPwYmJ/bu1JbcGJ8RLaG9b7liIgZ85itUVEPbMtWRVrde/0fnDPEPHW10ZsKW3kVsE9A==
+tldts-core@^7.0.20:
+  version "7.0.20"
+  resolved "https://registry.yarnpkg.com/tldts-core/-/tldts-core-7.0.20.tgz#cc987ce90c8388f493daaf9540da29c10ae6f43d"
+  integrity sha512-gF3cGE0wzboN8UuD0jldE/qIwC/Gaa2cHeWCbsaV1g51XLaL0cPtssjryUXHO9PGgphYPQWrinNwm1iMA3sMrA==
 
 tldts@^7.0.5:
-  version "7.0.19"
-  resolved "https://registry.yarnpkg.com/tldts/-/tldts-7.0.19.tgz#84cd7a7f04e68ec93b93b106fac038c527b99368"
-  integrity sha512-8PWx8tvC4jDB39BQw1m4x8y5MH1BcQ5xHeL2n7UVFulMPH/3Q0uiamahFJ3lXA0zO2SUyRXuVVbWSDmstlt9YA==
+  version "7.0.20"
+  resolved "https://registry.yarnpkg.com/tldts/-/tldts-7.0.20.tgz#210e7df50d5cf7a0bff336f97fa1e556336b8f66"
+  integrity sha512-TVQHdE8pbD1uhW4B79fQ7fkitS62TVGHZ1bwblOOobe3T8Zj96wvBVy7NFsAXexl1UYJ4z6f5fZp4AzOBIxRqA==
   dependencies:
-    tldts-core "^7.0.19"
+    tldts-core "^7.0.20"
 
 to-regex-range@^5.0.1:
   version "5.0.1"
