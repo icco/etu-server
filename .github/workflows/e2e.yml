@@ -48,7 +48,7 @@ jobs:
           retention-days: 30
       - name: Commit screenshots to PR branch
         if: always()
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: 'chore: update e2e screenshots'
           file_pattern: e2e/**/*.png
