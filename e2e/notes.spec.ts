@@ -108,7 +108,7 @@ test.describe("Notes Page", () => {
     })
 
     // Verify the pending image preview appears
-    await expect(page.locator("dialog.modal-open text=New images to upload")).toBeVisible()
+    await expect(page.locator("dialog.modal-open").getByText("New images to upload")).toBeVisible()
     const pendingImagePreview = page.locator("dialog.modal-open img").first()
     await expect(pendingImagePreview).toBeVisible()
 
@@ -127,7 +127,7 @@ test.describe("Notes Page", () => {
 
     // Verify the image is displayed in the note modal
     await expect(page.locator("dialog.modal-open")).toBeVisible({ timeout: 5000 })
-    await expect(page.locator("dialog.modal-open text=Attached Images")).toBeVisible()
+    await expect(page.locator("dialog.modal-open").getByText("Attached Images")).toBeVisible()
     const attachedImage = page.locator("dialog.modal-open .grid img")
     await expect(attachedImage).toBeVisible()
   })
