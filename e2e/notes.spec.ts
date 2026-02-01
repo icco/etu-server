@@ -90,9 +90,12 @@ test.describe("Notes Page", () => {
     await fabButton.click()
     await expect(page.locator("dialog.modal-open")).toBeVisible({ timeout: 5000 })
 
+    // Use unique content to avoid collision with retries
+    const uniqueContent = `Image test note ${Date.now()}`
+
     // Fill in note content
     const textarea = page.locator("dialog.modal-open textarea")
-    await textarea.fill("Note with an attached image")
+    await textarea.fill(uniqueContent)
 
     // Upload an image via the file input
     // Create a small test PNG (1x1 red pixel)
@@ -115,14 +118,14 @@ test.describe("Notes Page", () => {
     // Save the note
     await page.getByRole("button", { name: "Save Blip" }).click()
 
-    // Wait for modal to close and notes to refresh
+    // Wait for modal to close
     await expect(page.locator("dialog.modal-open")).not.toBeVisible({ timeout: 5000 })
 
-    // Find the newly created note (should be at the top)
-    await expect(page.locator("text=Note with an attached image")).toBeVisible({ timeout: 5000 })
+    // Find the newly created note card (should be at the top of the list)
+    const newNoteCard = page.locator(".card", { hasText: uniqueContent }).first()
+    await expect(newNoteCard).toBeVisible({ timeout: 5000 })
 
     // Click on the new note to open it
-    const newNoteCard = page.locator(".card", { hasText: "Note with an attached image" })
     await newNoteCard.click()
 
     // Verify the image is displayed in the note modal
