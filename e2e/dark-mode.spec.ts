@@ -133,7 +133,7 @@ test.describe("Dark Mode", () => {
       await enableDarkMode(page)
 
       // Verify notes page content (use stable tag visible on /notes in mock mode)
-      await expect(page.locator("text=ideas")).toBeVisible({ timeout: 10000 })
+      await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
       await expect(page).toHaveScreenshot("notes-list-dark.png")
     })
 
