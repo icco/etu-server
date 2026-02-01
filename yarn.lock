@@ -360,10 +360,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
-"@icco/etu-proto@^2026.2.23313":
-  version "2026.2.23313"
-  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.23313/6f8a9c05132d57d1c77783f7d25457fb6b5c62f6#6f8a9c05132d57d1c77783f7d25457fb6b5c62f6"
-  integrity sha512-PL0eJXXAElq99IbELMaonwlZ/NCFEKMgkY5cspwQ+kfP+0zppGa3fesNLz1xMAQ1n46uRFTpBrw+C5+zAsHKxw==
+"@icco/etu-proto@^2026.2":
+  version "2026.2.113009"
+  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.113009/39f0a3e3ca8d8cbf9a55cf44b5685ee1c65e31c7#39f0a3e3ca8d8cbf9a55cf44b5685ee1c65e31c7"
+  integrity sha512-w/auKbddbLWpbAchwMxDDkP+/hXYYyraRujq6Qy8cED1ILqxoYGb4dBToRDV3hq40k4EVem3m1Dgd5UmNjsDcQ==
   dependencies:
     "@bufbuild/protobuf" "^2.0.0"
 
@@ -826,9 +826,9 @@
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
 "@types/node@^25.1.0":
-  version "25.1.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.1.0.tgz#95cc584f1f478301efc86de4f1867e5875e83571"
-  integrity sha512-t7frlewr6+cbx+9Ohpl0NOTKXZNV9xHRmNOvql47BFJKcEG1CxtxlPEEe+gR9uhVWM4DwhnvTF110mIL4yP9RA==
+  version "25.2.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.2.0.tgz#015b7d228470c1dcbfc17fe9c63039d216b4d782"
+  integrity sha512-DZ8VwRFUNzuqJ5khrvwMXHmvPe+zGayJhr2CDNiKB1WBE1ST8Djl00D0IC4vvNmHMdj6DlbYRIaFE7WHjlDl5w==
   dependencies:
     undici-types "~7.16.0"
 
@@ -1386,9 +1386,9 @@ csstype@^3.2.2:
   integrity sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==
 
 daisyui@^5.5.14:
-  version "5.5.14"
-  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-5.5.14.tgz#818487da886730f6338f51d0414c32159c297cad"
-  integrity sha512-L47rvw7I7hK68TA97VB8Ee0woHew+/ohR6Lx6Ah/krfISOqcG4My7poNpX5Mo5/ytMxiR40fEaz6njzDi7cuSg==
+  version "5.5.16"
+  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-5.5.16.tgz#2dbadce939fb38685ce60570399b293821285a36"
+  integrity sha512-EPGcgduRIwXoQPuIl+r2BXRQsOutvf7UEB/mBfRiD2fdOYYnUqDU5PNp2eONnRqo1DxSsnD01gCRPccH65FWtQ==
 
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
