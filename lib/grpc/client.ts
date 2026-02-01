@@ -484,40 +484,15 @@ const realNotesService = {
   async getRandomNotes(request: GetRandomNotesRequest, apiKey: string): Promise<GetRandomNotesResponse> {
     return withErrorHandling(async () => {
       const client = getNotesClient()
-      // Try to use the new randomNotes endpoint if available
-      try {
-        // Check if method exists before calling
-        if (typeof (client as Record<string, unknown>).getRandomNotes === 'function') {
-          const response = await (client as { getRandomNotes: (req: unknown, opts: unknown) => Promise<{ notes: unknown[] }> }).getRandomNotes(
-            {
-              userId: request.userId,
-              count: request.count ?? 5,
-            },
-            { headers: createHeaders(apiKey) }
-          )
-          return {
-            notes: response.notes.map(convertNote),
-          }
-        }
-        // Method doesn't exist, fall through to fallback
-        throw new ConnectError("Method not implemented", Code.Unimplemented)
-      } catch (error) {
-        // If the method doesn't exist yet, fall back to listNotes
-        // This will be removed once the proto is updated everywhere
-        if (error instanceof ConnectError && error.code === Code.Unimplemented) {
-          const listResponse = await client.listNotes(
-            {
-              userId: request.userId,
-              limit: Math.max(request.count ?? 5, 50),
-              offset: 0,
-            },
-            { headers: createHeaders(apiKey) }
-          )
-          return {
-            notes: listResponse.notes.map(convertNote),
-          }
-        }
-        throw error
+      const response = await client.getRandomNotes(
+        {
+          userId: request.userId,
+          count: request.count ?? 5,
+        },
+        { headers: createHeaders(apiKey) }
+      )
+      return {
+        notes: response.notes.map(convertNote),
       }
     }, "NotesService.getRandomNotes")
   },
