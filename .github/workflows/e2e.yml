@@ -1,8 +1,6 @@
 name: E2E Tests
-
 on:
   pull_request:
-
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -13,23 +11,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "yarn"
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@icco"
-
+          cache: yarn
+          registry-url: https://npm.pkg.github.com
+          scope: '@icco'
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Install Playwright browsers
         run: yarn playwright install chromium --with-deps
-
       - name: Run E2E tests
         id: e2e
         run: yarn test:e2e --update-snapshots
@@ -37,9 +31,8 @@ jobs:
         env:
           CI: true
           E2E_MOCK: "true"
-          GRPC_API_KEY: "test-api-key"
-          NEXTAUTH_SECRET: "test-secret-for-e2e"
-
+          GRPC_API_KEY: test-api-key
+          NEXTAUTH_SECRET: test-secret-for-e2e
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         if: always()
@@ -50,7 +43,6 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 30
-
       - name: Commit screenshots to PR branch
         if: always()
         run: |
@@ -60,133 +52,20 @@ jobs:
 
           # Check if there are any screenshot changes
           git add e2e/**/*.png || true
-          
+
           if git diff --cached --quiet; then
             echo "No screenshot changes to commit"
           else
             git commit -m "chore: update e2e screenshots [skip ci]"
             git push origin HEAD:${{ github.head_ref }}
           fi
-
       - name: Comment PR with screenshots
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
         env:
           TEST_OUTCOME: ${{ steps.e2e.outcome }}
         with:
-          script: |
-            const fs = require('fs');
-            const path = require('path');
-
-            const testOutcome = process.env.TEST_OUTCOME;
-            const passed = testOutcome === 'success';
-            const statusEmoji = passed ? '✅' : '❌';
-            const statusText = passed ? 'passed' : 'failed';
-
-            // Find all screenshot files
-            const findScreenshots = (dir, files = []) => {
-              if (!fs.existsSync(dir)) return files;
-              const items = fs.readdirSync(dir);
-              for (const item of items) {
-                const fullPath = path.join(dir, item);
-                if (fs.statSync(fullPath).isDirectory()) {
-                  findScreenshots(fullPath, files);
-                } else if (item.endsWith('.png')) {
-                  files.push(fullPath);
-                }
-              }
-              return files;
-            };
-
-            const screenshots = findScreenshots('e2e');
-
-            if (screenshots.length === 0) {
-              console.log('No screenshots found');
-              return;
-            }
-
-            // Get artifact URL
-            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId,
-            });
-
-            const screenshotArtifact = artifacts.artifacts.find(a => a.name === 'e2e-screenshots');
-            const artifactUrl = screenshotArtifact
-              ? `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}/artifacts/${screenshotArtifact.id}`
-              : `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-
-            // Build image URLs from the PR branch
-            const prBranch = context.payload.pull_request.head.ref;
-            const rawBaseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${prBranch}`;
-
-            // Group screenshots by test file
-            const groupedScreenshots = {};
-            for (const screenshot of screenshots) {
-              const parts = screenshot.split('/');
-              // Path like: e2e/landing.spec.ts-snapshots/landing-hero-1-chromium-linux.png
-              const testFile = parts[1]?.replace('.spec.ts-snapshots', '') || 'other';
-              if (!groupedScreenshots[testFile]) {
-                groupedScreenshots[testFile] = [];
-              }
-              groupedScreenshots[testFile].push(screenshot);
-            }
-
-            // Build screenshot gallery
-            let screenshotGallery = '';
-            for (const [testFile, files] of Object.entries(groupedScreenshots)) {
-              screenshotGallery += `\n<details>\n<summary><strong>${testFile}</strong> (${files.length} screenshots)</summary>\n\n`;
-              for (const file of files) {
-                const fileName = path.basename(file);
-                const imageUrl = `${rawBaseUrl}/${file}`;
-                screenshotGallery += `#### ${fileName}\n![${fileName}](${imageUrl})\n\n`;
-              }
-              screenshotGallery += `</details>\n`;
-            }
-
-            const body = [
-              `## ${statusEmoji} E2E Screenshot Tests ${statusText}`,
-              '',
-              `**${screenshots.length} screenshots** were captured during the E2E test run.`,
-              '',
-              screenshotGallery,
-              '',
-              '---',
-              `📦 [Download all screenshots](${artifactUrl})`,
-              '',
-              `<sub>Generated by E2E workflow run [#${context.runId}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) • Last updated: ${new Date().toISOString()}</sub>`,
-            ].join('\n');
-
-            // Find existing comment
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const existingComment = comments.find(c =>
-              c.user.type === 'Bot' && c.body.includes('E2E Screenshot Tests')
-            );
-
-            if (existingComment) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existingComment.id,
-                body,
-              });
-              console.log(`Updated existing comment ${existingComment.id}`);
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body,
-              });
-              console.log('Created new comment');
-            }
-
+          script: "const fs = require('fs');\nconst path = require('path');\n\nconst testOutcome = process.env.TEST_OUTCOME;\nconst passed = testOutcome === 'success';\nconst statusEmoji = passed ? '✅' : '❌';\nconst statusText = passed ? 'passed' : 'failed';\n\n// Find all screenshot files\nconst findScreenshots = (dir, files = []) => {\n  if (!fs.existsSync(dir)) return files;\n  const items = fs.readdirSync(dir);\n  for (const item of items) {\n    const fullPath = path.join(dir, item);\n    if (fs.statSync(fullPath).isDirectory()) {\n      findScreenshots(fullPath, files);\n    } else if (item.endsWith('.png')) {\n      files.push(fullPath);\n    }\n  }\n  return files;\n};\n\nconst screenshots = findScreenshots('e2e');\n\nif (screenshots.length === 0) {\n  console.log('No screenshots found');\n  return;\n}\n\n// Get artifact URL\nconst { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({\n  owner: context.repo.owner,\n  repo: context.repo.repo,\n  run_id: context.runId,\n});\n\nconst screenshotArtifact = artifacts.artifacts.find(a => a.name === 'e2e-screenshots');\nconst artifactUrl = screenshotArtifact\n  ? `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}/artifacts/${screenshotArtifact.id}`\n  : `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;\n\n// Build image URLs from the PR branch\nconst prBranch = context.payload.pull_request.head.ref;\nconst rawBaseUrl = `https://raw.githubusercontent.com/${context.repo.owner}/${context.repo.repo}/${prBranch}`;\n\n// Group screenshots by test file\nconst groupedScreenshots = {};\nfor (const screenshot of screenshots) {\n  const parts = screenshot.split('/');\n  // Path like: e2e/landing.spec.ts-snapshots/landing-hero-1-chromium-linux.png\n  const testFile = parts[1]?.replace('.spec.ts-snapshots', '') || 'other';\n  if (!groupedScreenshots[testFile]) {\n    groupedScreenshots[testFile] = [];\n  }\n  groupedScreenshots[testFile].push(screenshot);\n}\n\n// Build screenshot gallery\nlet screenshotGallery = '';\nfor (const [testFile, files] of Object.entries(groupedScreenshots)) {\n  screenshotGallery += `\\n<details>\\n<summary><strong>${testFile}</strong> (${files.length} screenshots)</summary>\\n\\n`;\n  for (const file of files) {\n    const fileName = path.basename(file);\n    const imageUrl = `${rawBaseUrl}/${file}`;\n    screenshotGallery += `#### ${fileName}\\n![${fileName}](${imageUrl})\\n\\n`;\n  }\n  screenshotGallery += `</details>\\n`;\n}\n\nconst body = [\n  `## ${statusEmoji} E2E Screenshot Tests ${statusText}`,\n  '',\n  `**${screenshots.length} screenshots** were captured during the E2E test run.`,\n  '',\n  screenshotGallery,\n  '',\n  '---',\n  `\U0001F4E6 [Download all screenshots](${artifactUrl})`,\n  '',\n  `<sub>Generated by E2E workflow run [#${context.runId}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) • Last updated: ${new Date().toISOString()}</sub>`,\n].join('\\n');\n\n// Find existing comment\nconst { data: comments } = await github.rest.issues.listComments({\n  owner: context.repo.owner,\n  repo: context.repo.repo,\n  issue_number: context.issue.number,\n});\n\nconst existingComment = comments.find(c =>\n  c.user.type === 'Bot' && c.body.includes('E2E Screenshot Tests')\n);\n\nif (existingComment) {\n  await github.rest.issues.updateComment({\n    owner: context.repo.owner,\n    repo: context.repo.repo,\n    comment_id: existingComment.id,\n    body,\n  });\n  console.log(`Updated existing comment ${existingComment.id}`);\n} else {\n  await github.rest.issues.createComment({\n    owner: context.repo.owner,\n    repo: context.repo.repo,\n    issue_number: context.issue.number,\n    body,\n  });\n  console.log('Created new comment');\n}\n"
       - name: Fail if tests failed
         if: steps.e2e.outcome == 'failure'
         run: exit 1
