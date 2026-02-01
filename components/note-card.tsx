@@ -5,18 +5,7 @@ import { format } from "date-fns"
 import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
 import { EllipsisHorizontalIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
-import type { Note as GrpcNote, NoteImage as GrpcNoteImage } from "@/lib/grpc/client"
-
-// View layer types: with Timestamp fields converted to Date
-type NoteImage = Omit<GrpcNoteImage, "createdAt"> & {
-  createdAt?: Date
-}
-
-type Note = Omit<GrpcNote, "createdAt" | "updatedAt" | "images"> & {
-  createdAt: Date
-  updatedAt: Date
-  images: NoteImage[]
-}
+import type { Note } from "@/lib/types"
 
 interface NoteCardProps {
   note: Note

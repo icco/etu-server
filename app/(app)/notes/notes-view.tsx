@@ -18,18 +18,8 @@ import { NoteDialog } from "@/components/note-dialog"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { UserMenu } from "@/components/user-menu"
-import type { Note as GrpcNote, NoteImage as GrpcNoteImage, Tag } from "@/lib/grpc/client"
-
-// View layer types: with Timestamp fields converted to Date
-type NoteImage = Omit<GrpcNoteImage, "createdAt"> & {
-  createdAt?: Date
-}
-
-type Note = Omit<GrpcNote, "createdAt" | "updatedAt" | "images"> & {
-  createdAt: Date
-  updatedAt: Date
-  images: NoteImage[]
-}
+import type { Tag } from "@/lib/grpc/client"
+import type { Note } from "@/lib/types"
 
 interface NotesViewProps {
   initialNotes: Note[]

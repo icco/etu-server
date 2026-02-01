@@ -12,6 +12,8 @@ import type {
   UpdateNoteResponse,
   DeleteNoteRequest,
   DeleteNoteResponse,
+  GetRandomNotesRequest,
+  GetRandomNotesResponse,
   ListTagsRequest,
   ListTagsResponse,
   RegisterRequest,
@@ -217,6 +219,17 @@ export const mockNotesService = {
     }
     mockNotes.splice(index, 1)
     return { success: true }
+  },
+
+  async getRandomNotes(request: GetRandomNotesRequest, _apiKey: string): Promise<GetRandomNotesResponse> {
+    const count = request.count || 5
+    // Shuffle mock notes using Fisher-Yates algorithm
+    const shuffled = [...mockNotes]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return { notes: shuffled.slice(0, Math.min(count, shuffled.length)) }
   },
 }
 

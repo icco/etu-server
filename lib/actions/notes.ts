@@ -105,6 +105,7 @@ export async function createNote(data: {
   )
 
   revalidatePath("/notes")
+  revalidatePath("/")
   return { id: response.note.id }
 }
 
@@ -130,6 +131,7 @@ export async function updateNote(data: {
   )
 
   revalidatePath("/notes")
+  revalidatePath("/")
   return { success: true }
 }
 
@@ -145,6 +147,7 @@ export async function deleteNote(id: string) {
   )
 
   revalidatePath("/notes")
+  revalidatePath("/")
   return { success: true }
 }
 
@@ -214,6 +217,42 @@ export async function getNotes(options?: {
       })),
     })),
     total: response.total,
+  }
+}
+
+export async function getRandomNotes(count: number = 5) {
+  const userId = await requireUser()
+
+  try {
+    // Use the backend's randomNotes API
+    const response = await notesService.getRandomNotes(
+      {
+        userId,
+        count,
+      },
+      getGrpcApiKey()
+    )
+
+    return {
+      notes: response.notes.map((note) => ({
+        id: note.id,
+        content: note.content,
+        createdAt: timestampToDate(note.createdAt),
+        updatedAt: timestampToDate(note.updatedAt),
+        tags: note.tags,
+        images: note.images.map((img) => ({
+          id: img.id,
+          url: img.url,
+          extractedText: img.extractedText,
+          mimeType: img.mimeType,
+          createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
+        })),
+      })),
+    }
+  } catch (error: unknown) {
+    console.error("Failed to fetch random notes", { userId, count, error })
+    // Return empty array on error to prevent page crash
+    return { notes: [] }
   }
 }
 
