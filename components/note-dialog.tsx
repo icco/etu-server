@@ -201,147 +201,150 @@ export function NoteDialog({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-4">
-          {activeTab === "write" ? (
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Write your thoughts in Markdown... (Cmd+Enter to save)"
-              className="textarea textarea-bordered w-full h-[300px] font-mono text-sm resize-none bg-base-100 text-base-content placeholder:text-base-content/50"
-            />
-          ) : (
-            <div className="min-h-[300px] p-4 bg-base-200 rounded-lg">
-              {parsedContent ? (
-                <div
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{
-                    __html: parsedContent,
-                  }}
-                />
-              ) : (
-                <p className="text-base-content/60 italic">Nothing to preview yet...</p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Images */}
-        <div className="p-4 border-t border-base-300 space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium">Images</label>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="btn btn-ghost btn-sm gap-1"
-            >
-              <PhotoIcon className="h-4 w-4" />
-              Add Image
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-            />
+        {/* Scrollable content area - contains editor, images, and tags */}
+        <div className="flex-1 overflow-auto min-h-0">
+          {/* Content */}
+          <div className="p-4">
+            {activeTab === "write" ? (
+              <textarea
+                ref={textareaRef}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Write your thoughts in Markdown... (Cmd+Enter to save)"
+                className="textarea textarea-bordered w-full min-h-[150px] h-[200px] md:h-[300px] font-mono text-sm resize-y bg-base-100 text-base-content placeholder:text-base-content/50"
+              />
+            ) : (
+              <div className="min-h-[150px] p-4 bg-base-200 rounded-lg">
+                {parsedContent ? (
+                  <div
+                    className="prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: parsedContent,
+                    }}
+                  />
+                ) : (
+                  <p className="text-base-content/60 italic">Nothing to preview yet...</p>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Existing images (read-only when editing) */}
-          {initialImages.length > 0 && (
-            <div className="space-y-2">
-              <span className="text-xs text-base-content/60">Existing images</span>
-              <div className="flex flex-wrap gap-2">
-                {initialImages.map((img) => (
-                  <div key={img.id} className="relative group">
-                    <img
-                      src={img.url}
-                      alt=""
-                      className="h-20 w-20 object-cover rounded-lg border border-base-300"
-                    />
-                  </div>
-                ))}
-              </div>
+          {/* Images */}
+          <div className="px-4 pb-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium">Images</label>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="btn btn-ghost btn-sm gap-1"
+              >
+                <PhotoIcon className="h-4 w-4" />
+                Add Image
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+              />
             </div>
-          )}
 
-          {/* Pending images (new uploads) */}
-          {pendingImages.length > 0 && (
-            <div className="space-y-2">
-              <span className="text-xs text-base-content/60">New images to upload</span>
+            {/* Existing images (read-only when editing) */}
+            {initialImages.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-xs text-base-content/60">Existing images</span>
+                <div className="flex flex-wrap gap-2">
+                  {initialImages.map((img) => (
+                    <div key={img.id} className="relative group">
+                      <img
+                        src={img.url}
+                        alt=""
+                        className="h-16 w-16 md:h-20 md:w-20 object-cover rounded-lg border border-base-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Pending images (new uploads) */}
+            {pendingImages.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-xs text-base-content/60">New images to upload</span>
+                <div className="flex flex-wrap gap-2">
+                  {pendingImages.map((img) => (
+                    <div key={img.id} className="relative group">
+                      <img
+                        src={img.previewUrl}
+                        alt=""
+                        className="h-16 w-16 md:h-20 md:w-20 object-cover rounded-lg border border-base-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePendingImage(img.id)}
+                        className="absolute -top-2 -right-2 btn btn-circle btn-xs btn-error"
+                      >
+                        <XMarkIcon className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div className="px-4 pb-4 space-y-3">
+            <label className="block text-sm font-medium">Tags</label>
+            <div className="flex gap-2">
+              <div className="dropdown dropdown-top flex-1">
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={(e) => {
+                    setTagInput(e.target.value)
+                    setShowSuggestions(e.target.value.length > 0)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      addTag()
+                    }
+                  }}
+                  onFocus={() => tagInput && setShowSuggestions(true)}
+                  placeholder="Add a tag..."
+                  className="input input-bordered w-full bg-base-100 text-base-content placeholder:text-base-content/50"
+                />
+                {showSuggestions && filteredSuggestions.length > 0 && (
+                  <ul className="dropdown-content menu bg-base-100 rounded-box z-10 w-full p-2 shadow-lg max-h-40 overflow-auto">
+                    {filteredSuggestions.slice(0, 5).map((tag) => (
+                      <li key={tag}>
+                        <button onClick={() => addTag(tag)}>{tag}</button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <button onClick={() => addTag()} className="btn btn-ghost">
+                Add
+              </button>
+            </div>
+            {tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {pendingImages.map((img) => (
-                  <div key={img.id} className="relative group">
-                    <img
-                      src={img.previewUrl}
-                      alt=""
-                      className="h-20 w-20 object-cover rounded-lg border border-base-300"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removePendingImage(img.id)}
-                      className="absolute -top-2 -right-2 btn btn-circle btn-xs btn-error opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
+                {tags.map((tag) => (
+                  <div key={tag} className="badge badge-lg gap-1">
+                    {tag}
+                    <button onClick={() => removeTag(tag)} className="btn btn-ghost btn-xs btn-circle">
                       <XMarkIcon className="h-3 w-3" />
                     </button>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Tags */}
-        <div className="p-4 border-t border-base-300 space-y-3">
-          <label className="block text-sm font-medium">Tags</label>
-          <div className="flex gap-2">
-            <div className="dropdown dropdown-top flex-1">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => {
-                  setTagInput(e.target.value)
-                  setShowSuggestions(e.target.value.length > 0)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault()
-                    addTag()
-                  }
-                }}
-                onFocus={() => tagInput && setShowSuggestions(true)}
-                placeholder="Add a tag..."
-                className="input input-bordered w-full bg-base-100 text-base-content placeholder:text-base-content/50"
-              />
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <ul className="dropdown-content menu bg-base-100 rounded-box z-10 w-full p-2 shadow-lg max-h-40 overflow-auto">
-                  {filteredSuggestions.slice(0, 5).map((tag) => (
-                    <li key={tag}>
-                      <button onClick={() => addTag(tag)}>{tag}</button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <button onClick={() => addTag()} className="btn btn-ghost">
-              Add
-            </button>
+            )}
           </div>
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <div key={tag} className="badge badge-lg gap-1">
-                  {tag}
-                  <button onClick={() => removeTag(tag)} className="btn btn-ghost btn-xs btn-circle">
-                    <XMarkIcon className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Footer */}
