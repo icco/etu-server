@@ -19,8 +19,7 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  const formatTime = (date: Date) => format(new Date(date), "h:mm a")
-  const formatFullDate = (date: Date) => format(new Date(date), "EEEE, MMMM d, yyyy 'at' h:mm a")
+  const formatNoteDate = (date: Date) => format(new Date(date), "yyyy-MM-dd HH:mm")
 
   const renderMarkdown = (content: string) => {
     return DOMPurify.sanitize(marked.parse(content) as string)
@@ -62,7 +61,7 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
         <div className="card-body p-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <div className="text-sm text-base-content/60 mb-2" suppressHydrationWarning>{formatTime(note.createdAt)}</div>
+              <div className="text-sm text-base-content/60 mb-2" suppressHydrationWarning>{formatNoteDate(note.createdAt)}</div>
               {note.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {note.tags.map((tag) => (
@@ -161,7 +160,7 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
         <div className="modal-box w-11/12 max-w-2xl max-h-[85vh] flex flex-col p-0">
           <div className="p-6 border-b border-base-300">
             <h3 className="font-medium text-base-content/60" suppressHydrationWarning>
-              {formatFullDate(note.createdAt)}
+              {formatNoteDate(note.createdAt)}
             </h3>
           </div>
 
