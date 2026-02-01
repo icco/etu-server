@@ -24,6 +24,19 @@ import type {
   UpdateUserSubscriptionResponse,
   GetUserByStripeCustomerIdRequest,
   GetUserByStripeCustomerIdResponse,
+  GetUserSettingsRequest,
+  GetUserSettingsResponse,
+  UpdateUserSettingsRequest,
+  UpdateUserSettingsResponse,
+  CreateApiKeyRequest,
+  CreateApiKeyResponse,
+  ListApiKeysRequest,
+  ListApiKeysResponse,
+  DeleteApiKeyRequest,
+  DeleteApiKeyResponse,
+  VerifyApiKeyRequest,
+  VerifyApiKeyResponse,
+  ApiKey,
   Note,
   Tag,
   User,
@@ -85,13 +98,25 @@ const mockTags: Tag[] = [
   { id: "tag-7", name: "reading", count: 1 },
 ]
 
-const mockUser: User = {
+let mockUser: User = {
   id: "mock-user-1",
   email: "test@example.com",
   name: "Test User",
   subscriptionStatus: "active",
   createdAt: mockTimestamp(new Date("2026-01-01T00:00:00Z")),
+  notionKey: undefined,
 }
+
+const mockApiKeys: ApiKey[] = [
+  {
+    id: "mock-key-1",
+    name: "My Laptop CLI",
+    keyPrefix: "etu_abc123",
+    createdAt: mockTimestamp(new Date("2026-01-15T10:00:00Z")),
+    lastUsed: mockTimestamp(new Date("2026-01-20T14:30:00Z")),
+  },
+]
+
 
 // Mock Notes Service
 export const mockNotesService = {
@@ -220,6 +245,76 @@ export const mockAuthService = {
       subscriptionEnd: request.subscriptionEnd,
     }
     return { user: updatedUser }
+  },
+
+}
+
+// Mock User Settings Service
+export const mockUserSettingsService = {
+  async getUserSettings(
+    _request: GetUserSettingsRequest,
+    _apiKey: string
+  ): Promise<GetUserSettingsResponse> {
+    return { user: mockUser }
+  },
+
+  async updateUserSettings(
+    request: UpdateUserSettingsRequest,
+    _apiKey: string
+  ): Promise<UpdateUserSettingsResponse> {
+    // Update mock user with new settings
+    mockUser = {
+      ...mockUser,
+      name: request.name ?? mockUser.name,
+      image: request.image ?? mockUser.image,
+      notionKey: request.notionKey ?? mockUser.notionKey,
+    }
+    return { user: mockUser }
+  },
+}
+
+// Mock API Keys Service
+export const mockApiKeysService = {
+  async createApiKey(
+    request: CreateApiKeyRequest,
+    _apiKey: string
+  ): Promise<CreateApiKeyResponse> {
+    const newKey: ApiKey = {
+      id: `mock-key-${Date.now()}`,
+      name: request.name,
+      keyPrefix: `etu_${Math.random().toString(36).substring(2, 8)}`,
+      createdAt: mockTimestamp(new Date()),
+    }
+    mockApiKeys.push(newKey)
+    return {
+      apiKey: newKey,
+      rawKey: `etu_${Math.random().toString(36).substring(2, 40)}`,
+    }
+  },
+
+  async listApiKeys(
+    _request: ListApiKeysRequest,
+    _apiKey: string
+  ): Promise<ListApiKeysResponse> {
+    return { apiKeys: mockApiKeys }
+  },
+
+  async deleteApiKey(
+    request: DeleteApiKeyRequest,
+    _apiKey: string
+  ): Promise<DeleteApiKeyResponse> {
+    const index = mockApiKeys.findIndex((k) => k.id === request.keyId)
+    if (index !== -1) {
+      mockApiKeys.splice(index, 1)
+    }
+    return { success: true }
+  },
+
+  async verifyApiKey(
+    _request: VerifyApiKeyRequest,
+    _apiKey: string
+  ): Promise<VerifyApiKeyResponse> {
+    return { valid: true, userId: mockUser.id }
   },
 }
 

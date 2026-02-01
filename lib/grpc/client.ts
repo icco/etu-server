@@ -6,6 +6,7 @@ import {
   TagsService,
   AuthService,
   ApiKeysService,
+  UserSettingsService,
   type Timestamp as ProtoTimestamp,
   type Note as ProtoNote,
   type Tag as ProtoTag,
@@ -16,6 +17,8 @@ import {
   mockNotesService,
   mockTagsService,
   mockAuthService,
+  mockUserSettingsService,
+  mockApiKeysService,
   isMockMode,
 } from "./mock"
 
@@ -53,6 +56,10 @@ function getApiKeysClient() {
   return createClient(ApiKeysService, getTransport())
 }
 
+function getUserSettingsClient() {
+  return createClient(UserSettingsService, getTransport())
+}
+
 // Re-export types for compatibility
 export interface Timestamp {
   seconds: string | bigint
@@ -82,7 +89,9 @@ export interface User {
   subscriptionStatus: string
   subscriptionEnd?: Timestamp
   createdAt?: Timestamp
+  updatedAt?: Timestamp
   stripeCustomerId?: string
+  notionKey?: string
 }
 
 export interface ApiKey {
@@ -183,6 +192,26 @@ export interface GetUserRequest {
 }
 
 export interface GetUserResponse {
+  user: User
+}
+
+export interface GetUserSettingsRequest {
+  userId: string
+}
+
+export interface GetUserSettingsResponse {
+  user: User
+}
+
+export interface UpdateUserSettingsRequest {
+  userId: string
+  notionKey?: string
+  name?: string
+  image?: string
+  password?: string
+}
+
+export interface UpdateUserSettingsResponse {
   user: User
 }
 
@@ -288,7 +317,9 @@ function convertUser(user: ProtoUser | undefined): User {
     subscriptionStatus: user.subscriptionStatus,
     subscriptionEnd: user.subscriptionEnd ? convertTimestamp(user.subscriptionEnd) : undefined,
     createdAt: user.createdAt ? convertTimestamp(user.createdAt) : undefined,
+    updatedAt: user.updatedAt ? convertTimestamp(user.updatedAt) : undefined,
     stripeCustomerId: user.stripeCustomerId,
+    notionKey: user.notionKey,
   }
 }
 
@@ -507,10 +538,11 @@ const realAuthService = {
       return { user: convertUser(response.user) }
     }, "AuthService.updateUserSubscription")
   },
+
 }
 
 // API Keys Service
-export const apiKeysService = {
+const realApiKeysService = {
   async createApiKey(request: CreateApiKeyRequest, apiKey: string): Promise<CreateApiKeyResponse> {
     return withErrorHandling(async () => {
       const client = getApiKeysClient()
@@ -626,3 +658,43 @@ function grpcStatusToMessage(code: Code, details: string): string {
 export const notesService = isMockMode() ? mockNotesService : realNotesService
 export const tagsService = isMockMode() ? mockTagsService : realTagsService
 export const authService = isMockMode() ? mockAuthService : realAuthService
+export const apiKeysService = isMockMode() ? mockApiKeysService : realApiKeysService
+
+// User Settings Service
+const realUserSettingsService = {
+  async getUserSettings(
+    request: GetUserSettingsRequest,
+    apiKey: string
+  ): Promise<GetUserSettingsResponse> {
+    return withErrorHandling(async () => {
+      const client = getUserSettingsClient()
+      const response = await client.getUserSettings(
+        { userId: request.userId },
+        { headers: createHeaders(apiKey) }
+      )
+      return { user: convertUser(response.user) }
+    }, "UserSettingsService.getUserSettings")
+  },
+
+  async updateUserSettings(
+    request: UpdateUserSettingsRequest,
+    apiKey: string
+  ): Promise<UpdateUserSettingsResponse> {
+    return withErrorHandling(async () => {
+      const client = getUserSettingsClient()
+      const response = await client.updateUserSettings(
+        {
+          userId: request.userId,
+          notionKey: request.notionKey,
+          name: request.name,
+          image: request.image,
+          password: request.password,
+        },
+        { headers: createHeaders(apiKey) }
+      )
+      return { user: convertUser(response.user) }
+    }, "UserSettingsService.updateUserSettings")
+  },
+}
+
+export const userSettingsService = isMockMode() ? mockUserSettingsService : realUserSettingsService
