@@ -8,6 +8,8 @@ async function enableDarkMode(page: Page) {
   await page.locator("label.swap").click()
   // Wait for dark theme to be applied
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark")
+  // Reset scroll position so subsequent screenshots start from the top
+  await page.evaluate(() => window.scrollTo(0, 0))
 }
 
 test.describe("Dark Mode", () => {
@@ -98,7 +100,7 @@ test.describe("Dark Mode", () => {
       await page.goto("/login")
       await enableDarkMode(page)
 
-      await expect(page.getByRole("heading", { name: "Welcome Back" })).toBeVisible()
+      await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible()
       await expect(page.getByLabel("Email")).toBeVisible()
       await expect(page.getByLabel("Password")).toBeVisible()
       await expect(page).toHaveScreenshot("login-page-dark.png")
@@ -108,7 +110,7 @@ test.describe("Dark Mode", () => {
       await page.goto("/register")
       await enableDarkMode(page)
 
-      await expect(page.getByRole("heading", { name: "Create Account" })).toBeVisible()
+      await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible()
       await expect(page.getByLabel("Email")).toBeVisible()
       await expect(page.getByLabel("Password")).toBeVisible()
       await expect(page).toHaveScreenshot("register-page-dark.png")
@@ -130,8 +132,8 @@ test.describe("Dark Mode", () => {
     test("displays notes page in dark mode", async ({ page }) => {
       await enableDarkMode(page)
 
-      // Verify notes page content
-      await expect(page.locator("text=Your Blips")).toBeVisible({ timeout: 10000 })
+      // Verify notes page content (use stable tag visible on /notes in mock mode)
+      await expect(page.locator("text=ideas")).toBeVisible({ timeout: 10000 })
       await expect(page).toHaveScreenshot("notes-list-dark.png")
     })
 
