@@ -360,10 +360,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
-"@icco/etu-proto@^0.0.0-20260131233934.6cea110":
-  version "0.0.0-20260131233934.6cea110"
-  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/0.0.0-20260131233934.6cea110/88e08a1c0a5d80d90ee72d1ff736df8c1f83364d#88e08a1c0a5d80d90ee72d1ff736df8c1f83364d"
-  integrity sha512-kj4fQVehFk60NLCQ57IwFH8b6XWGs3ZpxJldOdpoeltpWfZIdZ8x2xH2ckJePoI80YTRR9iPvworBhvjiDfGgQ==
+"@icco/etu-proto@^2026.2.23313":
+  version "2026.2.23313"
+  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.23313/6f8a9c05132d57d1c77783f7d25457fb6b5c62f6#6f8a9c05132d57d1c77783f7d25457fb6b5c62f6"
+  integrity sha512-PL0eJXXAElq99IbELMaonwlZ/NCFEKMgkY5cspwQ+kfP+0zppGa3fesNLz1xMAQ1n46uRFTpBrw+C5+zAsHKxw==
   dependencies:
     "@bufbuild/protobuf" "^2.0.0"
 
@@ -825,10 +825,10 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
-"@types/node@25.0.10":
-  version "25.0.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.0.10.tgz#4864459c3c9459376b8b75fd051315071c8213e7"
-  integrity sha512-zWW5KPngR/yvakJgGOmZ5vTBemDoSqF3AcV/LrO5u5wTWyEAVVh+IT39G4gtyAkh3CtTZs8aX/yRM82OfzHJRg==
+"@types/node@^25.1.0":
+  version "25.1.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.1.0.tgz#95cc584f1f478301efc86de4f1867e5875e83571"
+  integrity sha512-t7frlewr6+cbx+9Ohpl0NOTKXZNV9xHRmNOvql47BFJKcEG1CxtxlPEEe+gR9uhVWM4DwhnvTF110mIL4yP9RA==
   dependencies:
     undici-types "~7.16.0"
 
@@ -3395,17 +3395,17 @@ tinyglobby@^0.2.13, tinyglobby@^0.2.15:
     fdir "^6.5.0"
     picomatch "^4.0.3"
 
-tldts-core@^7.0.20:
-  version "7.0.20"
-  resolved "https://registry.yarnpkg.com/tldts-core/-/tldts-core-7.0.20.tgz#cc987ce90c8388f493daaf9540da29c10ae6f43d"
-  integrity sha512-gF3cGE0wzboN8UuD0jldE/qIwC/Gaa2cHeWCbsaV1g51XLaL0cPtssjryUXHO9PGgphYPQWrinNwm1iMA3sMrA==
+tldts-core@^7.0.21:
+  version "7.0.21"
+  resolved "https://registry.yarnpkg.com/tldts-core/-/tldts-core-7.0.21.tgz#2869212dc8822b18789c9ac1492a52d536608d55"
+  integrity sha512-oVOMdHvgjqyzUZH1rOESgJP1uNe2bVrfK0jUHHmiM2rpEiRbf3j4BrsIc6JigJRbHGanQwuZv/R+LTcHsw+bLA==
 
 tldts@^7.0.5:
-  version "7.0.20"
-  resolved "https://registry.yarnpkg.com/tldts/-/tldts-7.0.20.tgz#210e7df50d5cf7a0bff336f97fa1e556336b8f66"
-  integrity sha512-TVQHdE8pbD1uhW4B79fQ7fkitS62TVGHZ1bwblOOobe3T8Zj96wvBVy7NFsAXexl1UYJ4z6f5fZp4AzOBIxRqA==
+  version "7.0.21"
+  resolved "https://registry.yarnpkg.com/tldts/-/tldts-7.0.21.tgz#74682c838be1e1997d2d7855488ee091625c9b26"
+  integrity sha512-Plu6V8fF/XU6d2k8jPtlQf5F4Xx2hAin4r2C2ca7wR8NK5MbRTo9huLUWRe28f3Uk8bYZfg74tit/dSjc18xnw==
   dependencies:
-    tldts-core "^7.0.20"
+    tldts-core "^7.0.21"
 
 to-regex-range@^5.0.1:
   version "5.0.1"
