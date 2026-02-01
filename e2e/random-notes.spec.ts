@@ -8,8 +8,10 @@ test.describe("Random Notes Home Page", () => {
     await page.getByLabel("Password").fill("testpassword")
     await page.getByRole("button", { name: "Sign In" }).click()
 
-    // After login, explicitly navigate to the home page
-    // (auth flow may redirect to /notes, so we navigate to / explicitly)
+    // Wait for login to complete (redirect to /notes) so session is established
+    await page.waitForURL("/notes")
+
+    // Navigate to home page, which shows Random Blips when logged in
     await page.goto("/")
   })
 
