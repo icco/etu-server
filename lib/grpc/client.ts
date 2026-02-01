@@ -18,6 +18,7 @@ import {
   mockTagsService,
   mockAuthService,
   mockUserSettingsService,
+  mockApiKeysService,
   isMockMode,
 } from "./mock"
 
@@ -541,7 +542,7 @@ const realAuthService = {
 }
 
 // API Keys Service
-export const apiKeysService = {
+const realApiKeysService = {
   async createApiKey(request: CreateApiKeyRequest, apiKey: string): Promise<CreateApiKeyResponse> {
     return withErrorHandling(async () => {
       const client = getApiKeysClient()
@@ -657,6 +658,7 @@ function grpcStatusToMessage(code: Code, details: string): string {
 export const notesService = isMockMode() ? mockNotesService : realNotesService
 export const tagsService = isMockMode() ? mockTagsService : realTagsService
 export const authService = isMockMode() ? mockAuthService : realAuthService
+export const apiKeysService = isMockMode() ? mockApiKeysService : realApiKeysService
 
 // User Settings Service
 const realUserSettingsService = {

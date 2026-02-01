@@ -28,6 +28,15 @@ import type {
   GetUserSettingsResponse,
   UpdateUserSettingsRequest,
   UpdateUserSettingsResponse,
+  CreateApiKeyRequest,
+  CreateApiKeyResponse,
+  ListApiKeysRequest,
+  ListApiKeysResponse,
+  DeleteApiKeyRequest,
+  DeleteApiKeyResponse,
+  VerifyApiKeyRequest,
+  VerifyApiKeyResponse,
+  ApiKey,
   Note,
   Tag,
   User,
@@ -97,6 +106,16 @@ let mockUser: User = {
   createdAt: mockTimestamp(new Date("2026-01-01T00:00:00Z")),
   notionKey: undefined,
 }
+
+const mockApiKeys: ApiKey[] = [
+  {
+    id: "mock-key-1",
+    name: "My Laptop CLI",
+    keyPrefix: "etu_abc123",
+    createdAt: mockTimestamp(new Date("2026-01-15T10:00:00Z")),
+    lastUsed: mockTimestamp(new Date("2026-01-20T14:30:00Z")),
+  },
+]
 
 
 // Mock Notes Service
@@ -251,6 +270,51 @@ export const mockUserSettingsService = {
       notionKey: request.notionKey ?? mockUser.notionKey,
     }
     return { user: mockUser }
+  },
+}
+
+// Mock API Keys Service
+export const mockApiKeysService = {
+  async createApiKey(
+    request: CreateApiKeyRequest,
+    _apiKey: string
+  ): Promise<CreateApiKeyResponse> {
+    const newKey: ApiKey = {
+      id: `mock-key-${Date.now()}`,
+      name: request.name,
+      keyPrefix: `etu_${Math.random().toString(36).substring(2, 8)}`,
+      createdAt: mockTimestamp(new Date()),
+    }
+    mockApiKeys.push(newKey)
+    return {
+      apiKey: newKey,
+      rawKey: `etu_${Math.random().toString(36).substring(2, 40)}`,
+    }
+  },
+
+  async listApiKeys(
+    _request: ListApiKeysRequest,
+    _apiKey: string
+  ): Promise<ListApiKeysResponse> {
+    return { apiKeys: mockApiKeys }
+  },
+
+  async deleteApiKey(
+    request: DeleteApiKeyRequest,
+    _apiKey: string
+  ): Promise<DeleteApiKeyResponse> {
+    const index = mockApiKeys.findIndex((k) => k.id === request.keyId)
+    if (index !== -1) {
+      mockApiKeys.splice(index, 1)
+    }
+    return { success: true }
+  },
+
+  async verifyApiKey(
+    _request: VerifyApiKeyRequest,
+    _apiKey: string
+  ): Promise<VerifyApiKeyResponse> {
+    return { valid: true, userId: mockUser.id }
   },
 }
 
