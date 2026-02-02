@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Link from "next/link"
 import { format } from "date-fns"
 import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
@@ -149,9 +150,14 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
           {note.tags.length > 0 && (
             <div className={compact ? "flex flex-wrap gap-1 mt-auto pt-2 justify-end" : "flex flex-wrap gap-2 mt-3 justify-end"}>
               {note.tags.map((tag) => (
-                <span key={tag} className={compact ? "badge badge-ghost badge-xs" : "badge badge-ghost badge-sm"}>
+                <Link
+                  key={tag}
+                  href={`/search?q=${encodeURIComponent(`tag:${tag}`)}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className={compact ? "badge badge-ghost badge-xs hover:badge-primary" : "badge badge-ghost badge-sm hover:badge-primary"}
+                >
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
           )}
@@ -206,9 +212,13 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
             {note.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-6 justify-end">
                 {note.tags.map((tag) => (
-                  <span key={tag} className="badge badge-ghost">
+                  <Link
+                    key={tag}
+                    href={`/search?q=${encodeURIComponent(`tag:${tag}`)}`}
+                    className="badge badge-ghost hover:badge-primary"
+                  >
                     {tag}
-                  </span>
+                  </Link>
                 ))}
               </div>
             )}

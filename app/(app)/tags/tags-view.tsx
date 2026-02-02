@@ -10,7 +10,6 @@ import { AppNav } from "@/components/app-nav"
 interface Tag {
   id: string
   name: string
-  count: number
 }
 
 interface TagsViewProps {
@@ -47,16 +46,13 @@ export function TagsView({ tags }: TagsViewProps) {
               {tags.map((tag) => (
                 <Link
                   key={tag.id}
-                  href={`/search?q=${encodeURIComponent(tag.name)}`}
+                  href={`/search?q=${encodeURIComponent(`tag:${tag.name}`)}`}
                   className="card bg-base-100 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all"
                 >
                   <div className="card-body p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <TagIcon className="h-5 w-5 text-primary" />
-                        <span className="font-medium">{tag.name}</span>
-                      </div>
-                      <span className="badge badge-ghost">{tag.count}</span>
+                    <div className="flex items-center gap-2">
+                      <TagIcon className="h-5 w-5 text-primary" />
+                      <span className="font-medium">{tag.name}</span>
                     </div>
                   </div>
                 </Link>
