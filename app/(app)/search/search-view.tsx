@@ -45,7 +45,7 @@ export function SearchView({ initialNotes, initialTags, query }: SearchViewProps
         </Header>
 
         <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex items-center gap-2">
               <MagnifyingGlassIcon className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold">Search</h1>

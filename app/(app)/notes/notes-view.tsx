@@ -1,6 +1,6 @@
 "use client"
 
-import { DocumentTextIcon, PlusIcon, SparklesIcon } from "@heroicons/react/24/outline"
+import { DocumentTextIcon, PlusIcon } from "@heroicons/react/24/outline"
 import { NoteCard } from "@/components/note-card"
 import { NoteDialog } from "@/components/note-dialog"
 import { Header } from "@/components/header"
@@ -43,7 +43,7 @@ export function NotesView({ initialNotes, initialTags }: NotesViewProps) {
         <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="mb-6 flex items-center gap-2">
-              <SparklesIcon className="h-8 w-8 text-primary" />
+              <DocumentTextIcon className="h-8 w-8 text-primary" />
               <h1 className="text-3xl font-bold">Notes</h1>
             </div>
           </div>
