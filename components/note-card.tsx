@@ -12,9 +12,11 @@ interface NoteCardProps {
   onEdit: (note: Note) => void
   onDelete: (id: string) => Promise<void>
   searchQuery?: string
+  /** When true, show a short preview (line-clamp, tighter layout) for grid use */
+  compact?: boolean
 }
 
-export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
+export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
   const [viewOpen, setViewOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -58,14 +60,14 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
         className="card bg-base-100 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer group"
         onClick={() => setViewOpen(true)}
       >
-        <div className="card-body p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="text-sm text-base-content/60 mb-2" suppressHydrationWarning>{formatNoteDate(note.createdAt)}</div>
+        <div className={compact ? "card-body p-2" : "card-body p-4"}>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <div className={compact ? "text-xs text-base-content/60 mb-1" : "text-sm text-base-content/60 mb-2"} suppressHydrationWarning>{formatNoteDate(note.createdAt)}</div>
               {note.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
+                <div className={compact ? "flex flex-wrap gap-1 mb-1" : "flex flex-wrap gap-2 mb-3"}>
                   {note.tags.map((tag) => (
-                    <span key={tag} className="badge badge-ghost badge-sm">
+                    <span key={tag} className={compact ? "badge badge-ghost badge-xs" : "badge badge-ghost badge-sm"}>
                       {tag}
                     </span>
                   ))}
@@ -129,12 +131,12 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
           </div>
 
           <div
-            className="prose prose-sm max-w-none"
+            className={compact ? "prose prose-sm max-w-none line-clamp-2" : "prose prose-sm max-w-none"}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(note.content) }}
           />
 
-          {/* Image thumbnails */}
-          {safeImages.length > 0 && (
+          {/* Image thumbnails - hide in compact mode for dense grid */}
+          {!compact && safeImages.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {safeImages.slice(0, 4).map((img, idx) => (
                 <div key={img.id} className="relative">

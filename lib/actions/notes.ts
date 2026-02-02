@@ -105,6 +105,7 @@ export async function createNote(data: {
   )
 
   revalidatePath("/notes")
+  revalidatePath("/history")
   revalidatePath("/")
   return { id: response.note.id }
 }
@@ -131,6 +132,7 @@ export async function updateNote(data: {
   )
 
   revalidatePath("/notes")
+  revalidatePath("/history")
   revalidatePath("/")
   return { success: true }
 }
@@ -147,6 +149,7 @@ export async function deleteNote(id: string) {
   )
 
   revalidatePath("/notes")
+  revalidatePath("/history")
   revalidatePath("/")
   return { success: true }
 }

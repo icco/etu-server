@@ -13,29 +13,21 @@ import {
 import { auth } from "@/lib/auth"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { getRandomNotes, getTags } from "@/lib/actions/notes"
-import { RandomNotesView } from "./random-notes-view"
+import { UserMenu } from "@/components/user-menu"
 
 export default async function LandingPage() {
   const session = await auth()
 
-  // If user is logged in, show random notes instead of landing page
-  if (session?.user) {
-    const [randomNotesData, tags] = await Promise.all([
-      getRandomNotes(5),
-      getTags(),
-    ])
-    
-    return <RandomNotesView notes={randomNotesData.notes} tags={tags} />
-  }
-
-  // Show landing page for unauthenticated users
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
       <Header logoHref="/">
-        <Link href="/login" className="btn btn-primary">
-          Get Started
-        </Link>
+        {session?.user ? (
+          <UserMenu />
+        ) : (
+          <Link href="/login" className="btn btn-primary">
+            Get Started
+          </Link>
+        )}
       </Header>
 
       <main className="flex-1">
@@ -218,7 +210,7 @@ export default async function LandingPage() {
                   <span>Light/dark theme, full export</span>
                 </li>
               </ul>
-              <Link href="/register" className="btn btn-primary w-full">
+              <Link href={session?.user ? "/notes" : "/register"} className="btn btn-primary w-full">
                 Start Using Etu
               </Link>
             </div>
