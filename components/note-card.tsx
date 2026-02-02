@@ -11,7 +11,6 @@ interface NoteCardProps {
   note: Note
   onEdit: (note: Note) => void
   onDelete: (id: string) => Promise<void>
-  searchQuery?: string
   /** When true, show a short preview (line-clamp, tighter layout) for grid use */
   compact?: boolean
 }
