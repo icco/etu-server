@@ -79,4 +79,56 @@ test.describe("Search Page", () => {
     // Should navigate to search page with query
     await expect(page).toHaveURL(/\/search\?q=test\+query/)
   })
+
+  test("trims whitespace from search query", async ({ page }) => {
+    // Search with leading/trailing whitespace
+    await page.goto("/search?q=%20%20building%20%20")
+
+    // Should still find results (query gets trimmed)
+    await expect(page.locator("text=result").first()).toBeVisible({ timeout: 10000 })
+    // Verify the note with "building" content is shown
+    await expect(page.locator("text=building").first()).toBeVisible()
+  })
+
+  test("search is case-insensitive", async ({ page }) => {
+    // Search with uppercase
+    await page.goto("/search?q=BUILDING")
+
+    // Should find the note with lowercase "building"
+    await expect(page.locator("text=result").first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator("text=building").first()).toBeVisible()
+  })
+
+  test("finds notes by partial content match", async ({ page }) => {
+    // Search for partial word
+    await page.goto("/search?q=road")
+
+    // Should find "roadmap" in mock data
+    await expect(page.locator("text=result").first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator("text=roadmap").first()).toBeVisible()
+  })
+
+  test("displays multiple matching results", async ({ page }) => {
+    // Search for "personal" which appears in multiple mock notes
+    await page.goto("/search?q=personal")
+
+    // Should show multiple results
+    await expect(page.locator("text=results").first()).toBeVisible({ timeout: 10000 })
+  })
+
+  test("empty search query shows empty state", async ({ page }) => {
+    // Navigate with empty query
+    await page.goto("/search?q=")
+
+    // Should show empty state, not results
+    await expect(page.locator("text=Search your blips")).toBeVisible({ timeout: 10000 })
+  })
+
+  test("whitespace-only query shows empty state", async ({ page }) => {
+    // Navigate with whitespace-only query
+    await page.goto("/search?q=%20%20%20")
+
+    // Should show empty state after trimming
+    await expect(page.locator("text=Search your blips")).toBeVisible({ timeout: 10000 })
+  })
 })
