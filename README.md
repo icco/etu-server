@@ -83,7 +83,7 @@ STRIPE_PRICE_ID="price_..."
 docker-compose up -d
 
 # Production build (requires GitHub token for @icco/etu-proto)
-docker build --build-arg NPM_TOKEN=$GITHUB_TOKEN -t etu-server .
+docker build --secret id=npm_token,env=GITHUB_TOKEN -t etu-server .
 docker run -p 3000:3000 \
   -e AUTH_SECRET="..." \
   -e GRPC_BACKEND_URL="http://backend:50051" \

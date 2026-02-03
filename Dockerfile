@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # =============================================================================
 # Etu Server - Next.js Full Stack Application
 # =============================================================================
@@ -10,15 +11,15 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies
-# NPM_TOKEN is required for @icco/etu-proto from GitHub Packages
-ARG NPM_TOKEN
+# NPM_TOKEN is required for @icco/etu-proto from GitHub Packages (use secrets, not build-args)
 COPY package.json yarn.lock* .npmrc ./
-RUN if [ -z "$NPM_TOKEN" ]; then \
-      echo "ERROR: NPM_TOKEN build arg is required for @icco/etu-proto"; \
-      echo "Usage: docker build --build-arg NPM_TOKEN=\$GITHUB_TOKEN ..."; \
+RUN --mount=type=secret,id=npm_token \
+    if [ ! -s /run/secrets/npm_token ]; then \
+      echo "ERROR: NPM_TOKEN secret is required for @icco/etu-proto"; \
+      echo "Usage: docker build --secret id=npm_token,env=NPM_TOKEN ..."; \
       exit 1; \
     fi && \
-    echo "//npm.pkg.github.com/:_authToken=${NPM_TOKEN}" >> .npmrc && \
+    echo "//npm.pkg.github.com/:_authToken=$(cat /run/secrets/npm_token)" >> .npmrc && \
     yarn install --frozen-lockfile && \
     rm -f .npmrc
 
