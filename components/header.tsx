@@ -6,15 +6,13 @@ interface HeaderProps {
   backHref?: string
   /** URL the logo links to. Defaults to "/" */
   logoHref?: string
-  /** Navigation component to display in the center */
+  /** Navigation component to display in the center (hidden on mobile) */
   nav?: React.ReactNode
-  /** Mobile navigation component to display on small screens */
-  mobileNav?: React.ReactNode
-  /** Content to display on the right side of the header */
+  /** Content to display on the right side of the header (mobile nav, user menu, etc.) */
   children?: React.ReactNode
 }
 
-export function Header({ backHref, logoHref = "/", nav, mobileNav, children }: HeaderProps) {
+export function Header({ backHref, logoHref = "/", nav, children }: HeaderProps) {
   return (
     <header className="bg-base-100 shadow-sm sticky top-0 z-50">
       <div className="navbar container mx-auto px-4 md:px-6">
@@ -29,9 +27,8 @@ export function Header({ backHref, logoHref = "/", nav, mobileNav, children }: H
           </Link>
         </div>
         {nav && <div className="navbar-center hidden md:flex">{nav}</div>}
-        {(mobileNav || children) && (
+        {children && (
           <div className="navbar-end gap-2">
-            {mobileNav}
             {children}
           </div>
         )}

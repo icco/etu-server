@@ -21,8 +21,8 @@ export default async function LandingPage() {
       <Header 
         logoHref="/" 
         nav={session?.user ? <AppNav /> : undefined}
-        mobileNav={session?.user ? <MobileNav /> : undefined}
       >
+        {session?.user && <MobileNav />}
         {session?.user ? (
           <UserMenu />
         ) : (

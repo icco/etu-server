@@ -40,7 +40,8 @@ export function SearchView({ initialNotes, initialTags, query }: SearchViewProps
   return (
     <>
       <div className="min-h-screen bg-base-200 flex flex-col">
-        <Header logoHref="/" nav={<AppNav />} mobileNav={<MobileNav />}>
+        <Header logoHref="/" nav={<AppNav />}>
+          <MobileNav />
           <NavSearch defaultValue={query} />
           <UserMenu />
         </Header>

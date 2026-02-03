@@ -20,7 +20,8 @@ interface TagsViewProps {
 export function TagsView({ tags }: TagsViewProps) {
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
-      <Header logoHref="/" nav={<AppNav />} mobileNav={<MobileNav />}>
+      <Header logoHref="/" nav={<AppNav />}>
+        <MobileNav />
         <UserMenu />
       </Header>
 

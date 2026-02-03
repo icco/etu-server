@@ -37,7 +37,8 @@ export function NotesView({ initialNotes, initialTags }: NotesViewProps) {
   return (
     <>
       <div className="min-h-screen bg-base-200 flex flex-col">
-        <Header logoHref="/" nav={<AppNav />} mobileNav={<MobileNav />}>
+        <Header logoHref="/" nav={<AppNav />}>
+          <MobileNav />
           <UserMenu />
         </Header>
 
