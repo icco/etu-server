@@ -58,7 +58,7 @@ const mockNotes: Note[] = [
   {
     id: "mock-note-1",
     content:
-      "This is my first thought about **building** something great.\n\nIt has multiple paragraphs and supports markdown.",
+      "This is my first thought about **building** something great. I have many ideas for new features.\n\nIt has multiple paragraphs and supports markdown.",
     tags: ["ideas", "projects"],
     images: [],
     createdAt: mockTimestamp(new Date("2026-01-25T10:00:00Z")),
@@ -74,7 +74,7 @@ const mockNotes: Note[] = [
   },
   {
     id: "mock-note-3",
-    content: "Remember to call mom on Sunday",
+    content: "Personal reminder: call mom on Sunday",
     tags: ["personal", "reminders"],
     images: [],
     createdAt: mockTimestamp(new Date("2026-01-23T09:15:00Z")),
@@ -82,7 +82,7 @@ const mockNotes: Note[] = [
   },
   {
     id: "mock-note-4",
-    content: "Book recommendations:\n- The Pragmatic Programmer\n- Clean Code\n- Design Patterns",
+    content: "Personal book recommendations:\n- The Pragmatic Programmer\n- Clean Code\n- Design Patterns",
     tags: ["reading", "personal"],
     images: [],
     createdAt: mockTimestamp(new Date("2026-01-22T16:45:00Z")),
