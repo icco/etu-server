@@ -139,3 +139,7 @@ For programmatic access to notes and tags, use:
 - **Mobile**: https://github.com/icco/etu-mobile
 
 Generate API keys in Settings to use with these clients.
+
+### Proto Documentation
+
+The proto definitions documentation is available at `/docs` when the app is running. This documentation is automatically generated from the `@icco/etu-proto` package and describes the gRPC API contract between the frontend and backend services.

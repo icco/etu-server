@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Etu Proto Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        h1 { color: #2563eb; }
+        code {
+            background: #f3f4f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Etu Proto Documentation</h1>
+    
+    <div class="info-box">
+        <p><strong>Note:</strong> The proto definitions are distributed as a compiled TypeScript package.</p>
+    </div>
+
+    <h2>About</h2>
+    <p>
+        Etu uses <a href="https://connectrpc.com/">Connect RPC</a> for communication between the frontend and backend.
+        The proto definitions are maintained in the <a href="https://github.com/icco/etu-backend">etu-backend</a> repository
+        and published as the <code>@icco/etu-proto</code> npm package.
+    </p>
+
+    <h2>Package Information</h2>
+    <ul>
+        <li><strong>Package:</strong> <code>@icco/etu-proto</code></li>
+        <li><strong>Registry:</strong> GitHub Packages</li>
+        <li><strong>Source:</strong> <a href="https://github.com/icco/etu-backend">github.com/icco/etu-backend</a></li>
+    </ul>
+
+    <h2>Usage in etu-web</h2>
+    <p>
+        The etu-web application imports TypeScript types and service clients from the <code>@icco/etu-proto</code> package:
+    </p>
+    <ul>
+        <li>Connect RPC client configuration in <code>lib/grpc/client.ts</code></li>
+        <li>Server actions in <code>lib/actions/</code> directory</li>
+        <li>Type definitions used throughout the application</li>
+    </ul>
+
+    <h2>Services</h2>
+    <p>The proto definitions include services for:</p>
+    <ul>
+        <li><strong>Notes Service:</strong> Create, read, update, and delete notes (blips)</li>
+        <li><strong>Tags Service:</strong> Manage tags and tag associations</li>
+        <li><strong>Users Service:</strong> User authentication and profile management</li>
+        <li><strong>API Keys Service:</strong> Generate and manage API keys for CLI/mobile access</li>
+    </ul>
+
+    <h2>Documentation</h2>
+    <p>
+        For detailed proto definitions, please refer to the
+        <a href="https://github.com/icco/etu-backend">etu-backend repository</a>.
+    </p>
+</body>
+</html>

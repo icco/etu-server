@@ -143,13 +143,21 @@ export default async function LandingPage() {
                 { title: "Image attachments", desc: "Add screenshots and photos to any note" },
                 { title: "Keyboard shortcuts", desc: "Press 'n' for new note, '/' to search" },
                 { title: "Dark mode", desc: "Easy on your eyes, day or night" },
-                { title: "API access", desc: "Use CLI or build your own integrations" },
+                { title: "API access", desc: "Use CLI or build your own integrations", link: "/docs" },
                 { title: "Data export", desc: "Your data is yours—export anytime" },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4 items-start">
                   <CheckIcon className="h-6 w-6 text-primary shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold">{item.title}</h4>
+                    <h4 className="font-semibold">
+                      {item.link ? (
+                        <Link href={item.link} className="hover:underline">
+                          {item.title}
+                        </Link>
+                      ) : (
+                        item.title
+                      )}
+                    </h4>
                     <p className="text-base-content/60 text-sm">{item.desc}</p>
                   </div>
                 </div>
