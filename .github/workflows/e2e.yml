@@ -81,7 +81,7 @@ jobs:
           commit_message: 'chore: update e2e screenshots'
           file_pattern: e2e/**/*.png
       - name: Comment PR with screenshots
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && always()
         run: node .github/scripts/comment-screenshots.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
