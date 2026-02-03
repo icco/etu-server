@@ -6,9 +6,9 @@ interface HeaderProps {
   backHref?: string
   /** URL the logo links to. Defaults to "/" */
   logoHref?: string
-  /** Navigation component to display in the center */
+  /** Navigation component to display in the center (hidden on mobile) */
   nav?: React.ReactNode
-  /** Content to display on the right side of the header */
+  /** Content to display on the right side of the header (mobile nav, user menu, etc.) */
   children?: React.ReactNode
 }
 

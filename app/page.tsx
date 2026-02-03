@@ -11,13 +11,18 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { UserMenu } from "@/components/user-menu"
 import { AppNav } from "@/components/app-nav"
+import { MobileNav } from "@/components/mobile-nav"
 
 export default async function LandingPage() {
   const session = await auth()
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
-      <Header logoHref="/" nav={session?.user ? <AppNav /> : undefined}>
+      <Header 
+        logoHref="/" 
+        nav={session?.user ? <AppNav /> : undefined}
+      >
+        {session?.user && <MobileNav />}
         {session?.user ? (
           <UserMenu />
         ) : (
