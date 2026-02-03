@@ -1,6 +1,11 @@
 import { test, expect } from "@playwright/test"
 
 test.describe("Mobile Navigation", () => {
+  // Skip tests on desktop - mobile nav is hidden with md:hidden
+  test.skip(({ browserName, viewport }) => {
+    return viewport !== null && viewport.width >= 768
+  }, "Mobile navigation only visible on mobile viewports")
+
   test.beforeEach(async ({ page }) => {
     // Authenticate via the login page
     await page.goto("/login")
