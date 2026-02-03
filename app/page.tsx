@@ -1,164 +1,237 @@
 import Link from "next/link"
-import { DocumentTextIcon, MagnifyingGlassIcon, DevicePhoneMobileIcon, CodeBracketIcon } from "@heroicons/react/24/outline"
+import {
+  LightBulbIcon,
+  ArrowPathIcon,
+  BoltIcon,
+  LockClosedIcon,
+  CheckIcon,
+} from "@heroicons/react/24/outline"
 import { auth } from "@/lib/auth"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { getRandomNotes, getTags } from "@/lib/actions/notes"
-import { RandomNotesView } from "./random-notes-view"
+import { UserMenu } from "@/components/user-menu"
+import { AppNav } from "@/components/app-nav"
 
 export default async function LandingPage() {
   const session = await auth()
 
-  // If user is logged in, show random notes instead of landing page
-  if (session?.user) {
-    const [randomNotesData, tags] = await Promise.all([
-      getRandomNotes(5),
-      getTags(),
-    ])
-    
-    return <RandomNotesView notes={randomNotesData.notes} tags={tags} />
-  }
-
-  // Show landing page for unauthenticated users
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
-      <Header logoHref="/">
-        <Link href="/login" className="btn btn-primary">
-          Get Started
-        </Link>
+      <Header logoHref="/" nav={session?.user ? <AppNav /> : undefined}>
+        {session?.user ? (
+          <UserMenu />
+        ) : (
+          <Link href="/login" className="btn btn-ghost">
+            Sign In
+          </Link>
+        )}
       </Header>
 
       <main className="flex-1">
-      <section className="container mx-auto px-6 py-20 md:py-32">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            Your Thoughts,
-            <br />
-            Resurfaced at the Right Time
-          </h2>
-          <p className="text-xl text-base-content/60 mb-8 leading-relaxed max-w-2xl mx-auto">
-            Capture fleeting ideas as blips. Let the system bring them back when you need them.
-            Turn scattered thoughts into finished work.
-          </p>
-          <Link href={session ? "/notes" : "/register"} className="btn btn-primary btn-lg">
-            Start Capturing Ideas
-          </Link>
-        </div>
-      </section>
+        {/* Hero Section - Clear value prop, single CTA */}
+        <section className="container mx-auto px-6 py-24 md:py-32">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Stop Losing Your Best Ideas
+            </h1>
+            <p className="text-xl text-base-content/70 mb-10 leading-relaxed">
+              Etu brings your notes back when you need them. Capture thoughts in seconds,
+              and the system resurfaces them over time—turning scattered ideas into creative breakthroughs.
+            </p>
+            <Link href={session ? "/notes" : "/register"} className="btn btn-primary btn-lg px-8">
+              Start Free for 14 Days
+            </Link>
+            <p className="text-sm text-base-content/50 mt-4">No credit card required</p>
+          </div>
+        </section>
 
-      <section className="container mx-auto px-6 py-20 border-t border-base-300">
-        <div className="max-w-5xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-12">
-            What Are Blips?
-          </h3>
-          <div className="card bg-base-100 shadow-xl mb-12">
-            <div className="card-body">
-              <p className="text-lg leading-relaxed mb-4">
-                A blip is more than just a note—it&apos;s a <strong>unit of attention managed by software</strong>.
-                When you capture a fleeting thought, Etu doesn&apos;t just store it away to be forgotten.
-                Instead, the system brings it back to you at the right moments.
-              </p>
-              <p className="text-lg leading-relaxed mb-4">
-                Whether it&apos;s a seed for an article, a creative insight, or a pattern you&apos;re tracking,
-                blips resurface over time. Each time you see an old blip, you can refine it, connect it to other
-                ideas, or let it naturally evolve into something bigger.
-              </p>
-              <p className="text-lg leading-relaxed">
-                This is <strong>programmable attention</strong>—using software not just to remember, but to help
-                you think. Your scattered thoughts become a system for creative synthesis.
+        {/* Problem Section */}
+        <section className="bg-base-300/50 py-20">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Your Notes App Is a Graveyard
+              </h2>
+              <p className="text-lg text-base-content/70 leading-relaxed">
+                You capture a brilliant idea. It disappears into folders you&apos;ll never open again.
+                Months later, you have the same thought—unaware you already wrote it down.
+                <strong className="text-base-content"> Sound familiar?</strong>
               </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="container mx-auto px-6 py-20 bg-base-300/30">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-16">
-            How It Works
-          </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-              <div className="card-body">
-                <DocumentTextIcon className="h-10 w-10 text-primary" />
-                <h4 className="card-title">Capture Instantly</h4>
+        {/* Solution Section - How it works */}
+        <section className="container mx-auto px-6 py-20">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+              Etu Brings Ideas Back to Life
+            </h2>
+            <div className="grid md:grid-cols-3 gap-10">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <LightBulbIcon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Capture in Seconds</h3>
                 <p className="text-base-content/60">
-                  Jot down fleeting thoughts as blips. Write in Markdown, add tags, no friction between idea and capture.
+                  Write a quick note with Markdown. Add tags. Press Cmd+Enter. Done.
+                  Zero friction between thought and capture.
                 </p>
               </div>
-            </div>
-
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-              <div className="card-body">
-                <MagnifyingGlassIcon className="h-10 w-10 text-primary" />
-                <h4 className="card-title">Resurface & Refine</h4>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <ArrowPathIcon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Ideas Resurface</h3>
                 <p className="text-base-content/60">
-                  Old blips come back to find you. Review, connect ideas, and watch patterns emerge over time.
+                  Old notes appear in your feed over time. See past thoughts with fresh eyes.
+                  Connect dots you couldn&apos;t before.
                 </p>
               </div>
-            </div>
-
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-              <div className="card-body">
-                <DevicePhoneMobileIcon className="h-10 w-10 text-primary" />
-                <h4 className="card-title">Access Everywhere</h4>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <BoltIcon className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3">Turn Into Action</h3>
                 <p className="text-base-content/60">
-                  Web, CLI, and mobile apps. Capture from wherever inspiration strikes, sync automatically.
-                </p>
-              </div>
-            </div>
-
-            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
-              <div className="card-body">
-                <CodeBracketIcon className="h-10 w-10 text-primary" />
-                <h4 className="card-title">Your Data, Your Rules</h4>
-                <p className="text-base-content/60">
-                  Open source and self-hostable. Export anytime. Built in the open on GitHub.
+                  Refine ideas each time they resurface. Watch scattered thoughts evolve
+                  into articles, projects, and decisions.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="container mx-auto px-6 py-20">
-        <div className="max-w-3xl mx-auto">
-          <h3 className="text-3xl md:text-4xl font-semibold text-center mb-12">
-            Simple, Honest Pricing
-          </h3>
-          <div className="card bg-base-100 shadow-xl border-2 border-primary">
-            <div className="card-body text-center">
-              <div className="text-5xl font-bold mb-2">$5</div>
-              <div className="text-xl text-base-content/60 mb-6">per year</div>
-              <ul className="text-left space-y-3 mb-8 max-w-md mx-auto">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">✓</span>
-                  <span>Unlimited blips with resurfacing</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">✓</span>
-                  <span>Intelligent search and tagging</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">✓</span>
-                  <span>Web, CLI, and mobile access</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">✓</span>
-                  <span>API keys for custom integrations</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">✓</span>
-                  <span>Full data export anytime</span>
-                </li>
-              </ul>
-              <Link href="/register" className="btn btn-primary w-full">
-                Start Using Etu
-              </Link>
+        {/* Social Proof */}
+        <section className="bg-base-100 py-16">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-8 text-center">
+                <div>
+                  <div className="text-4xl font-bold mb-2">10,000+</div>
+                  <div className="text-base-content/80">Notes captured</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold mb-2">Open Source</div>
+                  <div className="text-base-content/80">Self-host anytime</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold mb-2">$5/year</div>
+                  <div className="text-base-content/80">Simple pricing</div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Benefits Grid */}
+        <section className="container mx-auto px-6 py-20">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+              Everything You Need, Nothing You Don&apos;t
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { title: "Markdown support", desc: "Write with formatting that travels anywhere" },
+                { title: "Tag organization", desc: "Find notes by topic with autocomplete tags" },
+                { title: "Full-text search", desc: "Search across all your notes instantly" },
+                { title: "Image attachments", desc: "Add screenshots and photos to any note" },
+                { title: "Keyboard shortcuts", desc: "Press 'n' for new note, '/' to search" },
+                { title: "Dark mode", desc: "Easy on your eyes, day or night" },
+                { title: "API access", desc: "Use CLI or build your own integrations" },
+                { title: "Data export", desc: "Your data is yours—export anytime" },
+              ].map((item) => (
+                <div key={item.title} className="flex gap-4 items-start">
+                  <CheckIcon className="h-6 w-6 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold">{item.title}</h4>
+                    <p className="text-base-content/60 text-sm">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ / Objection Busters */}
+        <section className="bg-base-300/50 py-20">
+          <div className="container mx-auto px-6">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+                Common Questions
+              </h2>
+              <div className="space-y-6">
+                <div className="collapse collapse-arrow bg-base-100">
+                  <input type="radio" name="faq" defaultChecked />
+                  <div className="collapse-title font-semibold">
+                    How is this different from Notion or Obsidian?
+                  </div>
+                  <div className="collapse-content text-base-content/70">
+                    <p>
+                      Notion and Obsidian are powerful but complex. Etu does one thing well:
+                      fast capture with automatic resurfacing. No folders to organize, no graph to maintain.
+                      Just write and let the system bring ideas back when you need them.
+                    </p>
+                  </div>
+                </div>
+                <div className="collapse collapse-arrow bg-base-100">
+                  <input type="radio" name="faq" />
+                  <div className="collapse-title font-semibold">
+                    What happens to my data?
+                  </div>
+                  <div className="collapse-content text-base-content/70">
+                    <p>
+                      Your notes are encrypted and stored securely. Etu is open source, so you can
+                      self-host if you prefer. You can export all your data anytime in standard formats.
+                    </p>
+                  </div>
+                </div>
+                <div className="collapse collapse-arrow bg-base-100">
+                  <input type="radio" name="faq" />
+                  <div className="collapse-title font-semibold">
+                    Why $5/year? That seems too cheap.
+                  </div>
+                  <div className="collapse-content text-base-content/70">
+                    <p>
+                      We believe note-taking shouldn&apos;t be expensive. The low price keeps us focused
+                      on building a great product instead of upselling features. Plus, it&apos;s sustainable
+                      for our infrastructure costs.
+                    </p>
+                  </div>
+                </div>
+                <div className="collapse collapse-arrow bg-base-100">
+                  <input type="radio" name="faq" />
+                  <div className="collapse-title font-semibold">
+                    Can I use it on my phone?
+                  </div>
+                  <div className="collapse-content text-base-content/70">
+                    <p>
+                      Yes! The web app is fully responsive. We also offer API access so you can use
+                      our CLI tool or connect with other apps. Native mobile apps are on the roadmap.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="container mx-auto px-6 py-24">
+          <div className="max-w-3xl mx-auto text-center">
+            <LockClosedIcon className="h-12 w-12 text-primary mx-auto mb-6" />
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Your Ideas Deserve Better Than a Folder
+            </h2>
+            <p className="text-lg text-base-content/70 mb-10">
+              Start capturing thoughts today. Watch them resurface and evolve into something bigger.
+            </p>
+            <Link href={session?.user ? "/notes" : "/register"} className="btn btn-primary btn-lg px-8">
+              Try Etu Free
+            </Link>
+            <p className="text-sm text-base-content/50 mt-4">14-day free trial, then $5/year</p>
+          </div>
+        </section>
       </main>
 
       <Footer />

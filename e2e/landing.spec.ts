@@ -14,22 +14,50 @@ test.describe("Landing Page", () => {
 
   test("displays hero section correctly", async ({ page }) => {
     await page.goto("/")
-    await expect(page.locator("h2").first()).toContainText("Your Thoughts")
-    await expect(page.getByRole("link", { name: "Get Started" })).toBeVisible()
+    await expect(page.locator("h1")).toContainText("Stop Losing Your Best Ideas")
+    await expect(page.getByRole("link", { name: "Start Free for 14 Days" })).toBeVisible()
     await expect(page).toHaveScreenshot("landing-hero.png")
   })
 
-  test("displays features section", async ({ page }) => {
+  test("displays problem section", async ({ page }) => {
     await page.goto("/")
-    await page.locator("text=How It Works").scrollIntoViewIfNeeded()
-    await expect(page.locator("text=Capture Instantly")).toBeVisible()
-    await expect(page).toHaveScreenshot("landing-features.png")
+    await page.locator("text=Your Notes App Is a Graveyard").scrollIntoViewIfNeeded()
+    await expect(page.locator("text=Your Notes App Is a Graveyard")).toBeVisible()
+    await expect(page).toHaveScreenshot("landing-problem.png")
   })
 
-  test("displays pricing section", async ({ page }) => {
+  test("displays solution section", async ({ page }) => {
     await page.goto("/")
-    await page.locator("text=Simple, Honest Pricing").scrollIntoViewIfNeeded()
-    await expect(page.locator("text=$5")).toBeVisible()
-    await expect(page).toHaveScreenshot("landing-pricing.png")
+    await page.locator("text=Etu Brings Ideas Back to Life").scrollIntoViewIfNeeded()
+    await expect(page.locator("text=Capture in Seconds")).toBeVisible()
+    await expect(page).toHaveScreenshot("landing-solution.png")
+  })
+
+  test("displays FAQ section", async ({ page }) => {
+    await page.goto("/")
+    await page.locator("text=Common Questions").scrollIntoViewIfNeeded()
+    await expect(page.locator("text=Common Questions")).toBeVisible()
+    await expect(page).toHaveScreenshot("landing-faq.png")
+  })
+})
+
+test.describe("Landing Page (Authenticated)", () => {
+  test.beforeEach(async ({ page }) => {
+    // Authenticate via the login page
+    await page.goto("/login")
+    await page.getByLabel("Email").fill("test@example.com")
+    await page.getByLabel("Password").fill("testpassword")
+    await page.getByRole("button", { name: "Sign In" }).click()
+    await page.waitForURL("/notes")
+  })
+
+  test("shows navigation links when logged in", async ({ page }) => {
+    await page.goto("/")
+    // Check for app navigation links
+    await expect(page.getByRole("link", { name: /notes/i })).toBeVisible()
+    await expect(page.getByRole("link", { name: /history/i })).toBeVisible()
+    await expect(page.getByRole("link", { name: /search/i })).toBeVisible()
+    await expect(page.getByRole("link", { name: /tags/i })).toBeVisible()
+    await expect(page).toHaveScreenshot("landing-authenticated.png")
   })
 })

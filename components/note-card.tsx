@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Link from "next/link"
 import { format } from "date-fns"
 import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
@@ -11,10 +12,11 @@ interface NoteCardProps {
   note: Note
   onEdit: (note: Note) => void
   onDelete: (id: string) => Promise<void>
-  searchQuery?: string
+  /** When true, show a short preview (line-clamp, tighter layout) for grid use */
+  compact?: boolean
 }
 
-export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
+export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
   const [viewOpen, setViewOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -58,19 +60,10 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
         className="card bg-base-100 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer group"
         onClick={() => setViewOpen(true)}
       >
-        <div className="card-body p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="text-sm text-base-content/60 mb-2" suppressHydrationWarning>{formatNoteDate(note.createdAt)}</div>
-              {note.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {note.tags.map((tag) => (
-                    <span key={tag} className="badge badge-ghost badge-sm">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
+        <div className={compact ? "card-body p-4 flex flex-col" : "card-body p-4 flex flex-col"}>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <div className={compact ? "text-xs text-base-content/60 mb-1" : "text-sm text-base-content/60 mb-2"} suppressHydrationWarning>{formatNoteDate(note.createdAt)}</div>
             </div>
             <div className="dropdown dropdown-end">
               <button
@@ -129,12 +122,12 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
           </div>
 
           <div
-            className="prose prose-sm max-w-none"
+            className={compact ? "prose prose-sm max-w-none line-clamp-2 flex-1" : "prose prose-sm max-w-none"}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(note.content) }}
           />
 
-          {/* Image thumbnails */}
-          {safeImages.length > 0 && (
+          {/* Image thumbnails - hide in compact mode for dense grid */}
+          {!compact && safeImages.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {safeImages.slice(0, 4).map((img, idx) => (
                 <div key={img.id} className="relative">
@@ -152,6 +145,22 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
               ))}
             </div>
           )}
+
+          {/* Tags at bottom right */}
+          {note.tags.length > 0 && (
+            <div className={compact ? "flex flex-wrap gap-1 mt-auto pt-2 justify-end" : "flex flex-wrap gap-2 mt-3 justify-end"}>
+              {note.tags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/search?q=${encodeURIComponent(`tag:${tag}`)}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className={compact ? "badge badge-ghost badge-xs hover:badge-primary" : "badge badge-ghost badge-sm hover:badge-primary"}
+                >
+                  {tag}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -163,16 +172,6 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
               {formatNoteDate(note.createdAt)}
             </h3>
           </div>
-
-          {note.tags.length > 0 && (
-            <div className="px-6 py-3 flex flex-wrap gap-2">
-              {note.tags.map((tag) => (
-                <span key={tag} className="badge badge-ghost">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
 
           <div className="flex-1 overflow-auto px-6 py-4">
             <div
@@ -206,6 +205,21 @@ export function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
                     </a>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Tags at bottom right */}
+            {note.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-6 justify-end">
+                {note.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/search?q=${encodeURIComponent(`tag:${tag}`)}`}
+                    className="badge badge-ghost hover:badge-primary"
+                  >
+                    {tag}
+                  </Link>
+                ))}
               </div>
             )}
           </div>

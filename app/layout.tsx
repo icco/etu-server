@@ -4,8 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Etu - Interstitial Journaling",
-  description: "Capture life's moments through quick, tagged markdown notes",
+  title: "Etu - The Best Note-Taking App for Capturing Ideas",
+  description: "The simplest, most powerful note-taking app. Capture fleeting ideas as blips and let them resurface when you need them. Turn scattered thoughts into finished work.",
 }
 
 export default function RootLayout({
