@@ -186,6 +186,18 @@ export interface GetRandomNotesResponse {
   notes: Note[]
 }
 
+export interface SearchNotesRequest {
+  userId: string
+  query: string
+  limit?: number
+  offset?: number
+}
+
+export interface SearchNotesResponse {
+  notes: Note[]
+  total: number
+}
+
 export interface ListTagsRequest {
   userId: string
 }
@@ -496,6 +508,42 @@ const realNotesService = {
       }
     }, "NotesService.getRandomNotes")
   },
+
+  async searchNotes(request: SearchNotesRequest, apiKey: string): Promise<SearchNotesResponse> {
+    return withErrorHandling(async () => {
+      const client = getNotesClient()
+      const searchRpc = (client as { searchNotes?: (req: { userId: string; query: string; limit?: number; offset?: number }, opts: { headers: HeadersInit }) => Promise<{ notes: ProtoNote[]; total: number }> }).searchNotes
+      if (typeof searchRpc === "function") {
+        const response = await searchRpc(
+          {
+            userId: request.userId,
+            query: request.query,
+            limit: request.limit ?? 50,
+            offset: request.offset ?? 0,
+          },
+          { headers: createHeaders(apiKey) }
+        )
+        return {
+          notes: response.notes.map(convertNote),
+          total: response.total,
+        }
+      }
+      // Fallback: use listNotes with search until backend exposes searchNotes RPC
+      const listResponse = await client.listNotes(
+        {
+          userId: request.userId,
+          search: request.query,
+          limit: request.limit ?? 50,
+          offset: request.offset ?? 0,
+        },
+        { headers: createHeaders(apiKey) }
+      )
+      return {
+        notes: listResponse.notes.map(convertNote),
+        total: listResponse.total,
+      }
+    }, "NotesService.searchNotes")
+  },
 }
 
 // Tags Service
@@ -583,9 +631,9 @@ const realAuthService = {
           stripeCustomerId: request.stripeCustomerId,
           subscriptionEnd: request.subscriptionEnd
             ? {
-                seconds: BigInt(request.subscriptionEnd.seconds.toString()),
-                nanos: request.subscriptionEnd.nanos,
-              }
+              seconds: BigInt(request.subscriptionEnd.seconds.toString()),
+              nanos: request.subscriptionEnd.nanos,
+            }
             : undefined,
         },
         { headers: createHeaders(apiKey) }

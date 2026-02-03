@@ -14,6 +14,8 @@ import type {
   DeleteNoteResponse,
   GetRandomNotesRequest,
   GetRandomNotesResponse,
+  SearchNotesRequest,
+  SearchNotesResponse,
   ListTagsRequest,
   ListTagsResponse,
   RegisterRequest,
@@ -226,6 +228,17 @@ export const mockNotesService = {
     // Return random notes - server is responsible for randomization
     // Just return the first N notes from mock data for testing
     return { notes: mockNotes.slice(0, Math.min(count, mockNotes.length)) }
+  },
+
+  async searchNotes(request: SearchNotesRequest, _apiKey: string): Promise<SearchNotesResponse> {
+    const query = (request.query || "").toLowerCase()
+    const filtered = query
+      ? mockNotes.filter((n) => n.content.toLowerCase().includes(query))
+      : [...mockNotes]
+    const offset = request.offset || 0
+    const limit = request.limit || 50
+    const notes = filtered.slice(offset, offset + limit)
+    return { notes, total: filtered.length }
   },
 }
 

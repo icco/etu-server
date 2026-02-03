@@ -5,11 +5,11 @@ import { TagIcon } from "@heroicons/react/24/outline"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { UserMenu } from "@/components/user-menu"
+import { AppNav } from "@/components/app-nav"
 
 interface Tag {
   id: string
   name: string
-  count: number
 }
 
 interface TagsViewProps {
@@ -19,13 +19,16 @@ interface TagsViewProps {
 export function TagsView({ tags }: TagsViewProps) {
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
-      <Header backHref="/notes" logoHref="/notes">
+      <Header logoHref="/" nav={<AppNav />}>
         <UserMenu />
       </Header>
 
       <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">Tags</h1>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6 flex items-center gap-2">
+            <TagIcon className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl font-bold">Tags</h1>
+          </div>
 
           {tags.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -43,16 +46,13 @@ export function TagsView({ tags }: TagsViewProps) {
               {tags.map((tag) => (
                 <Link
                   key={tag.id}
-                  href={`/notes?tags=${encodeURIComponent(tag.name)}`}
+                  href={`/search?q=${encodeURIComponent(`tag:${tag.name}`)}`}
                   className="card bg-base-100 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all"
                 >
                   <div className="card-body p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <TagIcon className="h-5 w-5 text-primary" />
-                        <span className="font-medium">{tag.name}</span>
-                      </div>
-                      <span className="badge badge-ghost">{tag.count}</span>
+                    <div className="flex items-center gap-2">
+                      <TagIcon className="h-5 w-5 text-primary" />
+                      <span className="font-medium">{tag.name}</span>
                     </div>
                   </div>
                 </Link>

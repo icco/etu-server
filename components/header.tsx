@@ -6,28 +6,33 @@ interface HeaderProps {
   backHref?: string
   /** URL the logo links to. Defaults to "/" */
   logoHref?: string
+  /** Navigation component to display in the center */
+  nav?: React.ReactNode
   /** Content to display on the right side of the header */
   children?: React.ReactNode
 }
 
-export function Header({ backHref, logoHref = "/", children }: HeaderProps) {
+export function Header({ backHref, logoHref = "/", nav, children }: HeaderProps) {
   return (
-    <header className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
-      <div className="navbar-start">
-        {backHref && (
-          <Link href={backHref} className="btn btn-ghost btn-square">
-            <ArrowLeftIcon className="h-5 w-5" />
+    <header className="bg-base-100 shadow-sm sticky top-0 z-50">
+      <div className="navbar container mx-auto px-4 md:px-6">
+        <div className="navbar-start">
+          {backHref && (
+            <Link href={backHref} className="btn btn-ghost btn-square">
+              <ArrowLeftIcon className="h-5 w-5" />
+            </Link>
+          )}
+          <Link href={logoHref} className="text-2xl font-bold text-base-content">
+            Etu
           </Link>
-        )}
-        <Link href={logoHref} className="pl-4 text-2xl font-bold text-base-content">
-          Etu
-        </Link>
-      </div>
-      {children && (
-        <div className="navbar-end gap-2">
-          {children}
         </div>
-      )}
+        {nav && <div className="navbar-center hidden md:flex">{nav}</div>}
+        {children && (
+          <div className="navbar-end gap-2">
+            {children}
+          </div>
+        )}
+      </div>
     </header>
   )
 }

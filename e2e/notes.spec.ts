@@ -12,11 +12,11 @@ test.describe("Notes Page", () => {
     await page.waitForURL("/notes")
   })
 
-  test("displays notes list with mocked data", async ({ page }) => {
-    // Wait for notes to load - use first() since "ideas" appears multiple times
+  test("displays notes grid and latest blip with mocked data", async ({ page }) => {
+    // Wait for notes to load - use first() since "ideas" may appear in grid or latest
     await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
 
-    // Verify mock notes are displayed
+    // Verify mock notes are displayed (3x2 grid + latest blip section)
     await expect(page.locator("text=projects").first()).toBeVisible()
     await expect(page.locator("text=work").first()).toBeVisible()
     await expect(page).toHaveScreenshot("notes-list.png")
@@ -28,25 +28,6 @@ test.describe("Notes Page", () => {
     // Check for actual note content from mock data
     await expect(page.locator("text=building").first()).toBeVisible()
     await expect(page).toHaveScreenshot("notes-content.png")
-  })
-
-  test("search filters notes", async ({ page }) => {
-    await expect(page.locator("text=ideas").first()).toBeVisible({ timeout: 10000 })
-
-    // Look for search input (may be in a toggle)
-    const searchToggle = page.locator("[aria-label*='search' i], button:has-text('Search')")
-    if (await searchToggle.first().isVisible()) {
-      await searchToggle.first().click()
-    }
-
-    const searchInput = page.getByPlaceholder(/search/i)
-    await expect(searchInput).toBeVisible()
-    await searchInput.fill("meeting")
-    await searchInput.press("Enter")
-
-    // Wait for filtered results
-    await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot("notes-search.png")
   })
 
   test("new note dialog opens via FAB", async ({ page }) => {
