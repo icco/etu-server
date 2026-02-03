@@ -55,13 +55,13 @@ jobs:
 
       - name: Generate documentation
         run: |
-          mkdir -p public/proto-docs
+          mkdir -p public/docs
           # Check if we have proto files to document
           if ls /tmp/proto-temp/*.proto 1> /dev/null 2>&1; then
-            protoc --doc_out=public/proto-docs --doc_opt=html,index.html /tmp/proto-temp/*.proto
+            protoc --doc_out=public/docs --doc_opt=html,index.html /tmp/proto-temp/*.proto
           else
             # Create a simple HTML page explaining the proto package
-            cat > public/proto-docs/index.html << 'EOF'
+            cat > public/docs/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -149,13 +149,7 @@ jobs:
           fi
 
       - name: Commit and push generated docs
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/proto-docs
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update proto documentation"
-            git push
-          fi
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update proto documentation"
+          file_pattern: "public/docs/*"

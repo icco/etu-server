@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 
 export default function ProtoDocsPage() {
   // Redirect to the static HTML file served from public/
-  redirect('/proto-docs/index.html')
+  redirect('/docs/index.html')
 }
