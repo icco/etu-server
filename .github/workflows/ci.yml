@@ -1,0 +1,263 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+jobs:
+  lint:
+    permissions:
+      contents: read
+      packages: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: yarn
+          registry-url: https://npm.pkg.github.com
+          scope: '@icco'
+      - run: yarn install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: yarn lint
+  dockerfmt:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+      - name: Format Dockerfile
+        run: go run github.com/reteps/dockerfmt@latest -w Dockerfile
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'style: format Dockerfile'
+          file_pattern: Dockerfile
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          secrets: |
+            "npm_token=${{ secrets.GITHUB_TOKEN }}"
+      - name: Generate artifact attestation
+        if: github.ref == 'refs/heads/main'
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+  e2e:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - 1
+          - 2
+          - 3
+          - 4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref }}
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: yarn
+          registry-url: https://npm.pkg.github.com
+          scope: '@icco'
+      - run: yarn install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Playwright browsers
+        run: yarn playwright install chromium --with-deps
+      - name: Run E2E tests
+        id: e2e
+        run: yarn test:e2e --update-snapshots --shard=${{ matrix.shard }}/4
+        continue-on-error: true
+        env:
+          CI: true
+          E2E_MOCK: "true"
+          GRPC_API_KEY: test-api-key
+          NEXTAUTH_SECRET: test-secret-for-e2e
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-screenshots-${{ matrix.shard }}
+          path: |
+            e2e/**/*.png
+            test-results/
+            playwright-report/
+          retention-days: 30
+      - name: Fail if tests failed
+        if: steps.e2e.outcome == 'failure'
+        run: exit 1
+  merge:
+    needs: e2e
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Download all artifacts
+        uses: actions/download-artifact@v6
+        continue-on-error: true
+        with:
+          pattern: e2e-screenshots-*
+          merge-multiple: true
+      - name: Commit screenshots to PR branch
+        if: always()
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'chore: update e2e screenshots'
+          file_pattern: e2e/**/*.png
+      - name: Comment PR with screenshots
+        if: always()
+        run: node .github/scripts/comment-screenshots.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BRANCH: ${{ github.head_ref }}
+          RUN_ID: ${{ github.run_id }}
+          TEST_OUTCOME: ${{ (needs.e2e.result == 'success' && 'success') || (needs.e2e.result == 'failure' && 'failure') || (needs.e2e.result == 'cancelled' && 'cancelled') || 'skipped' }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+      - name: Fail if tests failed
+        if: needs.e2e.result == 'failure'
+        run: exit 1
+  build-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: yarn
+          registry-url: https://npm.pkg.github.com
+          scope: '@icco'
+      - run: yarn install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install protoc-gen-doc
+        run: |
+          wget https://github.com/pseudomuto/protoc-gen-doc/releases/download/v1.5.1/protoc-gen-doc_1.5.1_linux_amd64.tar.gz
+          tar -xzf protoc-gen-doc_1.5.1_linux_amd64.tar.gz
+          chmod +x protoc-gen-doc
+          sudo mv protoc-gen-doc /usr/local/bin/
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+      - name: Fetch proto source
+        run: |
+          mkdir -p /tmp/proto-temp /tmp/proto-include/google/protobuf
+          curl -fsSL -o /tmp/proto-temp/etu.proto https://raw.githubusercontent.com/icco/etu-backend/main/proto/etu.proto
+          curl -fsSL -o /tmp/proto-include/google/protobuf/timestamp.proto https://raw.githubusercontent.com/protocolbuffers/protobuf/main/src/google/protobuf/timestamp.proto
+      - name: Generate documentation
+        run: |
+          mkdir -p public/docs
+          protoc --doc_out=public/docs --doc_opt=html,index.html -I /tmp/proto-temp -I /tmp/proto-include /tmp/proto-temp/etu.proto
+      - name: Commit and push generated docs
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Update proto documentation
+          file_pattern: public/docs/*
+  misspell:
+    name: runner / misspell
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: misspell
+        uses: reviewdog/action-misspell@v1
+        with:
+          locale: US
+          ignore: Colour,colour
+          exclude: yarn.lock
+  pr-status:
+    if: github.event_name == 'pull_request' && !cancelled()
+    needs:
+      - lint
+      - dockerfmt
+      - build-and-push-image
+      - e2e
+      - build-docs
+      - misspell
+    runs-on: ubuntu-latest
+    permissions:
+      checks: read
+      contents: read
+    steps:
+      - name: Fast fail
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: |
+          echo "Some checks failed" >&2
+          exit 1
+      - uses: wechuli/allcheckspassed@v2
