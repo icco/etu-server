@@ -18,17 +18,22 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
-      <Header 
-        logoHref="/" 
+      <Header
+        logoHref="/"
         nav={session?.user ? <AppNav /> : undefined}
       >
         {session?.user && <MobileNav />}
         {session?.user ? (
           <UserMenu />
         ) : (
-          <Link href="/login" className="btn btn-ghost">
-            Sign In
-          </Link>
+          <>
+            <Link href="/docs" className="btn btn-ghost">
+              Docs
+            </Link>
+            <Link href="/login" className="btn btn-ghost">
+              Sign In
+            </Link>
+          </>
         )}
       </Header>
 
