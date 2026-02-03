@@ -91,4 +91,7 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
           RUN_ID: ${{ github.run_id }}
           TEST_OUTCOME: ${{ needs.e2e.result }}
+      - name: Fail if tests failed
+        if: needs.e2e.result == 'failure'
+        run: exit 1
           GITHUB_REPOSITORY: ${{ github.repository }}
