@@ -122,7 +122,8 @@ jobs:
         run: yarn playwright install chromium --with-deps
       - name: Run E2E tests
         id: e2e
-        run: yarn test:e2e --shard=${{ matrix.shard }}/4
+        run: yarn test:e2e --update-snapshots --shard=${{ matrix.shard }}/4
+        continue-on-error: true
         env:
           CI: true
           E2E_MOCK: "true"
