@@ -11,8 +11,9 @@ test.describe("Settings Page", () => {
     // Wait for redirect to notes page
     await page.waitForURL("/notes")
 
-    // Navigate to settings
+    // Navigate to settings - now redirects to /settings/account
     await page.goto("/settings")
+    await page.waitForURL("/settings/account")
     await expect(page.locator("h2").filter({ hasText: "Profile Information" })).toBeVisible({
       timeout: 10000,
     })
@@ -206,6 +207,9 @@ test.describe("Settings Page", () => {
   test("can navigate to Stats tab", async ({ page }) => {
     await page.getByRole("tab", { name: "Stats" }).click()
 
+    // Verify URL changed
+    await page.waitForURL("/settings/stats")
+
     // Verify stats content
     await expect(page.locator("text=Usage Statistics")).toBeVisible()
     await expect(page.locator("text=Total Blips")).toBeVisible()
@@ -217,6 +221,9 @@ test.describe("Settings Page", () => {
   test("can navigate to Subscription tab", async ({ page }) => {
     await page.getByRole("tab", { name: "Subscription" }).click()
 
+    // Verify URL changed
+    await page.waitForURL("/settings/subscription")
+
     // Verify subscription content
     await expect(page.locator("h2").filter({ hasText: "Subscription" })).toBeVisible()
     await expect(page.locator("text=$5")).toBeVisible()
@@ -227,10 +234,49 @@ test.describe("Settings Page", () => {
   test("can navigate to API Keys tab", async ({ page }) => {
     await page.getByRole("tab", { name: "API Keys" }).click()
 
+    // Verify URL changed
+    await page.waitForURL("/settings/api")
+
     // Verify API keys content
     await expect(page.locator("h2").filter({ hasText: "API Keys" })).toBeVisible()
     await expect(page.locator("text=Create New API Key")).toBeVisible()
 
     await expect(page).toHaveScreenshot("settings-api-keys-tab.png")
+  })
+
+  test("can directly navigate to stats page via URL", async ({ page }) => {
+    // Direct navigation to stats sub-page
+    await page.goto("/settings/stats")
+    await page.waitForURL("/settings/stats")
+
+    // Verify stats content is visible
+    await expect(page.locator("text=Usage Statistics")).toBeVisible()
+
+    // Verify Stats tab is active
+    await expect(page.getByRole("tab", { name: "Stats" })).toHaveClass(/tab-active/)
+  })
+
+  test("can directly navigate to subscription page via URL", async ({ page }) => {
+    // Direct navigation to subscription sub-page
+    await page.goto("/settings/subscription")
+    await page.waitForURL("/settings/subscription")
+
+    // Verify subscription content is visible
+    await expect(page.locator("h2").filter({ hasText: "Subscription" })).toBeVisible()
+
+    // Verify Subscription tab is active
+    await expect(page.getByRole("tab", { name: "Subscription" })).toHaveClass(/tab-active/)
+  })
+
+  test("can directly navigate to api keys page via URL", async ({ page }) => {
+    // Direct navigation to API keys sub-page
+    await page.goto("/settings/api")
+    await page.waitForURL("/settings/api")
+
+    // Verify API keys content is visible
+    await expect(page.locator("h2").filter({ hasText: "API Keys" })).toBeVisible()
+
+    // Verify API Keys tab is active
+    await expect(page.getByRole("tab", { name: "API Keys" })).toHaveClass(/tab-active/)
   })
 })
