@@ -40,6 +40,8 @@ import type {
   DeleteApiKeyResponse,
   VerifyApiKeyRequest,
   VerifyApiKeyResponse,
+  GetStatsRequest,
+  GetStatsResponse,
   ApiKey,
   Note,
   NoteImage,
@@ -364,6 +366,30 @@ export const mockApiKeysService = {
     _apiKey: string
   ): Promise<VerifyApiKeyResponse> {
     return { valid: true, userId: mockUser.id }
+  },
+}
+
+// Mock Stats Service
+export const mockStatsService = {
+  async getStats(_request: GetStatsRequest, _apiKey: string): Promise<GetStatsResponse> {
+    // Calculate mock stats based on mock data
+    // Note: This mock ignores userId and always returns stats for all mock data
+    // In a real implementation, you might filter by userId when provided
+    const totalBlips = BigInt(mockNotes.length)
+    const uniqueTags = BigInt(mockTags.length)
+    
+    // Calculate total words
+    const wordsWritten = BigInt(
+      mockNotes.reduce((total, note) => {
+        return total + note.content.split(/\s+/).filter((w) => w.length > 0).length
+      }, 0)
+    )
+
+    return {
+      totalBlips,
+      uniqueTags,
+      wordsWritten,
+    }
   },
 }
 

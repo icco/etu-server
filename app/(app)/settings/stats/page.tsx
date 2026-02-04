@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getStats } from "@/lib/actions/notes"
+import { getUserStats, getGlobalStats } from "@/lib/actions/notes"
 import { StatsView } from "./stats-view"
 
 export const metadata: Metadata = {
@@ -7,7 +7,10 @@ export const metadata: Metadata = {
 }
 
 export default async function StatsPage() {
-  const stats = await getStats()
+  const [userStats, globalStats] = await Promise.all([
+    getUserStats(),
+    getGlobalStats(),
+  ])
 
-  return <StatsView stats={stats} />
+  return <StatsView userStats={userStats} globalStats={globalStats} />
 }

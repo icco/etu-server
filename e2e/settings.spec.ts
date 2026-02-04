@@ -211,9 +211,9 @@ test.describe("Settings Page", () => {
     await page.waitForURL("/settings/stats")
 
     // Verify stats content
-    await expect(page.locator("text=Usage Statistics")).toBeVisible()
-    await expect(page.locator("text=Total Blips")).toBeVisible()
-    await expect(page.locator("text=Unique Tags")).toBeVisible()
+    await expect(page.locator("text=Your Statistics")).toBeVisible()
+    await expect(page.locator("text=Your Blips")).toBeVisible()
+    await expect(page.locator("text=Your Tags")).toBeVisible()
 
     await expect(page).toHaveScreenshot("settings-stats-tab.png")
   })
@@ -250,7 +250,7 @@ test.describe("Settings Page", () => {
     await page.waitForURL("/settings/stats")
 
     // Verify stats content is visible
-    await expect(page.locator("text=Usage Statistics")).toBeVisible()
+    await expect(page.locator("text=Your Statistics")).toBeVisible()
 
     // Verify Stats tab is active
     await expect(page.getByRole("tab", { name: "Stats" })).toHaveClass(/tab-active/)
