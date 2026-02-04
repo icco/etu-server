@@ -39,6 +39,7 @@ import type {
   DeleteApiKeyRequest,
   DeleteApiKeyResponse,
   VerifyApiKeyRequest,
+  VerifyApiKeyResponse,
   GetStatsRequest,
   GetStatsResponse,
   ApiKey,
