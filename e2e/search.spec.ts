@@ -53,7 +53,10 @@ test.describe("Search Page", () => {
     await expect(page).toHaveScreenshot("search-no-results.png")
   })
 
-  test("has navigation links", async ({ page }) => {
+  test("has navigation links", async ({ page, viewport }) => {
+    // Skip on mobile - mobile nav is tested separately in mobile-navigation.spec.ts
+    test.skip(viewport !== null && viewport.width < 768, "Mobile navigation tested separately")
+
     await expect(page.locator("h1").filter({ hasText: "Search" })).toBeVisible({ timeout: 10000 })
 
     // Check for nav links

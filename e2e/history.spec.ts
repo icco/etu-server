@@ -32,7 +32,10 @@ test.describe("History Page", () => {
     await expect(page).toHaveScreenshot("history-grouped.png")
   })
 
-  test("has navigation links", async ({ page }) => {
+  test("has navigation links", async ({ page, viewport }) => {
+    // Skip on mobile - mobile nav is tested separately in mobile-navigation.spec.ts
+    test.skip(viewport !== null && viewport.width < 768, "Mobile navigation tested separately")
+
     await expect(page.locator("h1").filter({ hasText: "History" })).toBeVisible({ timeout: 10000 })
 
     // Check for nav links

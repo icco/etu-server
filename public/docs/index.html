@@ -243,6 +243,14 @@
                 </li>
               
                 <li>
+                  <a href="#etu.GetStatsRequest"><span class="badge">M</span>GetStatsRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#etu.GetStatsResponse"><span class="badge">M</span>GetStatsResponse</a>
+                </li>
+              
+                <li>
                   <a href="#etu.GetUserByStripeCustomerIdRequest"><span class="badge">M</span>GetUserByStripeCustomerIdRequest</a>
                 </li>
               
@@ -367,6 +375,10 @@
               
                 <li>
                   <a href="#etu.NotesService"><span class="badge">S</span>NotesService</a>
+                </li>
+              
+                <li>
+                  <a href="#etu.StatsService"><span class="badge">S</span>StatsService</a>
                 </li>
               
                 <li>
@@ -886,6 +898,68 @@
                   <td><a href="#etu.Note">Note</a></td>
                   <td>repeated</td>
                   <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="etu.GetStatsRequest">GetStatsRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>user_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>If empty or omitted, returns stats for all users </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="etu.GetStatsResponse">GetStatsResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>total_blips</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Total number of notes (blips) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>unique_tags</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Number of unique tags </p></td>
+                </tr>
+              
+                <tr>
+                  <td>words_written</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Total word count across all notes </p></td>
                 </tr>
               
             </tbody>
@@ -2064,6 +2138,25 @@
                 <td>GetRandomNotes</td>
                 <td><a href="#etu.GetRandomNotesRequest">GetRandomNotesRequest</a></td>
                 <td><a href="#etu.GetRandomNotesResponse">GetRandomNotesResponse</a></td>
+                <td><p></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+
+        
+        <h3 id="etu.StatsService">StatsService</h3>
+        <p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>GetStats</td>
+                <td><a href="#etu.GetStatsRequest">GetStatsRequest</a></td>
+                <td><a href="#etu.GetStatsResponse">GetStatsResponse</a></td>
                 <td><p></p></td>
               </tr>
             

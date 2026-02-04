@@ -51,7 +51,10 @@ test.describe("Landing Page (Authenticated)", () => {
     await page.waitForURL("/notes")
   })
 
-  test("shows navigation links when logged in", async ({ page }) => {
+  test("shows navigation links when logged in", async ({ page, viewport }) => {
+    // Skip on mobile - mobile nav is tested separately in mobile-navigation.spec.ts
+    test.skip(viewport !== null && viewport.width < 768, "Mobile navigation tested separately")
+
     await page.goto("/")
     // Check for app navigation links
     await expect(page.getByRole("link", { name: /notes/i })).toBeVisible()

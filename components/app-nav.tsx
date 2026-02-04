@@ -28,6 +28,7 @@ export function AppNav() {
             key={href}
             href={href}
             className={`btn btn-ghost btn-sm gap-1 ${isActive ? "btn-active" : ""}`}
+            aria-label={label}
           >
             <Icon className="h-4 w-4" />
             <span className="hidden sm:inline">{label}</span>

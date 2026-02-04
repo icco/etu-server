@@ -58,8 +58,8 @@ test.describe("Dark Mode", () => {
       await page.goto("/")
       await enableDarkMode(page)
 
-      await expect(page.locator("h2").first()).toContainText("Your Thoughts")
-      await expect(page.getByRole("link", { name: "Get Started" })).toBeVisible()
+      await expect(page.locator("h1").first()).toContainText("Stop Losing Your Best Ideas")
+      await expect(page.getByRole("link", { name: "Start Free for 14 Days" })).toBeVisible()
       await expect(page).toHaveScreenshot("landing-hero-dark.png")
     })
 
@@ -67,8 +67,8 @@ test.describe("Dark Mode", () => {
       await page.goto("/")
       await enableDarkMode(page)
 
-      await page.locator("text=How It Works").scrollIntoViewIfNeeded()
-      await expect(page.locator("text=Capture Instantly")).toBeVisible()
+      await page.locator("text=Etu Brings Ideas Back to Life").scrollIntoViewIfNeeded()
+      await expect(page.locator("text=Capture in Seconds")).toBeVisible()
       await expect(page).toHaveScreenshot("landing-features-dark.png")
     })
 
@@ -76,8 +76,8 @@ test.describe("Dark Mode", () => {
       await page.goto("/")
       await enableDarkMode(page)
 
-      await page.locator("text=Simple, Honest Pricing").scrollIntoViewIfNeeded()
-      await expect(page.locator("text=$5")).toBeVisible()
+      await page.locator("text=Simple pricing").scrollIntoViewIfNeeded()
+      await expect(page.locator("text=$5/year").first()).toBeVisible()
       await expect(page).toHaveScreenshot("landing-pricing-dark.png")
     })
   })
