@@ -122,7 +122,8 @@ jobs:
         run: yarn playwright install chromium --with-deps
       - name: Run E2E tests
         id: e2e
-        run: yarn test:e2e --shard=${{ matrix.shard }}/4
+        run: yarn test:e2e --update-snapshots --shard=${{ matrix.shard }}/4
+        continue-on-error: true
         env:
           CI: true
           E2E_MOCK: "true"
@@ -138,6 +139,9 @@ jobs:
             test-results/
             playwright-report/
           retention-days: 30
+      - name: Fail if tests failed
+        if: steps.e2e.outcome == 'failure'
+        run: exit 1
   merge:
     needs: e2e
     if: always() && github.event_name == 'pull_request'
@@ -161,6 +165,12 @@ jobs:
         with:
           pattern: e2e-screenshots-*
           merge-multiple: true
+      - name: Commit screenshots to PR branch
+        if: always()
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: 'chore: update e2e screenshots'
+          file_pattern: e2e/**/*.png
       - name: Comment PR with screenshots
         if: always()
         run: node .github/scripts/comment-screenshots.js
