@@ -7,9 +7,11 @@ import {
   KeyIcon,
   CheckIcon,
   PencilIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline"
 import { toast } from "sonner"
 import { updateName, updateImage, updateNotionKey, changePassword } from "@/lib/actions/user"
+import { exportAllNotes } from "@/lib/actions/notes"
 
 interface AccountViewProps {
   user: {
@@ -46,6 +48,9 @@ export function AccountView({ user }: AccountViewProps) {
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
+
+  // Export state
+  const [isExporting, setIsExporting] = useState(false)
 
   const handleUpdateName = async () => {
     if (!editName.trim()) {
@@ -171,6 +176,34 @@ export function AccountView({ user }: AccountViewProps) {
   const handleCancelEditNotionKey = () => {
     setEditNotionKey("")
     setIsEditingNotionKey(false)
+  }
+
+  const handleExportNotes = async () => {
+    setIsExporting(true)
+    try {
+      const exportData = await exportAllNotes()
+      
+      // Create a blob from the JSON data
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: "application/json",
+      })
+      
+      // Create a download link and trigger download
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `etu-notes-export-${new Date().toISOString().split("T")[0]}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+      
+      toast.success(`Exported ${exportData.totalNotes} notes successfully`)
+    } catch {
+      toast.error("Failed to export notes")
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   return (
@@ -384,6 +417,38 @@ export function AccountView({ user }: AccountViewProps) {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Export Data Card */}
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body">
+          <h2 className="card-title gap-2">
+            <ArrowDownTrayIcon className="h-5 w-5" />
+            Export Data
+          </h2>
+          <div>
+            <p className="text-sm text-base-content/60 mb-4">
+              Download all your notes as a JSON file. This includes note content, tags, dates, and image metadata.
+            </p>
+            <button
+              onClick={handleExportNotes}
+              disabled={isExporting}
+              className="btn btn-primary gap-2"
+            >
+              {isExporting ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <ArrowDownTrayIcon className="h-5 w-5" />
+                  Export All Notes as JSON
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
