@@ -3,7 +3,13 @@
 import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
-import { notesService, tagsService, timestampToDate, type ImageUpload } from "@/lib/grpc/client"
+import {
+  notesService,
+  tagsService,
+  statsService,
+  timestampToDate,
+  type ImageUpload,
+} from "@/lib/grpc/client"
 
 const createNoteSchema = z.object({
   content: z.string().min(1, "Content is required"),
@@ -317,6 +323,7 @@ export async function getStats() {
   }
 }
 
+<<<<<<< HEAD
 export async function exportAllNotes() {
   const userId = await requireUser()
 
@@ -354,4 +361,41 @@ export async function exportAllNotes() {
   }
 
   return exportData
+}
+
+/**
+ * Get user-specific stats using the Stats API
+ * Returns total blips, unique tags, and words written for the current user
+ */
+export async function getUserStats() {
+  const userId = await requireUser()
+
+  const response = await statsService.getStats(
+    { userId },
+    getGrpcApiKey()
+  )
+
+  return {
+    totalBlips: Number(response.totalBlips),
+    uniqueTags: Number(response.uniqueTags),
+    wordsWritten: Number(response.wordsWritten),
+  }
+}
+
+/**
+ * Get global stats using the Stats API
+ * Returns total blips, unique tags, and words written across all users
+ */
+export async function getGlobalStats() {
+  // Empty userId = global stats (backend returns stats for all users when userId is empty)
+  const response = await statsService.getStats(
+    { userId: "" },
+    getGrpcApiKey()
+  )
+
+  return {
+    totalBlips: Number(response.totalBlips),
+    uniqueTags: Number(response.uniqueTags),
+    wordsWritten: Number(response.wordsWritten),
+  }
 }

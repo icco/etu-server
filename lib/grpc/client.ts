@@ -7,6 +7,7 @@ import {
   AuthService,
   ApiKeysService,
   UserSettingsService,
+  StatsService,
   type Note as ProtoNote,
   type NoteImage as ProtoNoteImage,
   type Tag as ProtoTag,
@@ -20,6 +21,7 @@ import {
   mockAuthService,
   mockUserSettingsService,
   mockApiKeysService,
+  mockStatsService,
   isMockMode,
 } from "./mock"
 
@@ -59,6 +61,10 @@ function getApiKeysClient() {
 
 function getUserSettingsClient() {
   return createClient(UserSettingsService, getTransport())
+}
+
+function getStatsClient() {
+  return createClient(StatsService, getTransport())
 }
 
 // Re-export types for compatibility
@@ -306,6 +312,16 @@ export interface VerifyApiKeyRequest {
 export interface VerifyApiKeyResponse {
   valid: boolean
   userId?: string
+}
+
+export interface GetStatsRequest {
+  userId?: string
+}
+
+export interface GetStatsResponse {
+  totalBlips: bigint
+  uniqueTags: bigint
+  wordsWritten: bigint
 }
 
 // Helper to create headers with API key
@@ -801,3 +817,23 @@ const realUserSettingsService = {
 }
 
 export const userSettingsService = isMockMode() ? mockUserSettingsService : realUserSettingsService
+
+// Stats Service
+const realStatsService = {
+  async getStats(request: GetStatsRequest, apiKey: string): Promise<GetStatsResponse> {
+    return withErrorHandling(async () => {
+      const client = getStatsClient()
+      const response = await client.getStats(
+        { userId: request.userId ?? "" },
+        { headers: createHeaders(apiKey) }
+      )
+      return {
+        totalBlips: response.totalBlips,
+        uniqueTags: response.uniqueTags,
+        wordsWritten: response.wordsWritten,
+      }
+    }, "StatsService.getStats")
+  },
+}
+
+export const statsService = isMockMode() ? mockStatsService : realStatsService
