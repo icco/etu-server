@@ -255,7 +255,7 @@ test.describe("Settings Page", () => {
     await page.waitForURL("/settings/stats")
 
     // Verify stats content is visible
-    await expect(page.locator("text=Usage Statistics")).toBeVisible()
+    await expect(page.locator("text=Your Statistics")).toBeVisible()
 
     // Verify Stats tab is active
     await expect(page.getByRole("tab", { name: "Stats" })).toHaveClass(/tab-active/)
