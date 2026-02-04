@@ -5,6 +5,7 @@ import {
   BoltIcon,
   LockClosedIcon,
   CheckIcon,
+  CommandLineIcon,
 } from "@heroicons/react/24/outline"
 import { auth } from "@/lib/auth"
 import { Header } from "@/components/header"
@@ -148,7 +149,7 @@ export default async function LandingPage() {
                 { title: "Image attachments", desc: "Add screenshots and photos to any note" },
                 { title: "Keyboard shortcuts", desc: "Press 'n' for new note, '/' to search" },
                 { title: "Dark mode", desc: "Easy on your eyes, day or night" },
-                { title: "API access", desc: "Use CLI or build your own integrations", link: "/docs" },
+                { title: "API access", desc: "Use the CLI or build your own integrations", link: "/docs" },
                 { title: "Data export", desc: "Your data is yours—export anytime" },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4 items-start">
@@ -167,6 +168,77 @@ export default async function LandingPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CLI Section */}
+        <section className="bg-base-100 py-20">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CommandLineIcon className="h-8 w-8 text-primary" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  Power Users Love the CLI
+                </h2>
+                <p className="text-lg text-base-content/70">
+                  The Etu command-line interface brings journaling to your terminal.
+                  Perfect for keyboard workflows, scripting, and quick captures.
+                </p>
+              </div>
+              
+              <div className="bg-base-200 rounded-lg p-8">
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <h3 className="font-semibold mb-2">Quick Installation</h3>
+                    <code className="text-sm bg-base-300 px-3 py-2 rounded block">
+                      brew tap icco/tap<br />
+                      brew install etu
+                    </code>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2">Create Notes Instantly</h3>
+                    <code className="text-sm bg-base-300 px-3 py-2 rounded block">
+                      etu create
+                    </code>
+                    <p className="text-sm text-base-content/60 mt-2">
+                      Interactive TUI with live preview
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-3 mb-6">
+                  <p className="text-sm text-base-content/70">
+                    <strong>Search &amp; Filter:</strong> <code className="bg-base-300 px-2 py-0.5 rounded text-xs">etu search &quot;project ideas&quot;</code>
+                  </p>
+                  <p className="text-sm text-base-content/70">
+                    <strong>List Entries:</strong> <code className="bg-base-300 px-2 py-0.5 rounded text-xs">etu list --from 2024-01-01</code>
+                  </p>
+                  <p className="text-sm text-base-content/70">
+                    <strong>Time Since Last Post:</strong> <code className="bg-base-300 px-2 py-0.5 rounded text-xs">etu timesince</code>
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <Link href="/docs" className="btn btn-outline btn-sm">
+                    View Full CLI Documentation
+                  </Link>
+                </div>
+              </div>
+
+              <p className="text-center text-sm text-base-content/60 mt-6">
+                Open source on GitHub:{" "}
+                <a 
+                  href="https://github.com/icco/etu" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="link link-primary"
+                >
+                  github.com/icco/etu
+                </a>
+              </p>
             </div>
           </div>
         </section>
