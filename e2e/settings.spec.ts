@@ -206,10 +206,15 @@ test.describe("Settings Page", () => {
   test("can navigate to Stats tab", async ({ page }) => {
     await page.getByRole("tab", { name: "Stats" }).click()
 
-    // Verify stats content
-    await expect(page.locator("text=Usage Statistics")).toBeVisible()
+    // Verify user stats content
+    await expect(page.locator("text=Your Statistics")).toBeVisible()
     await expect(page.locator("text=Total Blips")).toBeVisible()
     await expect(page.locator("text=Unique Tags")).toBeVisible()
+    await expect(page.locator("text=Words Written")).toBeVisible()
+
+    // Verify global stats content
+    await expect(page.locator("text=Global Statistics")).toBeVisible()
+    await expect(page.locator("text=Stats across all Etu users")).toBeVisible()
 
     await expect(page).toHaveScreenshot("settings-stats-tab.png")
   })

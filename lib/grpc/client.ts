@@ -323,7 +323,6 @@ export interface GetStatsResponse {
   uniqueTags: number
   wordsWritten: number
 }
-}
 
 // Helper to create headers with API key
 function createHeaders(apiKey: string): HeadersInit {
