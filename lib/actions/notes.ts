@@ -317,6 +317,13 @@ export async function getRandomNotes(options?: { count?: number }) {
       mimeType: img.mimeType,
       createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
     })),
+    audios: note.audios.map((audio) => ({
+      id: audio.id,
+      url: audio.url,
+      transcribedText: audio.transcribedText,
+      mimeType: audio.mimeType,
+      createdAt: audio.createdAt ? timestampToDate(audio.createdAt) : undefined,
+    })),
   }))
 }
 
