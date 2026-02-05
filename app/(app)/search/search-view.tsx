@@ -122,6 +122,7 @@ export function SearchView({ initialNotes, initialTags, query }: SearchViewProps
         initialContent={editingNote?.content}
         initialTags={editingNote?.tags}
         initialImages={editingNote?.images}
+        initialAudios={editingNote?.audios}
         existingTags={allTags}
         title={editingNote ? "Edit Blip" : "New Blip"}
       />

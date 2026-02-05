@@ -45,6 +45,7 @@ import type {
   ApiKey,
   Note,
   NoteImage,
+  NoteAudio,
   Tag,
   User,
   Timestamp,
@@ -63,6 +64,7 @@ const mockNotes: Note[] = [
       "This is my first thought about **building** something great. I have many ideas for new features.\n\nIt has multiple paragraphs and supports markdown.",
     tags: ["ideas", "projects"],
     images: [],
+    audios: [],
     createdAt: mockTimestamp(new Date("2026-01-25T10:00:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-25T10:00:00Z")),
   },
@@ -71,6 +73,7 @@ const mockNotes: Note[] = [
     content: "Meeting notes from today:\n- Discussed roadmap\n- Aligned on priorities\n- Next steps identified",
     tags: ["work", "meetings"],
     images: [],
+    audios: [],
     createdAt: mockTimestamp(new Date("2026-01-24T14:30:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-24T14:30:00Z")),
   },
@@ -79,6 +82,7 @@ const mockNotes: Note[] = [
     content: "Personal reminder: call mom on Sunday",
     tags: ["personal", "reminders"],
     images: [],
+    audios: [],
     createdAt: mockTimestamp(new Date("2026-01-23T09:15:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-23T09:15:00Z")),
   },
@@ -87,6 +91,7 @@ const mockNotes: Note[] = [
     content: "Personal book recommendations:\n- The Pragmatic Programmer\n- Clean Code\n- Design Patterns",
     tags: ["reading", "personal"],
     images: [],
+    audios: [],
     createdAt: mockTimestamp(new Date("2026-01-22T16:45:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-22T16:45:00Z")),
   },
@@ -95,6 +100,7 @@ const mockNotes: Note[] = [
     content: "Quick idea: what if we added dark mode to the app?",
     tags: ["ideas"],
     images: [],
+    audios: [],
     createdAt: mockTimestamp(new Date("2026-01-21T11:20:00Z")),
     updatedAt: mockTimestamp(new Date("2026-01-21T11:20:00Z")),
   },
@@ -168,11 +174,20 @@ export const mockNotesService = {
       mimeType: img.mimeType,
       createdAt: mockTimestamp(now),
     }))
+    // Convert uploaded audios to NoteAudio objects (mock URLs)
+    const audios: NoteAudio[] = (request.audios || []).map((audio, idx) => ({
+      id: `mock-audio-${Date.now()}-${idx}`,
+      url: `data:${audio.mimeType};base64,${Buffer.from(audio.data).toString("base64")}`,
+      transcribedText: "",
+      mimeType: audio.mimeType,
+      createdAt: mockTimestamp(now),
+    }))
     const note: Note = {
       id: `mock-note-${Date.now()}`,
       content: request.content,
       tags: request.tags || [],
       images,
+      audios,
       createdAt: mockTimestamp(now),
       updatedAt: mockTimestamp(now),
     }
@@ -211,6 +226,17 @@ export const mockNotesService = {
         createdAt: mockTimestamp(now),
       }))
       note.images = [...note.images, ...newImages]
+    }
+    // Add new audios if provided
+    if (request.addAudios && request.addAudios.length > 0) {
+      const newAudios: NoteAudio[] = request.addAudios.map((audio, idx) => ({
+        id: `mock-audio-${Date.now()}-${idx}`,
+        url: `data:${audio.mimeType};base64,${Buffer.from(audio.data).toString("base64")}`,
+        transcribedText: "",
+        mimeType: audio.mimeType,
+        createdAt: mockTimestamp(now),
+      }))
+      note.audios = [...note.audios, ...newAudios]
     }
     note.updatedAt = mockTimestamp(now)
     return { note }

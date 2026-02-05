@@ -34,7 +34,8 @@ export function useNoteActions({ existingTags }: UseNoteActionsOptions) {
     async (
       content: string,
       tags: string[],
-      newImages: { data: string; mimeType: string }[]
+      newImages: { data: string; mimeType: string }[],
+      newAudios: { data: string; mimeType: string }[]
     ) => {
       try {
         if (editingNote) {
@@ -43,6 +44,7 @@ export function useNoteActions({ existingTags }: UseNoteActionsOptions) {
             content,
             tags,
             addImages: newImages.length > 0 ? newImages : undefined,
+            addAudios: newAudios.length > 0 ? newAudios : undefined,
           })
           toast.success("Blip updated")
         } else {
@@ -50,6 +52,7 @@ export function useNoteActions({ existingTags }: UseNoteActionsOptions) {
             content,
             tags,
             images: newImages.length > 0 ? newImages : undefined,
+            audios: newAudios.length > 0 ? newAudios : undefined,
           })
           toast.success("Blip saved")
         }

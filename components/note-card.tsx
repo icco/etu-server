@@ -5,7 +5,7 @@ import Link from "next/link"
 import { format } from "date-fns"
 import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
-import { EllipsisHorizontalIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { EllipsisHorizontalIcon, PencilIcon, TrashIcon, MusicalNoteIcon } from "@heroicons/react/24/outline"
 import type { Note } from "@/lib/types"
 
 interface NoteCardProps {
@@ -43,6 +43,12 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
     if (!note.images) return []
     return note.images.filter((img) => isSafeUrl(img.url))
   }, [note.images])
+
+  // Compute safe audios once to avoid repeated filtering
+  const safeAudios = useMemo(() => {
+    if (!note.audios) return []
+    return note.audios.filter((audio) => isSafeUrl(audio.url))
+  }, [note.audios])
 
   const handleDelete = async () => {
     setIsDeleting(true)
@@ -146,6 +152,16 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
             </div>
           )}
 
+          {/* Audio indicator - show icon and count */}
+          {!compact && safeAudios.length > 0 && (
+            <div className="flex items-center gap-2 mt-3 text-base-content/60">
+              <MusicalNoteIcon className="h-4 w-4" />
+              <span className="text-sm">
+                {safeAudios.length} audio file{safeAudios.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+          )}
+
           {/* Tags at bottom right */}
           {note.tags.length > 0 && (
             <div className={compact ? "flex flex-wrap gap-1 mt-auto pt-2 justify-end" : "flex flex-wrap gap-2 mt-3 justify-end"}>
@@ -203,6 +219,29 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
                         </p>
                       )}
                     </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Audio files in dialog */}
+            {safeAudios.length > 0 && (
+              <div className="mt-6 space-y-4">
+                <h4 className="text-sm font-medium text-base-content/60">Attached Audio Files</h4>
+                <div className="space-y-3">
+                  {safeAudios.map((audio) => (
+                    <div key={audio.id} className="space-y-2">
+                      <audio controls className="w-full" src={audio.url}>
+                        <track kind="captions" />
+                        Your browser does not support the audio element.
+                      </audio>
+                      {audio.transcribedText && (
+                        <div className="bg-base-200 rounded-lg p-3">
+                          <p className="text-xs font-medium text-base-content/60 mb-1">Transcription:</p>
+                          <p className="text-sm text-base-content/80">{audio.transcribedText}</p>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>

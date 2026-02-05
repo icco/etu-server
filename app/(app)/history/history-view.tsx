@@ -168,6 +168,7 @@ export function HistoryView({ initialNotes, initialTotal, initialTags }: History
         initialContent={editingNote?.content}
         initialTags={editingNote?.tags}
         initialImages={editingNote?.images}
+        initialAudios={editingNote?.audios}
         existingTags={allTags}
         title={editingNote ? "Edit Blip" : "New Blip"}
       />

@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { marked } from "marked"
 import DOMPurify from "dompurify"
-import { XMarkIcon, PhotoIcon } from "@heroicons/react/24/outline"
-import type { NoteImage as GrpcNoteImage } from "@/lib/grpc/client"
+import { XMarkIcon, PhotoIcon, MusicalNoteIcon } from "@heroicons/react/24/outline"
+import type { NoteImage as GrpcNoteImage, NoteAudio as GrpcNoteAudio } from "@/lib/grpc/client"
 
 // Pick only the fields this component uses
 type NoteImage = Pick<GrpcNoteImage, "id" | "url" | "mimeType">
+type NoteAudio = Pick<GrpcNoteAudio, "id" | "url" | "mimeType" | "transcribedText">
 
 interface PendingImage {
   id: string
@@ -16,17 +17,27 @@ interface PendingImage {
   previewUrl: string
 }
 
+interface PendingAudio {
+  id: string
+  data: string // base64
+  mimeType: string
+  previewUrl: string
+  fileName: string
+}
+
 interface NoteDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (
     content: string,
     tags: string[],
-    newImages: { data: string; mimeType: string }[]
+    newImages: { data: string; mimeType: string }[],
+    newAudios: { data: string; mimeType: string }[]
   ) => Promise<void>
   initialContent?: string
   initialTags?: string[]
   initialImages?: NoteImage[]
+  initialAudios?: NoteAudio[]
   existingTags?: string[]
   title?: string
 }
@@ -38,6 +49,7 @@ export function NoteDialog({
   initialContent = "",
   initialTags = [],
   initialImages = [],
+  initialAudios = [],
   existingTags = [],
   title = "New Blip",
 }: NoteDialogProps) {
@@ -48,8 +60,10 @@ export function NoteDialog({
   const [isSaving, setIsSaving] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [pendingImages, setPendingImages] = useState<PendingImage[]>([])
+  const [pendingAudios, setPendingAudios] = useState<PendingAudio[]>([])
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const audioInputRef = useRef<HTMLInputElement>(null)
   // Track preview URLs for cleanup to avoid memory leaks
   const previewUrlsRef = useRef<Set<string>>(new Set())
 
@@ -62,17 +76,13 @@ export function NoteDialog({
       setTags(initialTags)
       setTagInput("")
       setActiveTab("write")
-      // Revoke any existing preview object URLs before clearing pending images
-      previewUrlsRef.current.forEach((url) => {
-        URL.revokeObjectURL(url)
-      })
-      previewUrlsRef.current.clear()
-      // Revoke any existing preview object URLs before clearing pending images
+      // Revoke any existing preview object URLs before clearing pending items
       previewUrlsRef.current.forEach((url) => {
         URL.revokeObjectURL(url)
       })
       previewUrlsRef.current.clear()
       setPendingImages([])
+      setPendingAudios([])
       setTimeout(() => textareaRef.current?.focus(), 100)
     }
     prevOpenRef.current = open
@@ -98,15 +108,20 @@ export function NoteDialog({
         data: img.data,
         mimeType: img.mimeType,
       }))
-      await onSave(content.trim(), tags, newImages)
+      const newAudios = pendingAudios.map((audio) => ({
+        data: audio.data,
+        mimeType: audio.mimeType,
+      }))
+      await onSave(content.trim(), tags, newImages, newAudios)
       setContent("")
       setTags([])
-      // Revoke all preview URLs before clearing pending images
+      // Revoke all preview URLs before clearing pending items
       previewUrlsRef.current.forEach((url) => {
         URL.revokeObjectURL(url)
       })
       previewUrlsRef.current.clear()
       setPendingImages([])
+      setPendingAudios([])
     } finally {
       setIsSaving(false)
     }
@@ -116,6 +131,22 @@ export function NoteDialog({
   const MAX_IMAGE_COUNT = 10
   const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024 // 5 MiB per image
   const ALLOWED_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"]
+
+  // Audio upload constraints
+  const MAX_AUDIO_COUNT = 5
+  const MAX_AUDIO_SIZE_BYTES = 25 * 1024 * 1024 // 25 MiB per audio
+  const ALLOWED_AUDIO_MIME_TYPES = [
+    "audio/mpeg",
+    "audio/mp3",
+    "audio/wav",
+    "audio/wave",
+    "audio/ogg",
+    "audio/webm",
+    "audio/mp4",
+    "audio/m4a",
+    "audio/flac",
+    "audio/aac",
+  ]
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -165,6 +196,58 @@ export function NoteDialog({
         previewUrlsRef.current.delete(img.previewUrl)
       }
       return prev.filter((i) => i.id !== id)
+    })
+  }
+
+  const handleAudioSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+
+    const newAudios: PendingAudio[] = []
+    for (const file of Array.from(files)) {
+      // Validate MIME type
+      if (!ALLOWED_AUDIO_MIME_TYPES.includes(file.type)) continue
+
+      // Validate file size
+      if (file.size > MAX_AUDIO_SIZE_BYTES) {
+        console.warn(`Skipping file "${file.name}": exceeds ${MAX_AUDIO_SIZE_BYTES / 1024 / 1024}MB limit`)
+        continue
+      }
+
+      // Check total audio count limit
+      if (pendingAudios.length + newAudios.length >= MAX_AUDIO_COUNT) {
+        console.warn(`Maximum of ${MAX_AUDIO_COUNT} audio files allowed`)
+        break
+      }
+
+      const base64 = await fileToBase64(file)
+      const previewUrl = URL.createObjectURL(file)
+      // Track URL for cleanup
+      previewUrlsRef.current.add(previewUrl)
+      newAudios.push({
+        id: `pending-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        data: base64,
+        mimeType: file.type,
+        previewUrl,
+        fileName: file.name,
+      })
+    }
+
+    setPendingAudios((prev) => [...prev, ...newAudios])
+    // Reset file input so the same file can be selected again
+    if (audioInputRef.current) {
+      audioInputRef.current.value = ""
+    }
+  }
+
+  const removePendingAudio = (id: string) => {
+    setPendingAudios((prev) => {
+      const audio = prev.find((a) => a.id === id)
+      if (audio) {
+        URL.revokeObjectURL(audio.previewUrl)
+        previewUrlsRef.current.delete(audio.previewUrl)
+      }
+      return prev.filter((a) => a.id !== id)
     })
   }
 
@@ -325,6 +408,80 @@ export function NoteDialog({
                         type="button"
                         onClick={() => removePendingImage(img.id)}
                         className="absolute -top-2 -right-2 btn btn-circle btn-xs btn-error"
+                      >
+                        <XMarkIcon className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Audio Files */}
+          <div className="px-4 pb-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium">Audio Files</label>
+              <button
+                type="button"
+                onClick={() => audioInputRef.current?.click()}
+                className="btn btn-ghost btn-sm gap-1"
+              >
+                <MusicalNoteIcon className="h-4 w-4" />
+                Add Audio
+              </button>
+              <input
+                ref={audioInputRef}
+                type="file"
+                accept="audio/*"
+                multiple
+                onChange={handleAudioSelect}
+                className="hidden"
+              />
+            </div>
+
+            {/* Existing audios (read-only when editing) */}
+            {initialAudios.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-xs text-base-content/60">Existing audio files</span>
+                <div className="space-y-2">
+                  {initialAudios.map((audio) => (
+                    <div key={audio.id} className="flex items-center gap-2 p-2 bg-base-200 rounded-lg">
+                      <MusicalNoteIcon className="h-5 w-5 text-base-content/60 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <audio controls className="w-full h-8" src={audio.url}>
+                          <track kind="captions" />
+                        </audio>
+                        {audio.transcribedText && (
+                          <p className="text-xs text-base-content/60 mt-1 line-clamp-2">
+                            {audio.transcribedText}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Pending audios (new uploads) */}
+            {pendingAudios.length > 0 && (
+              <div className="space-y-2">
+                <span className="text-xs text-base-content/60">New audio files to upload</span>
+                <div className="space-y-2">
+                  {pendingAudios.map((audio) => (
+                    <div key={audio.id} className="relative flex items-center gap-2 p-2 bg-base-200 rounded-lg">
+                      <MusicalNoteIcon className="h-5 w-5 text-base-content/60 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-base-content truncate">{audio.fileName}</p>
+                        <audio controls className="w-full h-8 mt-1" src={audio.previewUrl}>
+                          <track kind="captions" />
+                        </audio>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removePendingAudio(audio.id)}
+                        className="btn btn-circle btn-xs btn-error flex-shrink-0"
                       >
                         <XMarkIcon className="h-3 w-3" />
                       </button>
