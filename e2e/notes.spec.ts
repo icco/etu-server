@@ -85,7 +85,7 @@ test.describe("Notes Page", () => {
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==",
       "base64"
     )
-    const fileInput = page.locator('dialog.modal-open input[type="file"]')
+    const fileInput = page.locator('dialog.modal-open input[type="file"][accept="image/*"]')
     await fileInput.setInputFiles({
       name: "test-image.png",
       mimeType: "image/png",

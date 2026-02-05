@@ -68,12 +68,20 @@ function getStatsClient() {
   return createClient(StatsService, getTransport())
 }
 
-// Re-export types for compatibility
+// =============================================================================
+// Plain interface types for use in the application
+// =============================================================================
+// These are plain object interfaces that mirror the proto types but use a simpler
+// Timestamp format. Proto types extend Message<...> which adds protobuf-specific
+// properties, so we define plain interfaces for application use.
+
+// Simple Timestamp type (converted from @bufbuild/protobuf/wkt Timestamp)
 export interface Timestamp {
   seconds: string | bigint
   nanos: number
 }
 
+// Entity types as plain interfaces (matching proto field structure)
 export interface NoteImage {
   id: string
   url: string
@@ -82,22 +90,12 @@ export interface NoteImage {
   createdAt?: Timestamp
 }
 
-export interface ImageUpload {
-  data: Uint8Array
-  mimeType: string
-}
-
 export interface NoteAudio {
   id: string
   url: string
   transcribedText: string
   mimeType: string
   createdAt?: Timestamp
-}
-
-export interface AudioUpload {
-  data: Uint8Array
-  mimeType: string
 }
 
 export interface Note {
@@ -136,6 +134,17 @@ export interface ApiKey {
   keyPrefix: string
   createdAt?: Timestamp
   lastUsed?: Timestamp
+}
+
+// Upload types (matching proto, no Timestamps)
+export interface ImageUpload {
+  data: Uint8Array
+  mimeType: string
+}
+
+export interface AudioUpload {
+  data: Uint8Array
+  mimeType: string
 }
 
 // Request/Response types
