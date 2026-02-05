@@ -20,7 +20,7 @@ interface NotesViewProps {
 
 export function NotesView({ initialRandomNotes, initialRecentNote, initialTags }: NotesViewProps) {
   const allTags = initialTags.map((t) => t.name)
-  const gridNotes = initialRandomNotes.slice(0, 6)
+  const gridNotes = initialRandomNotes
   const mostRecent = initialRecentNote
   const hasNotes = initialRandomNotes.length > 0 || initialRecentNote !== undefined
 
