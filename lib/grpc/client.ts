@@ -14,8 +14,6 @@ import {
   type Tag as ProtoTag,
   type User as ProtoUser,
   type ApiKey as ProtoApiKey,
-  type ImageUpload,
-  type AudioUpload,
 } from "@icco/etu-proto"
 import type { Timestamp as ProtoTimestamp } from "@bufbuild/protobuf/wkt"
 import {
@@ -71,45 +69,83 @@ function getStatsClient() {
 }
 
 // =============================================================================
-// Type definitions derived from @icco/etu-proto
+// Plain interface types for use in the application
 // =============================================================================
-// We derive types from proto to avoid duplication while converting protobuf's
-// complex Timestamp type to a simpler format for use in the application.
+// These are plain object interfaces that mirror the proto types but use a simpler
+// Timestamp format. Proto types extend Message<...> which adds protobuf-specific
+// properties, so we define plain interfaces for application use.
 
-// Simple Timestamp type (converts from @bufbuild/protobuf/wkt Timestamp)
+// Simple Timestamp type (converted from @bufbuild/protobuf/wkt Timestamp)
 export interface Timestamp {
   seconds: string | bigint
   nanos: number
 }
 
-// Helper type to replace proto Timestamp with our simple Timestamp
-type WithSimpleTimestamp<T, K extends keyof T> = Omit<T, K> & {
-  [P in K]?: Timestamp
+// Entity types as plain interfaces (matching proto field structure)
+export interface NoteImage {
+  id: string
+  url: string
+  extractedText: string
+  mimeType: string
+  createdAt?: Timestamp
 }
 
-// Entity types derived from proto with simplified Timestamps
-export type NoteImage = WithSimpleTimestamp<ProtoNoteImage, "createdAt">
-export type NoteAudio = WithSimpleTimestamp<ProtoNoteAudio, "createdAt">
-export type Tag = WithSimpleTimestamp<ProtoTag, "createdAt">
-export type ApiKey = WithSimpleTimestamp<ProtoApiKey, "createdAt" | "lastUsed">
-
-// Note type: replace Timestamps and use our derived NoteImage/NoteAudio types
-export type Note = Omit<ProtoNote, "createdAt" | "updatedAt" | "images" | "audios"> & {
+export interface NoteAudio {
+  id: string
+  url: string
+  transcribedText: string
+  mimeType: string
   createdAt?: Timestamp
-  updatedAt?: Timestamp
+}
+
+export interface Note {
+  id: string
+  content: string
+  tags: string[]
   images: NoteImage[]
   audios: NoteAudio[]
-}
-
-// User type: replace all Timestamp fields
-export type User = Omit<ProtoUser, "createdAt" | "updatedAt" | "subscriptionEnd"> & {
   createdAt?: Timestamp
   updatedAt?: Timestamp
-  subscriptionEnd?: Timestamp
 }
 
-// Re-export upload types (already imported from proto, they have no Timestamps)
-export type { ImageUpload, AudioUpload }
+export interface Tag {
+  id: string
+  name: string
+  count: number
+  createdAt?: Timestamp
+}
+
+export interface User {
+  id: string
+  email: string
+  name?: string
+  image?: string
+  subscriptionStatus: string
+  subscriptionEnd?: Timestamp
+  createdAt?: Timestamp
+  updatedAt?: Timestamp
+  stripeCustomerId?: string
+  notionKey?: string
+}
+
+export interface ApiKey {
+  id: string
+  name: string
+  keyPrefix: string
+  createdAt?: Timestamp
+  lastUsed?: Timestamp
+}
+
+// Upload types (matching proto, no Timestamps)
+export interface ImageUpload {
+  data: Uint8Array
+  mimeType: string
+}
+
+export interface AudioUpload {
+  data: Uint8Array
+  mimeType: string
+}
 
 // Request/Response types
 export interface ListNotesRequest {
