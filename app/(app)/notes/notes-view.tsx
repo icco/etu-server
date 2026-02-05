@@ -13,15 +13,16 @@ import type { Tag } from "@/lib/grpc/client"
 import type { Note } from "@/lib/types"
 
 interface NotesViewProps {
-  initialNotes: Note[]
+  initialRandomNotes: Note[]
+  initialRecentNote?: Note
   initialTags: Tag[]
 }
 
-export function NotesView({ initialNotes, initialTags }: NotesViewProps) {
-  const notes = initialNotes
+export function NotesView({ initialRandomNotes, initialRecentNote, initialTags }: NotesViewProps) {
   const allTags = initialTags.map((t) => t.name)
-  const gridNotes = notes.slice(0, 6)
-  const mostRecent = notes.length > 0 ? notes[0] : undefined
+  const gridNotes = initialRandomNotes
+  const mostRecent = initialRecentNote
+  const hasNotes = initialRandomNotes.length > 0 || initialRecentNote !== undefined
 
   const {
     dialogOpen,
@@ -50,7 +51,7 @@ export function NotesView({ initialNotes, initialTags }: NotesViewProps) {
             </div>
           </div>
 
-          {notes.length === 0 ? (
+          {!hasNotes ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <DocumentTextIcon className="h-16 w-16 text-base-content/40 mb-4" />
               <h2 className="text-2xl font-semibold mb-2">No blips yet</h2>

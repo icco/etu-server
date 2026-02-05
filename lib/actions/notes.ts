@@ -293,6 +293,33 @@ export async function getNotes(options?: {
   }
 }
 
+export async function getRandomNotes(options?: { count?: number }) {
+  const userId = await requireUser()
+
+  const response = await notesService.getRandomNotes(
+    {
+      userId,
+      count: options?.count || 5,
+    },
+    getGrpcApiKey()
+  )
+
+  return response.notes.map((note) => ({
+    id: note.id,
+    content: note.content,
+    createdAt: timestampToDate(note.createdAt),
+    updatedAt: timestampToDate(note.updatedAt),
+    tags: note.tags,
+    images: note.images.map((img) => ({
+      id: img.id,
+      url: img.url,
+      extractedText: img.extractedText,
+      mimeType: img.mimeType,
+      createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
+    })),
+  }))
+}
+
 export async function searchNotes(options: { query: string; limit?: number; offset?: number }) {
   const userId = await requireUser()
   const response = await notesService.searchNotes(
