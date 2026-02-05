@@ -361,9 +361,9 @@
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
 "@icco/etu-proto@^2026.2.0":
-  version "2026.2.35014"
-  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.35014/dce269cd7bd7b6816c18b7a7acb0226b837f07dd#dce269cd7bd7b6816c18b7a7acb0226b837f07dd"
-  integrity sha512-jSQhit64lzNchdPLv1DYLR49/uiNb81pt8vafL7vZHPSxn1mij98T9MmNZXwsp3fqZ4whXCIdqHttpj0SnrhUA==
+  version "2026.2.163558"
+  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.163558/9ee3684e37706cef9b76b02c2842b3fb57ef56ba#9ee3684e37706cef9b76b02c2842b3fb57ef56ba"
+  integrity sha512-NigaSQrJDZwVraTlOVfMFAkq41i+eKkG0GKjueZgdIaSpC6jqFY0dGf5cHxvwxXDdlocmCDHxGeFKx2CxpXyUQ==
   dependencies:
     "@bufbuild/protobuf" "^2.0.0"
 
@@ -3099,9 +3099,9 @@ semver@^6.3.1:
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
 semver@^7.7.1, semver@^7.7.3:
-  version "7.7.3"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.3.tgz#4b5f4143d007633a8dc671cd0a6ef9147b8bb946"
-  integrity sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==
+  version "7.7.4"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.7.4.tgz#28464e36060e991fa7a11d0279d2d3f3b57a7e8a"
+  integrity sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==
 
 set-function-length@^1.2.2:
   version "1.2.2"
@@ -3322,9 +3322,9 @@ strip-json-comments@^3.1.1:
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
 stripe@^20.2.0:
-  version "20.3.0"
-  resolved "https://registry.yarnpkg.com/stripe/-/stripe-20.3.0.tgz#4f76e6583478bf5f9c713837ffb602bd2064fd66"
-  integrity sha512-DYzcmV1MfYhycr1GwjCjeQVYk9Gu8dpxyTlu7qeDCsuguug7oUTxPsUQuZeSf/OPzK7pofqobvOKVqAwlpgf/Q==
+  version "20.3.1"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-20.3.1.tgz#3a2406cbc0e3cb6916b76704de9484d9f2e3a6a1"
+  integrity sha512-k990yOT5G5rhX3XluRPw5Y8RLdJDW4dzQ29wWT66piHrbnM2KyamJ1dKgPsw4HzGHRWjDiSSdcI2WdxQUPV3aQ==
 
 styled-jsx@5.1.6:
   version "5.1.6"
