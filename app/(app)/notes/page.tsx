@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import { getNotes, getTags } from "@/lib/actions/notes"
+import { getNotes, getRandomNotes, getTags } from "@/lib/actions/notes"
 import { NotesView } from "./notes-view"
 
 export const metadata: Metadata = {
@@ -8,14 +8,19 @@ export const metadata: Metadata = {
 }
 
 export default async function NotesPage() {
-  const [notesData, tags] = await Promise.all([
-    getNotes({ limit: 7 }),
+  const [randomNotes, recentNotesData, tags] = await Promise.all([
+    getRandomNotes({ count: 6 }),
+    getNotes({ limit: 1 }),
     getTags(),
   ])
 
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <NotesView initialNotes={notesData.notes} initialTags={tags} />
+      <NotesView 
+        initialRandomNotes={randomNotes} 
+        initialRecentNote={recentNotesData.notes[0]} 
+        initialTags={tags} 
+      />
     </Suspense>
   )
 }
