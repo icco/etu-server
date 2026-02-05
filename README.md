@@ -1,4 +1,4 @@
-# Etu Server
+# Etu Web
 
 Etu is an interstitial journaling platform that helps you capture life's moments through quick, tagged markdown notes called "blips."
 
