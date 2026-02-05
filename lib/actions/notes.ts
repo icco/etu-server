@@ -11,7 +11,7 @@ import {
   type ImageUpload,
   type AudioUpload,
 } from "@/lib/grpc/client"
-import type { Note, Tag } from "@/lib/types"
+import { toNote, type Note, type Tag } from "@/lib/types"
 
 const createNoteSchema = z.object({
   content: z.string().min(1, "Content is required"),
@@ -222,27 +222,7 @@ export async function getNote(id: string): Promise<Note> {
     getGrpcApiKey()
   )
 
-  return {
-    id: response.note.id,
-    content: response.note.content,
-    createdAt: timestampToDate(response.note.createdAt),
-    updatedAt: timestampToDate(response.note.updatedAt),
-    tags: response.note.tags,
-    images: response.note.images.map((img) => ({
-      id: img.id,
-      url: img.url,
-      extractedText: img.extractedText,
-      mimeType: img.mimeType,
-      createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
-    })),
-    audios: response.note.audios.map((audio) => ({
-      id: audio.id,
-      url: audio.url,
-      transcribedText: audio.transcribedText,
-      mimeType: audio.mimeType,
-      createdAt: audio.createdAt ? timestampToDate(audio.createdAt) : undefined,
-    })),
-  }
+  return toNote(response.note)
 }
 
 export async function getNotes(options?: {
@@ -269,27 +249,7 @@ export async function getNotes(options?: {
   )
 
   return {
-    notes: response.notes.map((note) => ({
-      id: note.id,
-      content: note.content,
-      createdAt: timestampToDate(note.createdAt),
-      updatedAt: timestampToDate(note.updatedAt),
-      tags: note.tags,
-      images: note.images.map((img) => ({
-        id: img.id,
-        url: img.url,
-        extractedText: img.extractedText,
-        mimeType: img.mimeType,
-        createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
-      })),
-      audios: note.audios.map((audio) => ({
-        id: audio.id,
-        url: audio.url,
-        transcribedText: audio.transcribedText,
-        mimeType: audio.mimeType,
-        createdAt: audio.createdAt ? timestampToDate(audio.createdAt) : undefined,
-      })),
-    })),
+    notes: response.notes.map(toNote),
     total: response.total,
   }
 }
@@ -305,27 +265,7 @@ export async function getRandomNotes(options?: { count?: number }): Promise<Note
     getGrpcApiKey()
   )
 
-  return response.notes.map((note) => ({
-    id: note.id,
-    content: note.content,
-    createdAt: timestampToDate(note.createdAt),
-    updatedAt: timestampToDate(note.updatedAt),
-    tags: note.tags,
-    images: note.images.map((img) => ({
-      id: img.id,
-      url: img.url,
-      extractedText: img.extractedText,
-      mimeType: img.mimeType,
-      createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
-    })),
-    audios: note.audios.map((audio) => ({
-      id: audio.id,
-      url: audio.url,
-      transcribedText: audio.transcribedText,
-      mimeType: audio.mimeType,
-      createdAt: audio.createdAt ? timestampToDate(audio.createdAt) : undefined,
-    })),
-  }))
+  return response.notes.map(toNote)
 }
 
 export async function searchNotes(options: { query: string; limit?: number; offset?: number }): Promise<{ notes: Note[]; total: number }> {
@@ -340,27 +280,7 @@ export async function searchNotes(options: { query: string; limit?: number; offs
     getGrpcApiKey()
   )
   return {
-    notes: response.notes.map((note) => ({
-      id: note.id,
-      content: note.content,
-      createdAt: timestampToDate(note.createdAt),
-      updatedAt: timestampToDate(note.updatedAt),
-      tags: note.tags,
-      images: note.images.map((img) => ({
-        id: img.id,
-        url: img.url,
-        extractedText: img.extractedText,
-        mimeType: img.mimeType,
-        createdAt: img.createdAt ? timestampToDate(img.createdAt) : undefined,
-      })),
-      audios: note.audios.map((audio) => ({
-        id: audio.id,
-        url: audio.url,
-        transcribedText: audio.transcribedText,
-        mimeType: audio.mimeType,
-        createdAt: audio.createdAt ? timestampToDate(audio.createdAt) : undefined,
-      })),
-    })),
+    notes: response.notes.map(toNote),
     total: response.total,
   }
 }
@@ -444,32 +364,29 @@ export async function exportAllNotes() {
     getGrpcApiKey()
   )
 
-  // Format notes for export
+  // Format notes for export (convert Dates to ISO strings)
   const exportData = {
     exportDate: new Date().toISOString(),
     userId,
     totalNotes: response.notes.length,
-    notes: response.notes.map((note) => ({
-      id: note.id,
-      content: note.content,
-      tags: note.tags,
-      createdAt: timestampToDate(note.createdAt).toISOString(),
-      updatedAt: timestampToDate(note.updatedAt).toISOString(),
-      images: note.images.map((img) => ({
-        id: img.id,
-        url: img.url,
-        extractedText: img.extractedText,
-        mimeType: img.mimeType,
-        createdAt: img.createdAt ? timestampToDate(img.createdAt).toISOString() : undefined,
-      })),
-      audios: note.audios.map((audio) => ({
-        id: audio.id,
-        url: audio.url,
-        transcribedText: audio.transcribedText,
-        mimeType: audio.mimeType,
-        createdAt: audio.createdAt ? timestampToDate(audio.createdAt).toISOString() : undefined,
-      })),
-    })),
+    notes: response.notes.map((note) => {
+      const converted = toNote(note)
+      return {
+        id: converted.id,
+        content: converted.content,
+        tags: converted.tags,
+        createdAt: converted.createdAt.toISOString(),
+        updatedAt: converted.updatedAt.toISOString(),
+        images: converted.images.map((img) => ({
+          ...img,
+          createdAt: img.createdAt?.toISOString(),
+        })),
+        audios: converted.audios.map((audio) => ({
+          ...audio,
+          createdAt: audio.createdAt?.toISOString(),
+        })),
+      }
+    }),
   }
 
   return exportData
