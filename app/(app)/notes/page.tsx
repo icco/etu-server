@@ -18,7 +18,7 @@ export default async function NotesPage() {
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
       <NotesView 
         initialRandomNotes={randomNotes} 
-        initialRecentNote={recentNotesData.notes[0]} 
+        initialRecentNote={recentNotesData.notes?.[0]} 
         initialTags={tags} 
       />
     </Suspense>
