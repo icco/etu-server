@@ -58,6 +58,12 @@ export function toNoteAudio(audio: GrpcNoteAudio): NoteAudio {
 
 /** Convert gRPC Note to view Note (Timestamp -> Date) */
 export function toNote(note: GrpcNote): Note {
+  if (!note.createdAt) {
+    throw new Error("Note.createdAt is required")
+  }
+  if (!note.updatedAt) {
+    throw new Error("Note.updatedAt is required")
+  }
   return {
     id: note.id,
     content: note.content,
