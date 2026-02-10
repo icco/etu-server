@@ -4,8 +4,6 @@ import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
 import { apiKeysService, timestampToDate } from "@/lib/grpc/client"
-import { isRateLimited } from "@/lib/rate-limit"
-import logger from "@/lib/logger"
 
 function getGrpcApiKey(): string {
   const key = process.env.GRPC_API_KEY
@@ -30,15 +28,6 @@ async function requireUser() {
 export async function createApiKey(name: string) {
   const userId = await requireUser()
   createKeySchema.parse({ name })
-
-  // Rate limiting: 10 API key creations per hour per user
-  const rateLimitKey = `api-key-create:${userId}`
-  if (isRateLimited(rateLimitKey, 10, 60 * 60 * 1000)) {
-    logger.security("API key creation rate limit exceeded", { userId })
-    throw new Error(
-      "Too many API keys created. Please try again later."
-    )
-  }
 
   const response = await apiKeysService.createApiKey(
     { userId, name },

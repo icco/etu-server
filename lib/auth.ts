@@ -48,7 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: response.user.image,
           }
         } catch (error) {
-          logger.error("Authentication error", error)
+          logger.error({ error }, "Authentication error")
           return null
         }
       },
@@ -83,7 +83,7 @@ export async function getCurrentUser() {
       hasNotionKey: Boolean(response.user.notionKey),
     }
   } catch (error) {
-    logger.error("Get current user error", error)
+    logger.error({ error }, "Get current user error")
     return null
   }
 }

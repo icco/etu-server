@@ -452,9 +452,11 @@ async function withErrorHandling<T>(fn: () => Promise<T>, methodName?: string): 
     return await fn()
   } catch (error) {
     if (error instanceof ConnectError) {
-      logger.error(`gRPC error in ${methodName || 'unknown'}`, error, {
+      logger.error({
+        error,
         code: error.code,
-      })
+        methodName: methodName || 'unknown'
+      }, `gRPC error in ${methodName || 'unknown'}`)
       throw new GrpcError(error)
     }
     throw error

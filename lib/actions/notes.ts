@@ -12,8 +12,6 @@ import {
   type AudioUpload,
 } from "@/lib/grpc/client"
 import { toNote, type Note, type Tag } from "@/lib/types"
-import { isRateLimited } from "@/lib/rate-limit"
-import logger from "@/lib/logger"
 
 const createNoteSchema = z.object({
   content: z.string().min(1, "Content is required"),
@@ -149,13 +147,6 @@ export async function createNote(data: {
 }) {
   const userId = await requireUser()
   const parsed = createNoteSchema.parse(data)
-
-  // Rate limiting: 60 note creations per minute per user
-  const rateLimitKey = `note-create:${userId}`
-  if (isRateLimited(rateLimitKey, 60, 60 * 1000)) {
-    logger.security("Note creation rate limit exceeded", { userId })
-    throw new Error("Too many notes created. Please slow down.")
-  }
 
   const response = await notesService.createNote(
     {

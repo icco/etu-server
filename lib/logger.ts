@@ -1,155 +1,28 @@
-/**
- * Secure logging utility that sanitizes sensitive data
- * Only logs detailed errors in development mode
- */
+import pino from "pino"
 
-import { redactSensitiveData } from "./security"
-
-type LogLevel = "debug" | "info" | "warn" | "error"
-
-interface LogContext {
-  [key: string]: unknown
-}
-
-class Logger {
-  private isDevelopment = process.env.NODE_ENV === "development"
-
-  /**
-   * Sanitize log data to remove sensitive information
-   */
-  private sanitize(data: unknown): unknown {
-    if (typeof data === "string") {
-      return redactSensitiveData(data)
-    }
-
-    if (data instanceof Error) {
-      return {
-        name: data.name,
-        message: this.isDevelopment
-          ? redactSensitiveData(data.message)
-          : "Error occurred",
-        stack: this.isDevelopment ? data.stack : undefined,
-      }
-    }
-
-    if (Array.isArray(data)) {
-      return data.map((item) => this.sanitize(item))
-    }
-
-    if (data && typeof data === "object") {
-      const sanitized: Record<string, unknown> = {}
-      for (const [key, value] of Object.entries(data)) {
-        // Skip potentially sensitive keys
-        if (
-          /password|secret|token|key|credential|auth/i.test(key) &&
-          !this.isDevelopment
-        ) {
-          sanitized[key] = "[REDACTED]"
-        } else {
-          sanitized[key] = this.sanitize(value)
-        }
-      }
-      return sanitized
-    }
-
-    return data
-  }
-
-  /**
-   * Format log message with context
-   */
-  private format(
-    level: LogLevel,
-    message: string,
-    context?: LogContext
-  ): string {
-    const timestamp = new Date().toISOString()
-    const prefix = `[${timestamp}] [${level.toUpperCase()}]`
-
-    if (context) {
-      const sanitizedContext = this.sanitize(context)
-      return `${prefix} ${message} ${JSON.stringify(sanitizedContext)}`
-    }
-
-    return `${prefix} ${message}`
-  }
-
-  /**
-   * Log debug messages (only in development)
-   */
-  debug(message: string, context?: LogContext) {
-    if (this.isDevelopment) {
-      console.log(this.format("debug", message, context))
-    }
-  }
-
-  /**
-   * Log info messages
-   */
-  info(message: string, context?: LogContext) {
-    console.log(this.format("info", message, context))
-  }
-
-  /**
-   * Log warning messages
-   */
-  warn(message: string, context?: LogContext) {
-    console.warn(this.format("warn", message, context))
-  }
-
-  /**
-   * Log error messages with sanitization
-   */
-  error(message: string, error?: unknown, context?: LogContext) {
-    const sanitizedError = error ? this.sanitize(error) : undefined
-    const fullContext = {
-      ...context,
-      error: sanitizedError,
-    }
-
-    console.error(this.format("error", message, fullContext))
-  }
-
-  /**
-   * Log security events (always logged with sanitized context)
-   * NOTE: Security logs should contain audit trail information like:
-   * IP addresses, user IDs, timestamps, action types.
-   * Context is automatically sanitized to remove common sensitive fields.
-   */
-  security(event: string, context?: LogContext) {
-    const timestamp = new Date().toISOString()
-    
-    // Basic sanitization of context to remove common sensitive fields
-    let sanitizedContext = context || {}
-    if (context) {
-      const sensitiveKeys = ['password', 'token', 'secret', 'key', 'credential', 'apiKey']
-      sanitizedContext = Object.entries(context).reduce((acc, [key, value]) => {
-        if (sensitiveKeys.some(sk => key.toLowerCase().includes(sk))) {
-          acc[key] = '[REDACTED]'
-        } else {
-          acc[key] = value
-        }
-        return acc
-      }, {} as LogContext)
-    }
-    
-    console.warn(`[${timestamp}] [SECURITY] ${event}`, sanitizedContext)
-  }
-}
-
-// Singleton instance
-const logger = new Logger()
+const logger = pino({
+  level: process.env.LOG_LEVEL || "info",
+  serializers: {
+    // Ensure errors logged as { error } or { err } are properly serialized
+    error: pino.stdSerializers.err,
+    err: pino.stdSerializers.err,
+  },
+  // Redact common sensitive fields to avoid leaking secrets in logs
+  redact: [
+    // HTTP authorization / cookies
+    "req.headers.authorization",
+    "req.headers.cookie",
+    'res.headers["set-cookie"]',
+    "headers.authorization",
+    "headers.cookie",
+    // Generic secret-like fields
+    "*.password",
+    "*.token",
+    "*.accessToken",
+    "*.refreshToken",
+    "*.secret",
+    "*.apiKey",
+  ],
+})
 
 export default logger
-
-// Convenience exports
-export const debug = (message: string, context?: LogContext) =>
-  logger.debug(message, context)
-export const info = (message: string, context?: LogContext) =>
-  logger.info(message, context)
-export const warn = (message: string, context?: LogContext) =>
-  logger.warn(message, context)
-export const error = (message: string, err?: unknown, context?: LogContext) =>
-  logger.error(message, err, context)
-export const security = (event: string, context?: LogContext) =>
-  logger.security(event, context)

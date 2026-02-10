@@ -57,7 +57,7 @@ export async function updateName(formData: FormData) {
     revalidatePath("/settings")
     return { success: true }
   } catch (error) {
-    logger.error("Update name error", error, { userId: session.user.id })
+    logger.error({ error, userId: session.user.id }, "Update name error")
     return { error: "Failed to update name" }
   }
 }
@@ -90,7 +90,7 @@ export async function updateImage(formData: FormData) {
     revalidatePath("/settings")
     return { success: true }
   } catch (error) {
-    logger.error("Update image error", error, { userId: session.user.id })
+    logger.error({ error, userId: session.user.id }, "Update image error")
     return { error: "Failed to update image" }
   }
 }
@@ -122,7 +122,7 @@ export async function updateNotionKey(formData: FormData) {
     revalidatePath("/settings")
     return { success: true }
   } catch (error) {
-    logger.error("Update Notion key error", error, { userId: session.user.id })
+    logger.error({ error, userId: session.user.id }, "Update Notion key error")
     return { error: "Failed to update Notion key" }
   }
 }
@@ -152,7 +152,7 @@ export async function changePassword(formData: FormData) {
 
     return { success: true }
   } catch (error) {
-    logger.error("Change password error", error, { userId: session.user.id })
+    logger.error({ error, userId: session.user.id }, "Change password error")
     return { error: "Failed to change password" }
   }
 }

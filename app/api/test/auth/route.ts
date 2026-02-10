@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    logger.error("Test auth error", error)
+    logger.error({ error }, "Test auth error")
     return NextResponse.json({ error: "Authentication failed" }, { status: 500 })
   }
 }

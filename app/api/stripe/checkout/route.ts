@@ -16,10 +16,10 @@ function getGrpcApiKey(): string {
 export async function POST(request: Request) {
   // CSRF protection: verify origin
   if (!isSameOrigin(request)) {
-    logger.security("Stripe checkout CSRF attempt detected", {
+    logger.error({
       origin: request.headers.get("origin"),
       referer: request.headers.get("referer"),
-    })
+    }, "Stripe checkout CSRF attempt detected")
     return NextResponse.json(
       { error: "Invalid request origin" },
       { status: 403 }
@@ -73,9 +73,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
-    logger.error("Stripe checkout error", error, {
+    logger.error({
+      error,
       userId: session.user.id,
-    })
+    }, "Stripe checkout error")
     return NextResponse.json({ error: "Failed to create checkout" }, { status: 500 })
   }
 }
