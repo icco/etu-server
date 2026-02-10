@@ -9,16 +9,26 @@ type LockoutEntry = {
   lastAttempt: number
 }
 
+interface LockoutConfig {
+  maxAttempts?: number
+  lockoutDurationMs?: number
+  resetWindowMs?: number
+}
+
 class AccountLockoutTracker {
   private store = new Map<string, LockoutEntry>()
   private cleanupInterval: NodeJS.Timeout | null = null
 
-  // Configuration
-  private readonly MAX_ATTEMPTS = 5
-  private readonly LOCKOUT_DURATION = 15 * 60 * 1000 // 15 minutes
-  private readonly RESET_WINDOW = 60 * 60 * 1000 // 1 hour - reset attempts if no failures in this time
+  // Configuration (can be overridden via constructor)
+  private readonly MAX_ATTEMPTS: number
+  private readonly LOCKOUT_DURATION: number
+  private readonly RESET_WINDOW: number
 
-  constructor() {
+  constructor(config: LockoutConfig = {}) {
+    this.MAX_ATTEMPTS = config.maxAttempts ?? 5
+    this.LOCKOUT_DURATION = config.lockoutDurationMs ?? 15 * 60 * 1000 // 15 minutes
+    this.RESET_WINDOW = config.resetWindowMs ?? 60 * 60 * 1000 // 1 hour
+
     // Clean up expired entries every 10 minutes
     this.cleanupInterval = setInterval(() => {
       this.cleanup()

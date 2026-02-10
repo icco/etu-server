@@ -32,6 +32,12 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 })
 
+// Helper function to format lockout error message
+function formatLockoutMessage(unlockAt: number): string {
+  const minutesRemaining = Math.ceil((unlockAt - Date.now()) / (60 * 1000))
+  return `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minute${minutesRemaining === 1 ? "" : "s"}.`
+}
+
 export async function register(formData: FormData) {
   const parsed = registerSchema.safeParse({
     email: formData.get("email"),
@@ -46,7 +52,7 @@ export async function register(formData: FormData) {
 
   // Rate limiting: 5 attempts per minute per IP
   const headersList = await headers()
-  const clientId = await getClientIdentifier(headersList)
+  const clientId = getClientIdentifier(headersList)
   const rateLimitKey = `register:${clientId}`
 
   if (isRateLimited(rateLimitKey, 5, 60 * 1000)) {
@@ -95,18 +101,15 @@ export async function login(formData: FormData) {
   // Check account lockout first
   const lockStatus = isAccountLocked(email)
   if (lockStatus.isLocked && lockStatus.unlockAt) {
-    const minutesRemaining = Math.ceil(
-      (lockStatus.unlockAt - Date.now()) / (60 * 1000)
-    )
     logger.security("Login attempt on locked account", { email })
     return {
-      error: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minute${minutesRemaining === 1 ? "" : "s"}.`,
+      error: formatLockoutMessage(lockStatus.unlockAt),
     }
   }
 
   // Rate limiting: 5 attempts per minute per IP
   const headersList = await headers()
-  const clientId = await getClientIdentifier(headersList)
+  const clientId = getClientIdentifier(headersList)
   const rateLimitKey = `login:${clientId}`
 
   if (isRateLimited(rateLimitKey, 5, 60 * 1000)) {
@@ -129,12 +132,9 @@ export async function login(formData: FormData) {
       const lockoutStatus = recordFailedLogin(email)
 
       if (lockoutStatus.isLocked && lockoutStatus.unlockAt) {
-        const minutesRemaining = Math.ceil(
-          (lockoutStatus.unlockAt - Date.now()) / (60 * 1000)
-        )
         logger.security("Account locked after failed attempts", { email })
         return {
-          error: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minute${minutesRemaining === 1 ? "" : "s"}.`,
+          error: formatLockoutMessage(lockoutStatus.unlockAt),
         }
       }
 

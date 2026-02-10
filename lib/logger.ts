@@ -111,7 +111,12 @@ class Logger {
   }
 
   /**
-   * Log security events (always logged, never sanitized)
+   * Log security events (always logged with full context)
+   * WARNING: Only pass non-sensitive data to the context parameter.
+   * This method does NOT sanitize context data as it's meant for
+   * security audit trails that need precise information.
+   * Examples: IP addresses, user IDs, timestamps, action types.
+   * Never pass: passwords, tokens, API keys, PII, or error objects.
    */
   security(event: string, context?: LogContext) {
     const timestamp = new Date().toISOString()

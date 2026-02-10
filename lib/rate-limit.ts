@@ -139,7 +139,7 @@ export function resetRateLimit(identifier: string) {
 }
 
 // Helper to get client identifier from request headers
-export async function getClientIdentifier(headers?: Headers): Promise<string> {
+export function getClientIdentifier(headers?: Headers): string {
   if (!headers) {
     return "unknown"
   }
