@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 import { z } from "zod"
 import { authConfig } from "./auth.config"
 import { authService, timestampToDate } from "./grpc/client"
+import logger from "./logger"
 
 function getGrpcApiKey(): string {
   const key = process.env.GRPC_API_KEY
@@ -47,9 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: response.user.image,
           }
         } catch (error) {
-          if (process.env.NODE_ENV !== "production") {
-            console.error("Authentication error:", error)
-          }
+          logger.error("Authentication error", error)
           return null
         }
       },
@@ -84,9 +83,7 @@ export async function getCurrentUser() {
       hasNotionKey: Boolean(response.user.notionKey),
     }
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Get current user error:", error)
-    }
+    logger.error("Get current user error", error)
     return null
   }
 }

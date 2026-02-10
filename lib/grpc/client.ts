@@ -25,6 +25,7 @@ import {
   mockStatsService,
   isMockMode,
 } from "./mock"
+import logger from "../logger"
 
 // Get backend URL from environment
 const rawGrpcUrl = process.env.GRPC_BACKEND_URL || "http://localhost:50051"
@@ -451,7 +452,9 @@ async function withErrorHandling<T>(fn: () => Promise<T>, methodName?: string): 
     return await fn()
   } catch (error) {
     if (error instanceof ConnectError) {
-      console.error(`gRPC error in ${methodName || 'unknown'}:`, error.code, error.message)
+      logger.error(`gRPC error in ${methodName || 'unknown'}`, error, {
+        code: error.code,
+      })
       throw new GrpcError(error)
     }
     throw error

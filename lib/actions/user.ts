@@ -4,6 +4,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth"
 import { userSettingsService } from "@/lib/grpc/client"
 import { revalidatePath } from "next/cache"
+import logger from "@/lib/logger"
 
 function getGrpcApiKey(): string {
   const key = process.env.GRPC_API_KEY
@@ -56,7 +57,7 @@ export async function updateName(formData: FormData) {
     revalidatePath("/settings")
     return { success: true }
   } catch (error) {
-    console.error("Update name error:", error)
+    logger.error("Update name error", error, { userId: session.user.id })
     return { error: "Failed to update name" }
   }
 }
@@ -89,7 +90,7 @@ export async function updateImage(formData: FormData) {
     revalidatePath("/settings")
     return { success: true }
   } catch (error) {
-    console.error("Update image error:", error)
+    logger.error("Update image error", error, { userId: session.user.id })
     return { error: "Failed to update image" }
   }
 }
@@ -121,7 +122,7 @@ export async function updateNotionKey(formData: FormData) {
     revalidatePath("/settings")
     return { success: true }
   } catch (error) {
-    console.error("Update Notion key error:", error)
+    logger.error("Update Notion key error", error, { userId: session.user.id })
     return { error: "Failed to update Notion key" }
   }
 }
@@ -151,7 +152,7 @@ export async function changePassword(formData: FormData) {
 
     return { success: true }
   } catch (error) {
-    console.error("Change password error:", error)
+    logger.error("Change password error", error, { userId: session.user.id })
     return { error: "Failed to change password" }
   }
 }

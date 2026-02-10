@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { signIn } from "@/lib/auth"
 import { isMockMode } from "@/lib/grpc/mock"
+import logger from "@/lib/logger"
 
 // This endpoint is only available in E2E mock mode
 // It allows Playwright tests to authenticate without a real backend
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error("Test auth error:", error)
+    logger.error("Test auth error", error)
     return NextResponse.json({ error: "Authentication failed" }, { status: 500 })
   }
 }
