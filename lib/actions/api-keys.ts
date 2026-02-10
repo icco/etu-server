@@ -4,7 +4,6 @@ import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
 import { apiKeysService, timestampToDate } from "@/lib/grpc/client"
-import logger from "@/lib/logger"
 
 function getGrpcApiKey(): string {
   const key = process.env.GRPC_API_KEY

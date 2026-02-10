@@ -12,7 +12,6 @@ import {
   type AudioUpload,
 } from "@/lib/grpc/client"
 import { toNote, type Note, type Tag } from "@/lib/types"
-import logger from "@/lib/logger"
 
 const createNoteSchema = z.object({
   content: z.string().min(1, "Content is required"),
