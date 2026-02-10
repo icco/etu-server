@@ -58,5 +58,3 @@ export function isSameOrigin(request: Request): boolean {
 
   return verifyOrigin(request, [authUrl])
 }
-
-
