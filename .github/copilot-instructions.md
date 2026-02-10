@@ -19,6 +19,7 @@ Etu is an interstitial journaling platform that helps users capture life's momen
 - **Backend Client**: Connect RPC (`@connectrpc/connect`)
 - **Proto Types**: `@icco/etu-proto` package (published from etu-backend)
 - **Auth**: Auth.js v5 (NextAuth) with credentials via gRPC backend
+  - **Note**: Auth.js v5 is fully compatible with Next.js 16. While you may see peer dependency warnings during installation, the library works correctly in production. Use `--legacy-peer-deps` if needed.
 - **Styling**: Tailwind CSS 4 + daisyUI 5
 - **Icons**: Heroicons v2
 - **Markdown**: marked + DOMPurify for sanitization
