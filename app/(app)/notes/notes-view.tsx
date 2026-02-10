@@ -58,13 +58,25 @@ export function NotesView({ initialRandomNotes, initialRecentNote, initialTags }
               <p className="text-base-content/60 mb-6 max-w-md">
                 Start your interstitial journaling journey by capturing your first thought.
               </p>
-              <button onClick={() => setDialogOpen(true)} className="btn btn-primary gap-2">
+              <button onClick={() => setDialogOpen(true)} className="btn btn-primary gap-2" type="button">
                 <PlusIcon className="h-5 w-5" />
                 Create Your First Blip
               </button>
             </div>
           ) : (
             <div className="max-w-4xl mx-auto space-y-8">
+              {/* Most recent blip in full form */}
+              {mostRecent && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Latest blip</h3>
+                  <NoteCard
+                    note={mostRecent}
+                    onEdit={handleEditNote}
+                    onDelete={handleDeleteNote}
+                  />
+                </div>
+              )}
+
               {/* 3×2 grid of truncated blips */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {gridNotes.map((note) => (
@@ -77,18 +89,6 @@ export function NotesView({ initialRandomNotes, initialRecentNote, initialTags }
                   />
                 ))}
               </div>
-
-              {/* Most recent blip in full form */}
-              {mostRecent && (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">Latest blip</h3>
-                  <NoteCard
-                    note={mostRecent}
-                    onEdit={handleEditNote}
-                    onDelete={handleDeleteNote}
-                  />
-                </div>
-              )}
             </div>
           )}
         </main>
@@ -98,6 +98,7 @@ export function NotesView({ initialRandomNotes, initialRecentNote, initialTags }
             onClick={openNewNoteDialog}
             className="btn btn-lg btn-circle btn-primary"
             aria-label="Create new note"
+            type="button"
           >
             <PlusIcon className="h-6 w-6" />
           </button>
