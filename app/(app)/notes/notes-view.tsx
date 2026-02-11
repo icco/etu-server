@@ -78,6 +78,7 @@ export function NotesView({ initialRandomNotes, initialRecentNote, initialTags }
               )}
 
               {/* 3×2 grid of truncated blips */}
+              <h3 className="text-lg font-semibold mb-4">Random blips</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {gridNotes.map((note) => (
                   <NoteCard
