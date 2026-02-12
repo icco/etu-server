@@ -3,13 +3,13 @@
 import { useState } from "react"
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline"
 
-interface TranscriptCollapseProps {
+interface CollapsibleTranscriptProps {
   text: string
   label?: string
   maxLength?: number
 }
 
-export function TranscriptCollapse({ text, label = "Transcription:", maxLength = 150 }: TranscriptCollapseProps) {
+export function CollapsibleTranscript({ text, label = "Transcription:", maxLength = 150 }: CollapsibleTranscriptProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const shouldTruncate = text.length > maxLength
 

@@ -7,7 +7,7 @@ import { marked } from "marked"
 import DOMPurify from "isomorphic-dompurify"
 import { EllipsisHorizontalIcon, PencilIcon, TrashIcon, MusicalNoteIcon } from "@heroicons/react/24/outline"
 import type { Note } from "@/lib/types"
-import { TranscriptCollapse } from "@/components/transcript-collapse"
+import { CollapsibleTranscript } from "@/components/collapsible-transcript"
 
 interface NoteCardProps {
   note: Note
@@ -216,7 +216,7 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
                       />
                       {img.extractedText && (
                         <div className="mt-2">
-                          <TranscriptCollapse text={img.extractedText} label="Image text:" maxLength={150} />
+                          <CollapsibleTranscript text={img.extractedText} label="Extracted text:" maxLength={150} />
                         </div>
                       )}
                     </a>
@@ -248,7 +248,7 @@ export function NoteCard({ note, onEdit, onDelete, compact }: NoteCardProps) {
                           Your browser does not support the audio element.
                         </audio>
                         {audio.transcribedText && (
-                          <TranscriptCollapse text={audio.transcribedText} label="Transcription:" maxLength={200} />
+                          <CollapsibleTranscript text={audio.transcribedText} label="Transcription:" maxLength={200} />
                         )}
                       </div>
                     )
