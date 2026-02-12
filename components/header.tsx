@@ -16,19 +16,19 @@ export function Header({ backHref, logoHref = "/", nav, children }: HeaderProps)
   return (
     <header className="bg-base-100 shadow-sm sticky top-0 z-50">
       <div className="navbar container mx-auto px-4 md:px-6">
-        <div className="navbar-start">
+        <div className="flex-1">
           {backHref && (
             <Link href={backHref} className="btn btn-ghost btn-square">
               <ArrowLeftIcon className="h-5 w-5" />
             </Link>
           )}
-          <Link href={logoHref} className="text-2xl font-bold text-base-content">
+          <Link href={logoHref} className="btn btn-ghost text-xl">
             Etu
           </Link>
         </div>
-        {nav && <div className="navbar-center hidden md:flex">{nav}</div>}
+        {nav && <div className="flex-none hidden md:flex">{nav}</div>}
         {children && (
-          <div className="navbar-end gap-2">
+          <div className="flex-none gap-2">
             {children}
           </div>
         )}
