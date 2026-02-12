@@ -29,8 +29,9 @@ test.describe("Mobile Navigation", () => {
     // Click the user menu button
     await page.getByRole("button", { name: "Open user menu" }).click()
 
-    // Wait for dropdown to appear and click History link
-    await page.getByRole("link", { name: /history/i }).first().click()
+    // Wait for dropdown to appear and click History link - scoped to dropdown
+    const dropdown = page.locator('.dropdown-content')
+    await dropdown.getByRole("link", { name: /history/i }).click()
 
     // Verify we navigated to /history
     await expect(page).toHaveURL("/history")
@@ -42,13 +43,14 @@ test.describe("Mobile Navigation", () => {
     // Click the user menu button
     await page.getByRole("button", { name: "Open user menu" }).click()
 
-    // Check all navigation links are visible in the menu
-    await expect(page.getByRole("link", { name: /^notes$/i }).first()).toBeVisible()
-    await expect(page.getByRole("link", { name: /^history$/i }).first()).toBeVisible()
-    await expect(page.getByRole("link", { name: /^search$/i }).first()).toBeVisible()
-    await expect(page.getByRole("link", { name: /^tags$/i }).first()).toBeVisible()
-    await expect(page.getByRole("link", { name: /settings/i }).first()).toBeVisible()
-    await expect(page.getByRole("button", { name: /logout/i })).toBeVisible()
+    // Check all navigation links are visible in the menu - scoped to dropdown
+    const dropdown = page.locator('.dropdown-content')
+    await expect(dropdown.getByRole("link", { name: /^notes$/i })).toBeVisible()
+    await expect(dropdown.getByRole("link", { name: /^history$/i })).toBeVisible()
+    await expect(dropdown.getByRole("link", { name: /^search$/i })).toBeVisible()
+    await expect(dropdown.getByRole("link", { name: /^tags$/i })).toBeVisible()
+    await expect(dropdown.getByRole("link", { name: /settings/i })).toBeVisible()
+    await expect(dropdown.getByRole("button", { name: /logout/i })).toBeVisible()
   })
 
   test("user menu works on /history page", async ({ page }) => {
@@ -57,8 +59,9 @@ test.describe("Mobile Navigation", () => {
     // Click the user menu button
     await page.getByRole("button", { name: "Open user menu" }).click()
 
-    // Navigate to Search
-    await page.getByRole("link", { name: /^search$/i }).first().click()
+    // Navigate to Search - scoped to dropdown
+    const dropdown = page.locator('.dropdown-content')
+    await dropdown.getByRole("link", { name: /^search$/i }).click()
     await expect(page).toHaveURL("/search")
   })
 })

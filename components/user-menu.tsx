@@ -62,7 +62,9 @@ export function UserMenu() {
             Tags
           </Link>
         </li>
-        <div className="divider my-0"></div>
+        <li>
+          <div className="divider my-0"></div>
+        </li>
         <li>
           <Link href="/settings" className={isActive("/settings") ? "active" : ""}>
             <Cog6ToothIcon className="h-4 w-4" />
