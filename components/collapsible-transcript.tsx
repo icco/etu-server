@@ -32,6 +32,7 @@ export function CollapsibleTranscript({ text, label = "Transcription:", maxLengt
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
         className="btn btn-ghost btn-xs mt-2 gap-1"
+        aria-expanded={isExpanded}
       >
         {isExpanded ? (
           <>
