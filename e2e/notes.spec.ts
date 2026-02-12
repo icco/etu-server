@@ -137,38 +137,39 @@ test.describe("Notes Page", () => {
     await expect(extractedTextLabel).toBeVisible()
     
     // Verify the "Show more" button exists for long extracted text
-    const extractedTextShowMore = page.locator("dialog.modal-open").getByRole("button", { name: /Show more/ }).first()
-    await expect(extractedTextShowMore).toBeVisible()
-    
+    // Buttons use aria-label="Expand transcription" / "Collapse transcription"
+    const extractedTextExpand = page.locator("dialog.modal-open").getByRole("button", { name: /Expand transcription/ }).first()
+    await expect(extractedTextExpand).toBeVisible()
+
     // Click to expand and verify full text is visible
-    await extractedTextShowMore.click()
+    await extractedTextExpand.click()
     await expect(page.locator("dialog.modal-open").getByText(/CollapsibleTranscript component handles/)).toBeVisible()
-    
-    // Verify "Show less" button appears after expanding
-    const extractedTextShowLess = page.locator("dialog.modal-open").getByRole("button", { name: /Show less/ }).first()
-    await expect(extractedTextShowLess).toBeVisible()
-    
+
+    // Verify "Collapse" button appears after expanding
+    const extractedTextCollapse = page.locator("dialog.modal-open").getByRole("button", { name: /Collapse transcription/ }).first()
+    await expect(extractedTextCollapse).toBeVisible()
+
     // Collapse it again
-    await extractedTextShowLess.click()
-    await expect(extractedTextShowMore).toBeVisible()
+    await extractedTextCollapse.click()
+    await expect(extractedTextExpand).toBeVisible()
 
     // Verify audio section exists
     await expect(page.locator("dialog.modal-open").getByText("Attached Audio Files")).toBeVisible()
-    
+
     // Verify audio player is present
     const audioPlayer = page.locator("dialog.modal-open audio")
     await expect(audioPlayer).toBeVisible()
-    
+
     // Verify transcription is shown with CollapsibleTranscript component
     const transcriptionLabel = page.locator("dialog.modal-open").getByText("Transcription:")
     await expect(transcriptionLabel).toBeVisible()
-    
-    // Verify the "Show more" button exists for long transcription
-    const transcriptionShowMore = page.locator("dialog.modal-open").getByRole("button", { name: /Show more/ }).last()
-    await expect(transcriptionShowMore).toBeVisible()
-    
+
+    // Verify the expand button exists for long transcription
+    const transcriptionExpand = page.locator("dialog.modal-open").getByRole("button", { name: /Expand transcription/ }).last()
+    await expect(transcriptionExpand).toBeVisible()
+
     // Click to expand transcription
-    await transcriptionShowMore.click()
+    await transcriptionExpand.click()
     await expect(page.locator("dialog.modal-open").getByText(/audio transcription/)).toBeVisible()
 
     // Take a screenshot
