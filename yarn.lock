@@ -328,9 +328,9 @@
     levn "^0.4.1"
 
 "@exodus/bytes@^1.11.0", "@exodus/bytes@^1.6.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@exodus/bytes/-/bytes-1.12.0.tgz#c7a268cf9c14d44e14959e08824467f496c5f10a"
-  integrity sha512-BuCOHA/EJdPN0qQ5MdgAiJSt9fYDHbghlgrj33gRdy/Yp1/FMCDhU6vJfcKrLC0TPWGSrfH3vYXBQWmFHxlddw==
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@exodus/bytes/-/bytes-1.13.0.tgz#0164f26e542b606ab25dd29671ba2c9697426abe"
+  integrity sha512-VnfL2lS43Z9F8li1faMH9hDZwqfrF5JvOePmrF8oESfo0ijaujnT81zYtienQRpoFa+FJbq0E5rrnMWEW73gOw==
 
 "@heroicons/react@^2.2.0":
   version "2.2.0"
@@ -361,9 +361,9 @@
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
 
 "@icco/etu-proto@^2026.2.0":
-  version "2026.2.175709"
-  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.175709/7286b83c06dbd78c874f7b06009d527d1311e7a2#7286b83c06dbd78c874f7b06009d527d1311e7a2"
-  integrity sha512-eaDitIHc7ZTPb+YGOuN+8ckhF6s5/KV85jeBXHo3DL0xUbfsKpJowvqjraqj81MeIQXbLS4kocHBRBXn/8c49g==
+  version "2026.2.162551"
+  resolved "https://npm.pkg.github.com/download/@icco/etu-proto/2026.2.162551/53a8eb49892e95ac06a20704be09cae345505f48#53a8eb49892e95ac06a20704be09cae345505f48"
+  integrity sha512-OdfonT1xioQPndzDTenPfMHw4kUE9EZgMxii/ct1ooZsD/Cy/NOyfXcqE7MO80j7mvCQ4HzwrLJ6n2sxM7pHJA==
   dependencies:
     "@bufbuild/protobuf" "^2.0.0"
 
@@ -831,9 +831,9 @@
   integrity sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==
 
 "@types/react@^19.0.10":
-  version "19.2.13"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-19.2.13.tgz#7cea30d7f60a01d97e4ece039c04e9056682218a"
-  integrity sha512-KkiJeU6VbYbUOp5ITMIc7kBfqlYkKA5KhEHVrGMmUUMt7NeaZg65ojdPk+FtNrBAOXNVM5QM72jnADjM+XVRAQ==
+  version "19.2.14"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-19.2.14.tgz#39604929b5e3957e3a6fa0001dafb17c7af70bad"
+  integrity sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==
   dependencies:
     csstype "^3.2.2"
 
@@ -2641,9 +2641,9 @@ magic-string@^0.30.21:
     "@jridgewell/sourcemap-codec" "^1.5.5"
 
 marked@^17.0.1:
-  version "17.0.1"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-17.0.1.tgz#9db34197ac145e5929572ee49ef701e37ee9b2e6"
-  integrity sha512-boeBdiS0ghpWcSwoNm/jJBwdpFaMnZWRzjA6SkUMYb40SVaN1x7mmfGKp0jvexGcx+7y2La5zRZsYFZI6Qpypg==
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-17.0.2.tgz#a103f82bed9653dd1d74c15f74107c84ddbe749d"
+  integrity sha512-s5HZGFQea7Huv5zZcAGhJLT3qLpAfnY7v7GWkICUr0+Wd5TFEtdlRR2XUL5Gg+RH7u2Df595ifrxR03mBaw7gA==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"
