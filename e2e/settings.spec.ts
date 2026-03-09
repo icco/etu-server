@@ -66,20 +66,33 @@ test.describe("Settings Page", () => {
     await expect(page).toHaveScreenshot("settings-name-updated.png")
   })
 
-  test("can edit profile image URL", async ({ page }) => {
+  test("can upload profile image", async ({ page }) => {
     // Find the Profile Image section
     const imageSection = page.locator("div").filter({ hasText: /^Profile Image/ }).first()
     await imageSection.getByRole("button", { name: "Edit" }).click()
 
-    // Input should now be visible
-    const imageInput = page.getByPlaceholder("Enter image URL")
-    await expect(imageInput).toBeVisible()
+    // File input should now be visible
+    const fileInput = imageSection.locator('input[type="file"]')
+    await expect(fileInput).toBeAttached()
 
-    // Enter a valid image URL
-    await imageInput.fill("https://example.com/avatar.png")
+    // Create a small 1x1 PNG in memory and upload it
+    const pngBuffer = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
+      "base64"
+    )
+    await fileInput.setInputFiles({
+      name: "avatar.png",
+      mimeType: "image/png",
+      buffer: pngBuffer,
+    })
 
-    // Click save
-    await imageSection.locator("button.btn-primary").click()
+    // Preview should appear
+    await expect(imageSection.locator("img")).toBeVisible()
+
+    // Upload button should be enabled now
+    const uploadBtn = imageSection.getByRole("button", { name: "Upload" })
+    await expect(uploadBtn).toBeEnabled()
+    await uploadBtn.click()
 
     // Wait for success message
     await expect(page.locator("text=Profile image updated")).toBeVisible({ timeout: 5000 })
@@ -87,20 +100,35 @@ test.describe("Settings Page", () => {
     await expect(page).toHaveScreenshot("settings-image-updated.png")
   })
 
-  test("can clear profile image with empty string", async ({ page }) => {
-    // Find the Profile Image section
+  test("can remove profile image", async ({ page }) => {
+    // First upload an image so there's one to remove
     const imageSection = page.locator("div").filter({ hasText: /^Profile Image/ }).first()
     await imageSection.getByRole("button", { name: "Edit" }).click()
 
-    // Clear the input
-    const imageInput = page.getByPlaceholder("Enter image URL")
-    await imageInput.fill("")
+    const fileInput = imageSection.locator('input[type="file"]')
+    const pngBuffer = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==",
+      "base64"
+    )
+    await fileInput.setInputFiles({
+      name: "avatar.png",
+      mimeType: "image/png",
+      buffer: pngBuffer,
+    })
+    await imageSection.getByRole("button", { name: "Upload" }).click()
+    await expect(page.locator("text=Profile image updated")).toBeVisible({ timeout: 5000 })
 
-    // Click save
-    await imageSection.locator("button.btn-primary").click()
+    // Now remove it
+    await page.reload()
+    await expect(page.locator("h2").filter({ hasText: "Profile Information" })).toBeVisible({
+      timeout: 10000,
+    })
+    const imageSection2 = page.locator("div").filter({ hasText: /^Profile Image/ }).first()
+    await imageSection2.getByRole("button", { name: "Edit" }).click()
+    await imageSection2.getByRole("button", { name: "Remove" }).click()
 
     // Wait for success message
-    await expect(page.locator("text=Profile image updated")).toBeVisible({ timeout: 5000 })
+    await expect(page.locator("text=Profile image removed")).toBeVisible({ timeout: 5000 })
   })
 
   test("displays Integrations section with Notion key", async ({ page }) => {
