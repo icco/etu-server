@@ -278,9 +278,9 @@ export interface UpdateUserSettingsRequest {
   userId: string
   notionKey?: string
   name?: string
-  image?: string
   password?: string
   profileImageUpload?: ImageUpload
+  clearProfileImage?: boolean
 }
 
 export interface UpdateUserSettingsResponse {
@@ -851,9 +851,9 @@ const realUserSettingsService = {
           userId: request.userId,
           notionKey: request.notionKey,
           name: request.name,
-          image: request.image,
           password: request.password,
           profileImageUpload: request.profileImageUpload,
+          clearProfileImage: request.clearProfileImage,
         },
         { headers: createHeaders(apiKey) }
       )

@@ -18,11 +18,6 @@ const updateNameSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
 })
 
-const updateImageSchema = z.object({
-  // Allow empty string (to clear) or valid URL
-  image: z.union([z.literal(""), z.string().url("Invalid image URL")]),
-})
-
 const updateNotionKeySchema = z.object({
   notionKey: z.string().optional(),
 })
@@ -59,39 +54,6 @@ export async function updateName(formData: FormData) {
   } catch (error) {
     logger.error({ error, userId: session.user.id }, "Update name error")
     return { error: "Failed to update name" }
-  }
-}
-
-export async function updateImage(formData: FormData) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return { error: "Not authenticated" }
-  }
-
-  const imageValue = formData.get("image")
-  const parsed = updateImageSchema.safeParse({
-    image: typeof imageValue === "string" ? imageValue : "",
-  })
-
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0].message }
-  }
-
-  try {
-    // Empty string clears the image, otherwise sets the URL
-    await userSettingsService.updateUserSettings(
-      {
-        userId: session.user.id,
-        image: parsed.data.image,
-      },
-      getGrpcApiKey()
-    )
-
-    revalidatePath("/settings")
-    return { success: true }
-  } catch (error) {
-    logger.error({ error, userId: session.user.id }, "Update image error")
-    return { error: "Failed to update image" }
   }
 }
 
@@ -183,6 +145,29 @@ export async function uploadProfileImage(data: { data: string; mimeType: string 
   } catch (error) {
     logger.error({ error, userId: session.user.id }, "Upload profile image error")
     return { error: "Failed to upload profile image" }
+  }
+}
+
+export async function clearProfileImage() {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return { error: "Not authenticated" }
+  }
+
+  try {
+    await userSettingsService.updateUserSettings(
+      {
+        userId: session.user.id,
+        clearProfileImage: true,
+      },
+      getGrpcApiKey()
+    )
+
+    revalidatePath("/settings")
+    return { success: true }
+  } catch (error) {
+    logger.error({ error, userId: session.user.id }, "Clear profile image error")
+    return { error: "Failed to remove profile image" }
   }
 }
 

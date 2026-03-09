@@ -10,7 +10,7 @@ import {
   ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline"
 import { toast } from "sonner"
-import { updateName, updateImage, uploadProfileImage, updateNotionKey, changePassword } from "@/lib/actions/user"
+import { updateName, uploadProfileImage, clearProfileImage, updateNotionKey, changePassword } from "@/lib/actions/user"
 import { exportAllNotes } from "@/lib/actions/notes"
 
 interface AccountViewProps {
@@ -146,9 +146,7 @@ export function AccountView({ user }: AccountViewProps) {
   const handleRemoveImage = async () => {
     setIsUpdatingImage(true)
     try {
-      const formData = new FormData()
-      formData.set("image", "")
-      const result = await updateImage(formData)
+      const result = await clearProfileImage()
       if (result.error) {
         toast.error(result.error)
       } else {
