@@ -10,7 +10,7 @@ import {
   ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline"
 import { toast } from "sonner"
-import { updateName, updateImage, updateNotionKey, changePassword } from "@/lib/actions/user"
+import { updateName, updateImage, uploadProfileImage, updateNotionKey, changePassword } from "@/lib/actions/user"
 import { exportAllNotes } from "@/lib/actions/notes"
 
 interface AccountViewProps {
@@ -37,6 +37,8 @@ export function AccountView({ user }: AccountViewProps) {
   const [isEditingImage, setIsEditingImage] = useState(false)
   const [editImage, setEditImage] = useState(user.image || "")
   const [isUpdatingImage, setIsUpdatingImage] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [selectedFile, setSelectedFile] = useState<{ data: string; mimeType: string } | null>(null)
 
   // Notion key editing state
   const [isEditingNotionKey, setIsEditingNotionKey] = useState(false)
@@ -83,19 +85,53 @@ export function AccountView({ user }: AccountViewProps) {
     setIsEditingName(false)
   }
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB")
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = reader.result as string
+      setImagePreview(result)
+      // Extract base64 data after the data URL prefix
+      const base64 = result.split(",")[1]
+      setSelectedFile({ data: base64, mimeType: file.type })
+    }
+    reader.readAsDataURL(file)
+  }
+
   const handleUpdateImage = async () => {
     setIsUpdatingImage(true)
     try {
-      const formData = new FormData()
-      formData.set("image", editImage.trim())
-      const result = await updateImage(formData)
-
-      if (result.error) {
-        toast.error(result.error)
+      if (selectedFile) {
+        // Upload file
+        const result = await uploadProfileImage(selectedFile)
+        if (result.error) {
+          toast.error(result.error)
+        } else {
+          toast.success("Profile image updated")
+          setIsEditingImage(false)
+          setImagePreview(null)
+          setSelectedFile(null)
+          router.refresh()
+        }
       } else {
-        toast.success("Profile image updated")
-        setIsEditingImage(false)
-        router.refresh()
+        // URL-based update (clear or set URL)
+        const formData = new FormData()
+        formData.set("image", editImage.trim())
+        const result = await updateImage(formData)
+        if (result.error) {
+          toast.error(result.error)
+        } else {
+          toast.success("Profile image updated")
+          setIsEditingImage(false)
+          router.refresh()
+        }
       }
     } catch {
       toast.error("Failed to update profile image")
@@ -106,6 +142,8 @@ export function AccountView({ user }: AccountViewProps) {
 
   const handleCancelEditImage = () => {
     setEditImage(user.image || "")
+    setImagePreview(null)
+    setSelectedFile(null)
     setIsEditingImage(false)
   }
 
@@ -275,37 +313,43 @@ export function AccountView({ user }: AccountViewProps) {
             <div>
               <label className="text-sm text-base-content/60">Profile Image</label>
               {isEditingImage ? (
-                <div className="flex gap-2 mt-1">
-                  <input
-                    type="url"
-                    value={editImage}
-                    onChange={(e) => setEditImage(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleUpdateImage()
-                      if (e.key === "Escape") handleCancelEditImage()
-                    }}
-                    className="input input-bordered flex-1 bg-base-100 text-base-content"
-                    placeholder="Enter image URL"
-                    autoFocus
-                  />
-                  <button
-                    onClick={handleUpdateImage}
-                    disabled={isUpdatingImage}
-                    className="btn btn-primary btn-sm"
-                  >
-                    {isUpdatingImage ? (
-                      <span className="loading loading-spinner loading-xs"></span>
-                    ) : (
-                      <CheckIcon className="h-4 w-4" />
+                <div className="space-y-3 mt-1">
+                  <div className="flex items-center gap-4">
+                    {(imagePreview || user.image) && (
+                      <img
+                        src={imagePreview || user.image || ""}
+                        alt="Preview"
+                        className="w-16 h-16 rounded-full object-cover"
+                      />
                     )}
-                  </button>
-                  <button
-                    onClick={handleCancelEditImage}
-                    disabled={isUpdatingImage}
-                    className="btn btn-ghost btn-sm"
-                  >
-                    Cancel
-                  </button>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      onChange={handleFileSelect}
+                      className="file-input file-input-bordered file-input-sm flex-1 bg-base-100"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleUpdateImage}
+                      disabled={isUpdatingImage || !selectedFile}
+                      className="btn btn-primary btn-sm"
+                    >
+                      {isUpdatingImage ? (
+                        <span className="loading loading-spinner loading-xs"></span>
+                      ) : (
+                        <CheckIcon className="h-4 w-4" />
+                      )}
+                      Upload
+                    </button>
+                    <button
+                      onClick={handleCancelEditImage}
+                      disabled={isUpdatingImage}
+                      className="btn btn-ghost btn-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="flex items-center justify-between">

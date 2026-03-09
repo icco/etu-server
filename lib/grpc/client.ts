@@ -280,6 +280,7 @@ export interface UpdateUserSettingsRequest {
   name?: string
   image?: string
   password?: string
+  profileImageUpload?: ImageUpload
 }
 
 export interface UpdateUserSettingsResponse {
@@ -852,6 +853,7 @@ const realUserSettingsService = {
           name: request.name,
           image: request.image,
           password: request.password,
+          profileImageUpload: request.profileImageUpload,
         },
         { headers: createHeaders(apiKey) }
       )

@@ -2,7 +2,7 @@
 
 import { z } from "zod"
 import { auth } from "@/lib/auth"
-import { userSettingsService } from "@/lib/grpc/client"
+import { userSettingsService, type ImageUpload } from "@/lib/grpc/client"
 import { revalidatePath } from "next/cache"
 import logger from "@/lib/logger"
 
@@ -124,6 +124,65 @@ export async function updateNotionKey(formData: FormData) {
   } catch (error) {
     logger.error({ error, userId: session.user.id }, "Update Notion key error")
     return { error: "Failed to update Notion key" }
+  }
+}
+
+const ALLOWED_IMAGE_MIME_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+])
+
+const MAX_PROFILE_IMAGE_BYTES = 5 * 1024 * 1024 // 5 MiB
+
+function estimateBase64Size(base64: string): number {
+  const len = base64.length
+  if (len === 0) return 0
+  let padding = 0
+  if (base64.endsWith("==")) {
+    padding = 2
+  } else if (base64.endsWith("=")) {
+    padding = 1
+  }
+  return (len * 3) / 4 - padding
+}
+
+export async function uploadProfileImage(data: { data: string; mimeType: string }) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return { error: "Not authenticated" }
+  }
+
+  if (!ALLOWED_IMAGE_MIME_TYPES.has(data.mimeType)) {
+    return { error: "Unsupported image type. Allowed: JPEG, PNG, WebP, GIF" }
+  }
+
+  const estimatedBytes = estimateBase64Size(data.data)
+  if (estimatedBytes > MAX_PROFILE_IMAGE_BYTES) {
+    return { error: "Image exceeds maximum size of 5MB" }
+  }
+
+  try {
+    const buffer = Buffer.from(data.data, "base64")
+    const profileImageUpload: ImageUpload = {
+      data: new Uint8Array(buffer),
+      mimeType: data.mimeType,
+    }
+
+    await userSettingsService.updateUserSettings(
+      {
+        userId: session.user.id,
+        profileImageUpload,
+      },
+      getGrpcApiKey()
+    )
+
+    revalidatePath("/settings")
+    return { success: true }
+  } catch (error) {
+    logger.error({ error, userId: session.user.id }, "Upload profile image error")
+    return { error: "Failed to upload profile image" }
   }
 }
 
