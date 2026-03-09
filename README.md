@@ -13,12 +13,13 @@ This is the webapp for Etu. For more reading on our ideas see:
 - **Tag System**: Organize notes with custom tags and autocomplete
 - **Search & Filter**: Find notes by content, tags, or date
 - **Timeline View**: Browse notes chronologically with date grouping
-- **Full Note View**: Click any note to see rendered markdown
-- **Settings**: Manage account, view stats, and manage API keys
+- **History**: Review past notes
+- **Settings**: Manage account, profile image, Notion integration, view stats, and manage API keys
 - **Keyboard Shortcuts**: `n` for new note, `/` to search
 - **Mobile Support**: Responsive design with bottom navigation
 - **API Keys**: Generate keys for CLI and mobile app access
 - **Stripe Subscriptions**: $5/year with Stripe integration
+- **Theme Toggle**: Light/dark mode support
 
 ## Tech Stack
 
@@ -49,9 +50,8 @@ This is the webapp for Etu. For more reading on our ideas see:
 # Install dependencies
 yarn install
 
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your gRPC backend URL and secrets
+# Set up environment variables (see below)
+# Create .env.local with your gRPC backend URL and secrets
 
 # Start development server
 yarn dev
@@ -96,31 +96,27 @@ docker run -p 3000:3000 \
 ```
 ├── app/
 │   ├── (auth)/           # Login/register pages
-│   │   ├── login/
-│   │   └── register/
 │   ├── (app)/            # Protected app pages
 │   │   ├── notes/        # Notes timeline
-│   │   └── settings/     # User settings
+│   │   ├── history/      # Note history
+│   │   ├── search/       # Full-text search
+│   │   ├── tags/         # Tag browser
+│   │   └── settings/     # Account, API keys, stats, subscription
 │   ├── api/
 │   │   ├── auth/         # NextAuth handlers
 │   │   └── stripe/       # Stripe webhooks
-│   ├── layout.tsx
-│   ├── page.tsx          # Landing page
-│   └── globals.css
-├── components/
-│   ├── note-card.tsx
-│   └── note-dialog.tsx
+│   ├── docs/             # Proto API documentation
+│   └── page.tsx          # Landing page
+├── components/           # Shared UI (nav, note cards, dialogs, theme toggle)
 ├── lib/
-│   ├── actions/          # Server actions (use gRPC backend)
-│   │   ├── auth.ts
-│   │   ├── notes.ts
-│   │   └── api-keys.ts
+│   ├── actions/          # Server actions (notes, auth, user, api-keys)
 │   ├── grpc/
-│   │   └── client.ts     # Connect RPC client for etu-backend
+│   │   ├── client.ts     # Connect RPC client + proto type converters
+│   │   └── mock.ts       # Mock services for e2e testing
 │   ├── auth.ts           # Auth.js config
+│   ├── types.ts          # View-layer types (proto Timestamp → Date)
 │   └── stripe.ts
-├── middleware.ts         # Auth middleware
-└── next.config.ts
+└── middleware.ts          # Auth middleware
 ```
 
 ## Architecture
