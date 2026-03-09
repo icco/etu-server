@@ -18,6 +18,9 @@ test.describe("Mobile Navigation", () => {
   test("user menu button is visible on notes page", async ({ page }) => {
     await page.goto("/notes")
 
+    // Wait for page content to load
+    await expect(page.locator("h1").filter({ hasText: "Notes" })).toBeVisible({ timeout: 10000 })
+
     // Check that the user menu button is visible
     const userMenuButton = page.getByRole("button", { name: "Open user menu" })
     await expect(userMenuButton).toBeVisible()
@@ -25,6 +28,9 @@ test.describe("Mobile Navigation", () => {
 
   test("can navigate to /history from notes page using user menu", async ({ page }) => {
     await page.goto("/notes")
+
+    // Wait for page content to load
+    await expect(page.locator("h1").filter({ hasText: "Notes" })).toBeVisible({ timeout: 10000 })
 
     // Click the user menu button
     await page.getByRole("button", { name: "Open user menu" }).click()
@@ -39,6 +45,9 @@ test.describe("Mobile Navigation", () => {
 
   test("user menu shows all navigation options", async ({ page }) => {
     await page.goto("/notes")
+
+    // Wait for page content to load before interacting with dropdown
+    await expect(page.locator("h1").filter({ hasText: "Notes" })).toBeVisible({ timeout: 10000 })
 
     // Click the user menu button
     await page.getByRole("button", { name: "Open user menu" }).click()
@@ -55,6 +64,9 @@ test.describe("Mobile Navigation", () => {
 
   test("user menu works on /history page", async ({ page }) => {
     await page.goto("/history")
+
+    // Wait for page content to load
+    await expect(page.locator("h1").filter({ hasText: "History" })).toBeVisible({ timeout: 10000 })
 
     // Click the user menu button
     await page.getByRole("button", { name: "Open user menu" }).click()
