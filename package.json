@@ -25,7 +25,7 @@
     "dompurify": "^3.3.1",
     "isomorphic-dompurify": "^3.0.0-rc.2",
     "marked": "^17.0.1",
-    "next": "^16.1.2",
+    "next": "^16.2.4",
     "next-auth": "^5.0.0-beta.30",
     "next-themes": "^0.4.6",
     "pino": "^10.0.0",
