@@ -122,23 +122,50 @@ jobs:
         run: yarn playwright install chromium --with-deps
       - name: Run E2E tests
         id: e2e
-        run: yarn test:e2e --update-snapshots --shard=${{ matrix.shard }}/4
+        # Use --update-snapshots=all so Playwright never decodes the existing
+        # snapshot through pngjs for comparison. A corrupt expected PNG (from
+        # any past artifact-merge race) would otherwise fail the test with
+        # `Failed to re-generate expected: unrecognised content at end of stream`
+        # instead of being quietly rewritten.
+        run: yarn test:e2e --update-snapshots=all --shard=${{ matrix.shard }}/4
         continue-on-error: true
         env:
           CI: true
           E2E_MOCK: "true"
           GRPC_API_KEY: test-api-key
           NEXTAUTH_SECRET: test-secret-for-e2e
+      - name: Stage shard-owned snapshots
+        if: always()
+        # Only stage PNGs this shard actually wrote. Uploading the entire
+        # `e2e/**/*.png` tree from every shard means later artifacts can
+        # silently overwrite freshly-regenerated PNGs with stale copies when
+        # the merge job extracts them with `merge-multiple: true`, which we've
+        # seen produce IDAT-corrupt PNGs that break later runs.
+        run: |
+          set -euo pipefail
+          mkdir -p shard-snapshots
+          {
+            git ls-files --modified
+            git ls-files --others --exclude-standard
+          } | grep -E '^e2e/.*\.png$' | sort -u > shard-snapshots.list || true
+          echo "Snapshots updated by shard ${{ matrix.shard }}:"
+          cat shard-snapshots.list
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            mkdir -p "shard-snapshots/$(dirname "$file")"
+            cp "$file" "shard-snapshots/$file"
+          done < shard-snapshots.list
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: e2e-screenshots-${{ matrix.shard }}
           path: |
-            e2e/**/*.png
+            shard-snapshots/e2e/**/*.png
             test-results/
             playwright-report/
           retention-days: 30
+          if-no-files-found: ignore
       - name: Fail if tests failed
         if: steps.e2e.outcome == 'failure'
         run: exit 1
@@ -165,6 +192,18 @@ jobs:
         with:
           pattern: e2e-screenshots-*
           merge-multiple: true
+      - name: Apply shard-owned snapshots to working tree
+        # Each shard uploads only the PNGs it regenerated, scoped under
+        # `shard-snapshots/e2e/...` to avoid path collisions between shards.
+        # Move them into the repo's `e2e/` tree so git-auto-commit-action
+        # can detect and commit only the actual changes.
+        run: |
+          set -euo pipefail
+          if [ -d shard-snapshots/e2e ]; then
+            cp -R shard-snapshots/e2e/. e2e/
+          else
+            echo "No shard snapshots downloaded; nothing to apply."
+          fi
       - name: Commit screenshots to main branch
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
