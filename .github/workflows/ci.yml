@@ -125,7 +125,7 @@ jobs:
         # Use --update-snapshots=all so Playwright never decodes the existing
         # snapshot through pngjs for comparison. A corrupt expected PNG (from
         # any past artifact-merge race) would otherwise fail the test with
-        # `Failed to re-generate expected: unrecognised content at end of stream`
+        # `Failed to re-generate expected: unrecognized content at end of stream`
         # instead of being quietly rewritten.
         run: yarn test:e2e --update-snapshots=all --shard=${{ matrix.shard }}/4
         continue-on-error: true
