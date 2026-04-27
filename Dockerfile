@@ -36,6 +36,10 @@ RUN yarn build
 
 # Production image
 FROM base AS runner
+
+LABEL org.opencontainers.image.source=https://github.com/icco/etu-web
+LABEL org.opencontainers.image.description="An online notetaking tool"
+LABEL org.opencontainers.image.licenses=CC-BY-NC-4.0
 WORKDIR /app
 
 ENV NODE_ENV=production
